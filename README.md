@@ -1,6 +1,7 @@
 # pyxlpora_api
 
 [![PyPI version](https://badge.fury.io/py/pyxplora-api.svg)](https://badge.fury.io/py/pyxplora-api)
+[![Coverage Status](https://coveralls.io/repos/github/Ludy87/pyxplora_api/badge.svg?branch=main)](https://coveralls.io/github/Ludy87/pyxplora_api?branch=main)
 
 Unofficial python library for the Xplora API
 
