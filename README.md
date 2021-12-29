@@ -52,11 +52,11 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
 ---
 ## Watch
 
-| sections | mode | type |
-|----------|------|------|
+| sections | mode | type | comment |
+|----------|------|------|---------|
 | current Step      | read | int |
 | total Step        | read | int |
-| Alarm             | read | list |
+| Alarms            | read | list |
 | UID               | read | string |
 | Name              | read | string |
 | Xcoin             | read | int |
@@ -72,5 +72,5 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
 | track Interval    | read | list |
 | ask Watch Locate  | read | bool |
 | silent Mode       | read | list |
-| shutdown          | read | bool | admin |
-| reboot            | read | bool | admin |
+| shutdown          | read | bool | only admins |
+| reboot            | read | bool | only admins |
