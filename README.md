@@ -18,7 +18,7 @@ from pyxplora_api import pyxplora_api as PXA
 xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
 ```
 
-# Language Support
+# Country Support
 ---
 
 | CountryCode | Country |
