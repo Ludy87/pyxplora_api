@@ -7,7 +7,9 @@ Unofficial python library for the Xplora API
 Diese Projekt ist eine Übersetzung von TypeScript zu Python, mit Erweiterungen.
 Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com/MiGoller/xplora-api.js)
 
----
+
+# [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
+
 
 # Functions
 ---
