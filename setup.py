@@ -14,7 +14,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Ludy87/pyxplora_api",
     packages=setuptools.find_packages(),
-    classifiers=(
+    classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.9",
@@ -25,7 +25,7 @@ setuptools.setup(
         "Topic :: Utilities",
         "Topic :: Home Automation",
         "Topic :: Software Development :: Libraries :: Python Modules",
-    ),
+    ],
     keywords="api xplora",
     install_requires=["python-graphql-client==0.4.3"],
 )
