@@ -194,7 +194,9 @@ class GQLHandler:
 ########## SECTION MUTATION start ##########
 
     def sendText(self, ownId, text): # ownUser id
-        return self.runAuthorizedGqlQuery(gm.MUTATION['sendTextM'], { "uid": ownId, "text": text })['data']
+        if self.runAuthorizedGqlQuery(gm.MUTATION['sendTextM'], { "uid": ownId, "text": text })['data']['sendChatText'] != None:
+            return True
+        return False
 
     def addStep(self, stepCount):
         return self.runAuthorizedGqlQuery(gm.MUTATION['addStepM'], { "stepCount": stepCount })['data']

@@ -41,6 +41,8 @@ class PyXploraApi:
         return self.contacts
 
 ##### User Info #####
+    def getUserID(self):
+        return self.myInfo['id']
     def getUserName(self):
         return self.myInfo['name']
     def getUserIcon(self):
@@ -137,6 +139,8 @@ class PyXploraApi:
         return self.handler.trackWatch(self.watch_user_id)['trackWatch']
     def askWatchLocate(self):
         return self.handler.askWatchLocate(self.watch_user_id)['askWatchLocate']
+
+##### Feature #####
     def schoolSilentMode(self):
         for sientTime in self.handler.silentTimes(self.watch_user_id)['silentTimes']:
             self.school_silent_mode.append({
@@ -161,10 +165,14 @@ class PyXploraApi:
         for silentTime in self.schoolSilentMode():
             res.append(self.setDisableSilentTime(silentTime['id']))
         return res
+    def sendText(self, text): # sender is login User
+        return self.handler.sendText(self.watch_user_id, text)
     def shutdown(self):
         return self.handler.shutdown(self.watch_user_id)
     def reboot(self):
         return self.handler.reboot(self.watch_user_id)
+
+##### - #####
     def helperTime(self, time):
         h = str(int(time) /60).split('.')
         h2 = str(int(h[1]) *60).zfill(2)[:2]
