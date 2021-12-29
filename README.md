@@ -10,12 +10,59 @@ Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com
 
 # [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
 
-# Init
+# Usage
 ---
 ```
 from pyxplora_api import pyxplora_api as PXA
 
 xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
+```
+
+# Feature
+---
+
+```
+# Watch Info
+getContacts()
+getUserName()
+getUserIcon()
+getUserXcoin()
+getUserCurrentStep()
+getUserTotalStep()
+getUserCreate()
+getUserUpdate()
+
+# Watch Location Info
+getWatchCurrentStep()
+getWatchTotalStep()
+getWatchAlarm()
+getWatchUserID()
+getWatchUserName()
+getWatchXcoin()
+getWatchBattery()
+getWatchIsCharging()
+getWatchOnlineStatus()
+getWatchUnReadChatMsgCount()
+getWatchChats()
+getWatchLastLocation()
+getWatchLocateType()
+getWatchLocate()
+getWatchIsInSafeZone()
+getWatchSafeZoneLabel()
+getSafeZones()
+trackWatchInterval()
+askWatchLocate()
+
+# Feature
+schoolSilentMode()
+setEnableSilentTime()
+setDisableSilentTime()
+setAllEnableSilentTime()
+setAllDisableSilentTime()
+
+sentText()
+shutdown()
+reboot()
 ```
 
 # Country Support
@@ -72,5 +119,6 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
 | track Interval    | read | list |
 | ask Watch Locate  | read | bool |
 | silent Mode       | read | list |
+| sendText          | read | bool |
 | shutdown          | read | bool | only admins |
 | reboot            | read | bool | only admins |
