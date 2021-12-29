@@ -177,7 +177,7 @@ class GQLHandler:
     def getReviewStatus(self, id):
         return self.runAuthorizedGqlQuery(gq.QUERY['GetReviewStatusQ'], { 'uid': id })['data']
 
-    def countries(self):
+    def countries(self): # Country Support
         return self.runAuthorizedGqlQuery(gq.QUERY['CountriesQ'], {})['data']
 
     def safeZones(self, ownId):
