@@ -10,6 +10,29 @@ Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com
 
 # [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
 
+# Init
+---
+```
+from pyxplora_api import pyxplora_api as PXA
+
+xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
+```
+
+# Language Support
+---
+
+| CountryCode | Country |
+|-------------|---------|
+| 44 | United Kingdom |
+| 34 | Spain |
+| 49 | Germany |
+| 47 | Norway |
+| 46 | Sweden |
+| 358 | Finland |
+| 33 | France |
+| 39 | Italy |
+| 41 | Switzerland |
+| 43 | Austria |
 
 # Functions
 ---
