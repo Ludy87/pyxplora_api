@@ -1,4 +1,3 @@
-from logging import shutdown
 import gql_handler
 from gql_handler import NormalStatus
 from datetime import datetime
