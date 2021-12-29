@@ -1,7 +1,7 @@
-import pyxplora_api.pyxplora_api as PyXploraApi
+from pyxplora_api import pyxplora_api as PXA
 
 def main():
-    xplora = PyXploraApi("+49", "123456789", "ACCOUNT_PASSWORT", "de-DE", "Europe/Berlin")
+    xplora = PXA.PyXploraApi("+49", "123456789", "ACCOUNT_PASSWORT", "de-DE", "Europe/Berlin")
     print(xplora.getUserName())
 
 if __name__ == '__main__':

@@ -1,10 +1,9 @@
-import gql_handler
-from gql_handler import NormalStatus
+from .gql_handler import *
 from datetime import datetime
 
 class PyXploraApi:
     def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str):
-        self.handler = gql_handler.GQLHandler(countryPhoneNumber, phoneNumber, password, userLang, timeZone)
+        self.handler = GQLHandler(countryPhoneNumber, phoneNumber, password, userLang, timeZone)
         self.handler.login()
 
         self.myInfo = self.handler.getMyInfo()['readMyInfo']

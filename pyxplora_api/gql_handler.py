@@ -6,8 +6,8 @@ from python_graphql_client import GraphqlClient
 
 from enum import Enum
 
-import gql_mutations as gm
-import gql_queries as gq
+from . import gql_mutations as gm
+from . import gql_queries as gq
 
 class NormalStatus(Enum):
     ENABLE = "ENABLE"
