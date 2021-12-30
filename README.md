@@ -126,9 +126,9 @@ reboot()
 | Chats             | read | list | Don't all chats - confused |
 | last locate       | read | dict |
 | locate now        | read | dict | async - 30 sec pause |
-| locate Type       | read | string | GPS/WiFi |
+| locate Type       | read | str | GPS/WiFi |
 | is in Safezone    | read | bool |
-| Safezone Lable    | read | string |
+| Safezone Lable    | read | str |
 | Safezone          | read/write | list |
 | track Interval    | read | int |
 | ask Watch Locate  | read | bool | sync/async |
