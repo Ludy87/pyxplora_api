@@ -15,13 +15,13 @@ Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com
 # [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
 
 # Usage
----
 ```
 from pyxplora_api import pyxplora_api as PXA
 
 xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
 ```
 
+---
 # Feature
 ---
 
@@ -69,8 +69,8 @@ shutdown()
 reboot()
 ```
 
-# Country Support
 ---
+# Country Support
 
 | CountryCode | Country |
 |-------------|---------|
@@ -88,41 +88,51 @@ reboot()
 # Functions
 ---
 
+## Contacts
+
+| sections | mode | type |
+|----------|------|------|
+| Contacts | read | list |
+
+---
 ## Login Account
 
 | sections | mode | type |
 |----------|------|------|
-| Username          | read | string |
-| Icon              | read | string |
+| UID               | read | str |
+| Username          | read | str |
+| Icon              | read | str |
 | Xcoin             | read | int |
 | current Step      | read | int |
 | total Step        | read/write | int |
-| time of create    | read | string |
-| time of update    | read | string |
+| time of create    | read | str |
+| time of update    | read | str |
 
 ---
 ## Watch
 
 | sections | mode | type | comment |
 |----------|------|------|---------|
+| UID               | read | str |
+| Name              | read | str |
+| Xcoin             | read | int |
 | current Step      | read | int |
 | total Step        | read | int |
 | Alarms            | read | list |
-| UID               | read | string |
-| Name              | read | string |
-| Xcoin             | read | int |
 | Battery           | read | int |
 | Charging          | read | bool |
+| Online Status     | read | str | ?BUG?|
 | Unread Msg Count  | read | int | ?BUG? |
-| Chats             | read | list | Don't all chats |
+| Chats             | read | list | Don't all chats - confused |
+| last locate       | read | dict |
+| locate now        | read | dict | async - 30 sec pause |
 | locate Type       | read | string | GPS/WiFi |
-| locate            | read | dict |
 | is in Safezone    | read | bool |
 | Safezone Lable    | read | string |
 | Safezone          | read/write | list |
-| track Interval    | read | list |
-| ask Watch Locate  | read | bool |
-| silent Mode       | read | list |
-| sendText          | read | bool |
+| track Interval    | read | int |
+| ask Watch Locate  | read | bool | sync/async |
+| silents           | read | list | get all/enable/disable - enable all/disable all |
+| sendText          | read | bool | sender: logged User |
 | shutdown          | read | bool | only admins |
 | reboot            | read | bool | only admins |

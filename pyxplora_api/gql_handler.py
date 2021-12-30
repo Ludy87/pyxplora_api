@@ -14,6 +14,12 @@ class NormalStatus(Enum):
     DISABLE = "DISABLE"
     UNKNOWN__ = "UNKNOWN__"
 
+class WatchOnlineStatus(Enum):
+    UNKNOWN = "UNKNOWN"
+    ONLINE = "ONLINE"
+    OFFLINE = "OFFLINE"
+    UNKNOWN__ = "UNKNOWN__"
+
 class GQLHandler:
     def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str):
         # init vars
@@ -74,12 +80,27 @@ class GQLHandler:
         # execute QUERY|MUTATION
         data = gqlClient.execute(query=query, variables=variables)
         return data
+    async def runGqlQuery_a(self, query: str, variables):
+        if query == None:
+            raise Exception("GraphQL guery string MUST NOT be empty!")
+        # Add Xplora API headers
+        requestHeaders = self.getRequestHeaders("application/json; charset=UTF-8")
+        # create GQLClient
+        gqlClient = GraphqlClient(endpoint=self.ENDPOINT, headers=requestHeaders)
+        # execute QUERY|MUTATION
+        data = await gqlClient.execute_async(query=query, variables=variables)
+        return data
 
     def runAuthorizedGqlQuery(self, query: str, variables):
         if self.accessToken == None:
             raise Exception("You have to login to the Xplora API first.")
         # Run GraphQL query and return
         return self.runGqlQuery(query, variables)
+    async def runAuthorizedGqlQuery_a(self, query: str, variables):
+        if self.accessToken == None:
+            raise Exception("You have to login to the Xplora API first.")
+        # Run GraphQL query and return
+        return await self.runGqlQuery_a(query, variables)
 
     def login(self):
         data = self.runGqlQuery(gm.MUTATION["tokenM"], self.variables)['data']
@@ -141,11 +162,20 @@ class GQLHandler:
     def getWatchLastLocation(self, ownId):
         return self.runAuthorizedGqlQuery(gq.QUERY['watchLastLocateQ'], { "uid": ownId })['data']
 
-    def trackWatch(self, ownId): # tracking time - seconds
-        return self.runAuthorizedGqlQuery(gq.QUERY['trackWatchQ'], { "uid": ownId })['data']
+    async def getWatchLastLocation_a(self, ownId):
+        return (await self.runAuthorizedGqlQuery_a(gq.QUERY['watchLastLocateQ'], { "uid": ownId }))['data']
 
-    def askWatchLocate(self, ownId):
-        return self.runAuthorizedGqlQuery(gq.QUERY['askWatchLocateQ'], { "uid": ownId })['data']
+    def trackWatch(self, ownId): # tracking time - seconds
+        res = self.runAuthorizedGqlQuery_a(gq.QUERY['trackWatchQ'], { "uid": ownId })['data']
+        if res['trackWatch'] != None:
+            return res
+        return { 'trackWatch': -1 }
+
+    async def askWatchLocate(self, ownId):
+        res = (await self.runAuthorizedGqlQuery_a(gq.QUERY['askWatchLocateQ'], { "uid": ownId }))['data']
+        if res['askWatchLocate'] != None:
+            return res
+        return { 'askWatchLocate': False }
 
     def getAlarms(self, ownId):
         return self.runAuthorizedGqlQuery(gq.QUERY['alarmsQ'], { "uid": ownId })['data']
