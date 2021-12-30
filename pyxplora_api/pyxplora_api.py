@@ -84,6 +84,7 @@ class PyXploraApi:
     async def getWatchBattery_a(self) -> int:
         await self.askWatchLocate_async()
         await asyncio.sleep(15)
+        self.watch_last_location = await self.handler.getWatchLastLocation_a(self.watch_user_id)['watchLastLocate']
         if (int(datetime.timestamp(datetime.now())) - self.watch_last_location['tm']) < 30:
             return self.watch_last_location['battery']
         watch_location = (await self.askHelper())
