@@ -81,6 +81,15 @@ class PyXploraApi:
         return self.alarms
     def getWatchBattery(self) -> int:
         return self.watch_last_location['battery']
+    async def getWatchBattery_a(self) -> int:
+        await self.askWatchLocate_async()
+        await asyncio.sleep(15)
+        if (int(datetime.timestamp(datetime.now())) - self.watch_last_location['tm']) < 30:
+            return self.watch_last_location['battery']
+        watch_location = (await self.askHelper())
+        await asyncio.sleep(1)
+        return watch_location['battery']
+        
     def getWatchIsCharging(self) -> bool:
         return self.watch_last_location['isCharging']
     def getWatchOnlineStatus(self) -> WatchOnlineStatus:
