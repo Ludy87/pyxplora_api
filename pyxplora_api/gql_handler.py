@@ -171,7 +171,13 @@ class GQLHandler:
             return res
         return { 'trackWatch': -1 }
 
-    async def askWatchLocate(self, ownId):
+    def askWatchLocate(self, ownId):
+        res = self.runAuthorizedGqlQuery(gq.QUERY['askWatchLocateQ'], { "uid": ownId })['data']
+        if res['askWatchLocate'] != None:
+            return res
+        return { 'askWatchLocate': False }
+
+    async def askWatchLocate_a(self, ownId):
         res = (await self.runAuthorizedGqlQuery_a(gq.QUERY['askWatchLocateQ'], { "uid": ownId }))['data']
         if res['askWatchLocate'] != None:
             return res

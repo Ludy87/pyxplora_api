@@ -180,7 +180,7 @@ class PyXploraApi:
     def askWatchLocate(self) -> bool:
         return self.handler.askWatchLocate(self.watch_user_id)['askWatchLocate']
     async def askWatchLocate_async(self) -> bool:
-        return (await self.handler.askWatchLocate(self.watch_user_id))['askWatchLocate']
+        return (await self.handler.askWatchLocate_a(self.watch_user_id))['askWatchLocate']
 
 ##### Feature #####
     def schoolSilentMode(self) -> list:
