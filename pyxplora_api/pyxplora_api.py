@@ -115,6 +115,8 @@ class PyXploraApi:
         return watch_location['isCharging']
     def getWatchOnlineStatus(self) -> WatchOnlineStatus:
         try:
+            if self.trackWatchInterval() == -1:
+                return WatchOnlineStatus.OFFLINE.value
             return self.handler.getWatches(self.watch_user_id)['watches'][self.watch_no]['onlineStatus']
         except TypeError:
             return WatchOnlineStatus.UNKNOWN.value
