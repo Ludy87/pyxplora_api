@@ -94,7 +94,7 @@ class PyXploraApi:
 
     def getWatchIsCharging(self) -> bool:
         return self.watch_last_location['isCharging']
-    async def getWatchIsCharging(self) -> bool:
+    async def getWatchIsCharging_a(self) -> bool:
         await self.askWatchLocate_async()
         await asyncio.sleep(15)
         self.watch_last_location = (await self.handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
