@@ -166,7 +166,7 @@ class GQLHandler:
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['watchLastLocateQ'], { "uid": ownId }))['data']
 
     def trackWatch(self, ownId): # tracking time - seconds
-        res = self.runAuthorizedGqlQuery_a(gq.QUERY['trackWatchQ'], { "uid": ownId })['data']
+        res = self.runAuthorizedGqlQuery(gq.QUERY['trackWatchQ'], { "uid": ownId })['data']
         if res['trackWatch'] != None:
             return res
         return { 'trackWatch': -1 }
