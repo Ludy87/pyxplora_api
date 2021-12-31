@@ -4,10 +4,19 @@ import asyncio
 
 class PyXploraApi:
     def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
-        self.handler = GQLHandler(countryPhoneNumber, phoneNumber, password, userLang, timeZone)
+        self._countryPhoneNumber = countryPhoneNumber
+        self._phoneNumber = phoneNumber
+        self._password = password
+        self._userLang = userLang
+        self._timeZone = timeZone
+        self._watchNo = watchNo
+        self.update()
+
+    def update(self):
+        self.handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
         self.handler.login()
 
-        self.watch_no = watchNo
+        self.watch_no = self._watchNo
 
         self.myInfo = self.handler.getMyInfo()['readMyInfo']
         self.watch_user_id = self.myInfo['children'][self.watch_no]['ward']['id']
