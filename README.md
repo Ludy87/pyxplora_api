@@ -125,13 +125,13 @@ reboot()
 | Unread Msg Count  | read | int | ?BUG? |
 | Chats             | read | list | Don't all chats - confused |
 | last locate       | read | dict |
-| locate now        | read | dict | async - 30 sec pause |
+| locate now        | read | dict |
 | locate Type       | read | str | GPS/WiFi |
 | is in Safezone    | read | bool |
 | Safezone Lable    | read | str |
 | Safezone          | read/write | list |
 | track Interval    | read | int |
-| ask Watch Locate  | read | bool | sync/async |
+| ask Watch Locate  | read | bool |
 | silents           | read | list | get all/enable/disable - enable all/disable all |
 | sendText          | read | bool | sender: logged User |
 | shutdown          | read | bool | only admins |
