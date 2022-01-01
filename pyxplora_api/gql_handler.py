@@ -1,7 +1,7 @@
 import hashlib
 import math
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from python_graphql_client import GraphqlClient
 
 from enum import Enum

@@ -1,3 +1,4 @@
+from logging import FATAL
 from .gql_handler import *
 from datetime import datetime
 import asyncio
@@ -12,7 +13,7 @@ class PyXploraApi:
         self._watchNo = watchNo
         self.update()
 
-    def update(self):
+    def update(self) -> None:
         self.handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
         self.handler.login()
 
@@ -29,6 +30,9 @@ class PyXploraApi:
         self.chats = []
         self.safe_zones = []
         self.school_silent_mode = []
+
+    def version(self) -> str:
+        return "1.0.22"
 
 ##### Contact Info #####
     def getContacts(self) -> list:
@@ -114,6 +118,8 @@ class PyXploraApi:
         await asyncio.sleep(1)
         return watch_location['isCharging']
     def getWatchOnlineStatus(self) -> WatchOnlineStatus:
+        if self.askWatchLocate() == False:
+            return WatchOnlineStatus.OFFLINE.value
         try:
             if self.trackWatchInterval() == -1:
                 return WatchOnlineStatus.OFFLINE.value
@@ -144,31 +150,16 @@ class PyXploraApi:
         return self.watch_last_location
     def getWatchLocateType(self) -> str:
         return self.watch_last_location['locateType']
-    async def getWatchLocate(self) -> dict:
-        await self.askWatchLocate_async()
-        await asyncio.sleep(15)
-        if (int(datetime.timestamp(datetime.now())) - self.watch_last_location['tm']) < 30:
-            return {
-                'tm': datetime.fromtimestamp(self.watch_last_location['tm']).strftime('%Y-%m-%d %H:%M:%S'),
-                'lat': self.watch_last_location['lat'],
-                'lng': self.watch_last_location['lng'],
-                'rad': self.watch_last_location['rad'],
-                'poi': self.watch_last_location['poi'],
-                'city': self.watch_last_location['city'],
-                'province': self.watch_last_location['province'],
-                'country': self.watch_last_location['country'],
-            }
-        watch_location = (await self.askHelper())
-        await asyncio.sleep(1)
+    def getWatchLocate(self) -> dict:
         return {
-            'tm': datetime.fromtimestamp(watch_location['tm']).strftime('%Y-%m-%d %H:%M:%S'),
-            'lat': watch_location['lat'],
-            'lng': watch_location['lng'],
-            'rad': watch_location['rad'],
-            'poi': watch_location['poi'],
-            'city': watch_location['city'],
-            'province': watch_location['province'],
-            'country': watch_location['country'],
+            'tm': datetime.fromtimestamp(self.watch_last_location['tm']).strftime('%Y-%m-%d %H:%M:%S'),
+            'lat': self.watch_last_location['lat'],
+            'lng': self.watch_last_location['lng'],
+            'rad': self.watch_last_location['rad'],
+            'poi': self.watch_last_location['poi'],
+            'city': self.watch_last_location['city'],
+            'province': self.watch_last_location['province'],
+            'country': self.watch_last_location['country'],
         }
     def getWatchIsInSafeZone(self) -> bool:
         return self.watch_last_location['isInSafeZone']
