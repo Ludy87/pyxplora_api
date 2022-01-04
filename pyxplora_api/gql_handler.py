@@ -106,8 +106,7 @@ class GQLHandler:
         data = self.runGqlQuery(gm.MUTATION["tokenM"], self.variables)['data']
         if data['issueToken'] == None:
             # Login failed.
-            raise Exception("Login to Xplora API failed.")
-
+            raise LoginError("Login to Xplora API failed. Check your input!")
         self.issueToken = data['issueToken']
 
         #  Login succeeded
@@ -129,7 +128,7 @@ class GQLHandler:
         if self.issueToken:
             return True
         else: # login failed
-            raise Exception("Login to Xplora API failed.")
+            raise LoginError("Login to Xplora API failed.", 2)
 
     def isAdmin(self, ownId, query, variables, key):
         contacts = self.getContacts(ownId)
@@ -250,3 +249,15 @@ class GQLHandler:
         return self.runAuthorizedGqlQuery(gm.MUTATION['setEnableSlientTimeM'], { 'silentId': silentId, 'status': status.value })['data']
 
 ########## SECTION MUTATION end ##########
+
+class Error(Exception):
+    pass
+
+class LoginError(Error):
+    def __init__(self, message, res=1):
+        self.message = message
+        self.res = res
+        super().__init__(self.message, self.res)
+
+    def __str__(self):
+        return f'{self.message} - {self.res}'

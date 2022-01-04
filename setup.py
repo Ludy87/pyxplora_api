@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyxplora_api",
-    version="1.0.24",
+    version="1.0.25",
     author="Ludy87",
     author_email="android@astra-g.org",
     description="Python Xplora-Api",
