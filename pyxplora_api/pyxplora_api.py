@@ -15,7 +15,7 @@ class PyXploraApi:
 
     def update(self) -> None:
         self.handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
-        self.handler.login()
+        self.result = self.handler.login()
 
         self.watch_no = self._watchNo
 
@@ -32,7 +32,7 @@ class PyXploraApi:
         self.school_silent_mode = []
 
     def version(self) -> str:
-        return "1.0.22"
+        return "1.0.23"
 
 ##### Contact Info #####
     def getContacts(self) -> list:
@@ -104,19 +104,11 @@ class PyXploraApi:
         watch_location = await self.askHelper()
         await asyncio.sleep(1)
         return watch_location['battery']
-
     def getWatchIsCharging(self) -> bool:
-        return self.watch_last_location['isCharging']
-    async def getWatchIsCharging_a(self) -> bool:
-        await self.askWatchLocate_async()
-        await asyncio.sleep(15)
-        self.watch_last_location = (await self.handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
-        if self.watch_last_location != None:
-            if (int(datetime.timestamp(datetime.now())) - self.watch_last_location['tm']) < 30:
-                return self.watch_last_location['isCharging']
-        watch_location = await self.askHelper()
-        await asyncio.sleep(1)
-        return watch_location['isCharging']
+        try:
+            return self.watch_last_location['isCharging']
+        except TypeError:
+            return False
     def getWatchOnlineStatus(self) -> WatchOnlineStatus:
         if self.askWatchLocate() == False:
             return WatchOnlineStatus.OFFLINE.value
