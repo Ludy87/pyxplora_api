@@ -1,4 +1,3 @@
-from logging import FATAL
 from .gql_handler import *
 from datetime import datetime
 import asyncio
@@ -20,8 +19,12 @@ class PyXploraApi:
         self.watch_no = self._watchNo
 
         self.myInfo = self.handler.getMyInfo()['readMyInfo']
-        self.watch_user_id = self.myInfo['children'][self.watch_no]['ward']['id']
-        self.watch_user_name = self.myInfo['children'][self.watch_no]['ward']['name']
+        if 'children' in self.myInfo:
+            self.watch_user_id = self.myInfo['children'][self.watch_no]['ward']['id']
+            self.watch_user_name = self.myInfo['children'][self.watch_no]['ward']['name']
+        else:
+            self.watch_user_id = "n/a"
+            self.watch_user_name = "n/a"
 
         self.watch_last_location = self.handler.getWatchLastLocation(self.watch_user_id)['watchLastLocate']
 
@@ -32,7 +35,7 @@ class PyXploraApi:
         self.school_silent_mode = []
 
     def version(self) -> str:
-        return "1.0.23"
+        return "1.0.24"
 
 ##### Contact Info #####
     def getContacts(self) -> list:
@@ -56,21 +59,21 @@ class PyXploraApi:
 
 ##### User Info #####
     def getUserID(self) -> str:
-        return self.myInfo['id']
+        return self.checkMyInfo(self.myInfo, 'id', 'n/a')
     def getUserName(self) -> str:
-        return self.myInfo['name']
+        return self.checkMyInfo(self.myInfo, 'name', 'n/a')
     def getUserIcon(self) -> str:
-        return self.myInfo['extra']['profileIcon']
+        return self.checkMyInfo(self.checkMyInfo(self.myInfo, 'extra', 'n/a'), 'profileIcon', 'n/a')
     def getUserXcoin(self) -> int:
-        return self.myInfo['xcoin']
+        return self.checkMyInfo(self.myInfo, 'xcoin', -1)
     def getUserCurrentStep(self) -> int:
-        return self.myInfo['currentStep']
+        return self.checkMyInfo(self.myInfo, 'currentStep', -1)
     def getUserTotalStep(self) -> int:
-        return self.myInfo['totalStep']
+        return self.checkMyInfo(self.myInfo, 'totalStep', -1)
     def getUserCreate(self) -> str:
-        return datetime.fromtimestamp(self.myInfo['create']).strftime('%Y-%m-%d %H:%M:%S')
+        return datetime.fromtimestamp(self.checkMyInfo(self.myInfo, 'create', 0)).strftime('%Y-%m-%d %H:%M:%S')
     def getUserUpdate(self) -> str:
-        return datetime.fromtimestamp(self.myInfo['update']).strftime('%Y-%m-%d %H:%M:%S')
+        return datetime.fromtimestamp(self.checkMyInfo(self.myInfo, 'update', 0)).strftime('%Y-%m-%d %H:%M:%S')
 
 ##### Watch Info #####
     def getWatchUserID(self) -> str:
@@ -218,3 +221,7 @@ class PyXploraApi:
             return (await self.handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
         except TypeError:
             return 0
+    def checkMyInfo(self, func, value: str, res):
+        if value in func:
+            return func[value]
+        return res
