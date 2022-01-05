@@ -6,7 +6,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/Ludy87/pyxplora_api)](https://github.com/Ludy87/pyxplora_api)
 [![GitHub license](https://img.shields.io/github/license/Ludy87/pyxplora_api)](https://github.com/Ludy87/pyxplora_api/blob/main/LICENSE)
 
-Unofficial python library for the Xplora API
+Unofficial python library for the Xplora® API
 
 Diese Projekt ist eine Übersetzung von TypeScript zu Python, mit Erweiterungen.
 Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com/MiGoller/xplora-api.js)
