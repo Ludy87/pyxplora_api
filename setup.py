@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyxplora_api",
-    version="1.0.27",
+    version="1.0.28",
     author="Ludy87",
     author_email="android@astra-g.org",
-    description="Python Xplora-Api",
+    description="Python Xplora® Api",
     license="MIT",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -26,6 +26,6 @@ setuptools.setup(
         "Topic :: Home Automation",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords="api xplora",
+    keywords="api xplora watch",
     install_requires=["python-graphql-client==0.4.3"],
 )

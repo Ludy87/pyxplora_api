@@ -137,8 +137,11 @@ class PyXploraApi:
         except TypeError:
             return False
     def getWatchOnlineStatus(self) -> WatchOnlineStatus:
-        if self.askWatchLocate() == False:
-            return WatchOnlineStatus.OFFLINE.value
+        if self.askWatchLocate() == True:
+            return WatchOnlineStatus.ONLINE.value
+        self.__handler: GQLHandler = []
+        if self.askWatchLocate() == True:
+            return WatchOnlineStatus.ONLINE.value
         try:
             if self.trackWatchInterval() == -1:
                 return WatchOnlineStatus.OFFLINE.value

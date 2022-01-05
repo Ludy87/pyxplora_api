@@ -1,6 +1,7 @@
 import hashlib
 import math
 import time
+import logging
 from datetime import date, datetime, timezone
 from python_graphql_client import GraphqlClient
 
@@ -8,6 +9,8 @@ from enum import Enum
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
+
+_LOGGER = logging.getLogger(__name__)
 
 class NormalStatus(Enum):
     ENABLE = "ENABLE"
@@ -51,9 +54,9 @@ class GQLHandler:
         if acceptedContentType == "" or acceptedContentType == None:
             raise Exception("acceptedContentType MUST NOT be empty!")
         if self.API_KEY == None:
-            raise Exception("XploraO2O API_KEY MUST NOT be empty!")
+            raise Exception("Xplorao2o API_KEY MUST NOT be empty!")
         if self.API_SECRET == None:
-            raise Exception("XploraO2O API_SECRET MUST NOT be empty!")
+            raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
         requestHeaders = {}
         if self.accessToken == None:
             # OPEN authorization
@@ -73,7 +76,7 @@ class GQLHandler:
     def runGqlQuery(self, query: str, variables):
         if query == None:
             raise Exception("GraphQL guery string MUST NOT be empty!")
-        # Add Xplora API headers
+        # Add Xplora® API headers
         requestHeaders = self.getRequestHeaders("application/json; charset=UTF-8")
         # create GQLClient
         gqlClient = GraphqlClient(endpoint=self.ENDPOINT, headers=requestHeaders)
@@ -83,7 +86,7 @@ class GQLHandler:
     async def runGqlQuery_a(self, query: str, variables):
         if query == None:
             raise Exception("GraphQL guery string MUST NOT be empty!")
-        # Add Xplora API headers
+        # Add Xplora® API headers
         requestHeaders = self.getRequestHeaders("application/json; charset=UTF-8")
         # create GQLClient
         gqlClient = GraphqlClient(endpoint=self.ENDPOINT, headers=requestHeaders)
@@ -93,20 +96,21 @@ class GQLHandler:
 
     def runAuthorizedGqlQuery(self, query: str, variables):
         if self.accessToken == None:
-            raise Exception("You have to login to the Xplora API first.")
+            raise Exception("You have to login to the Xplora® API first.")
         # Run GraphQL query and return
         return self.runGqlQuery(query, variables)
     async def runAuthorizedGqlQuery_a(self, query: str, variables):
         if self.accessToken == None:
-            raise Exception("You have to login to the Xplora API first.")
+            raise Exception("You have to login to the Xplora® API first.")
         # Run GraphQL query and return
         return await self.runGqlQuery_a(query, variables)
 
     def login(self):
         data = self.runGqlQuery(gm.MUTATION["tokenM"], self.variables)['data']
+        _LOGGER.debug(data)
         if data['issueToken'] == None:
             # Login failed.
-            raise LoginError("Login to Xplora API failed. Check your input!")
+            raise LoginError("Login to Xplora® API failed. Check your input!")
         self.issueToken = data['issueToken']
 
         #  Login succeeded
@@ -128,7 +132,7 @@ class GQLHandler:
         if self.issueToken:
             return True
         else: # login failed
-            raise LoginError("Login to Xplora API failed.", 2)
+            raise LoginError("Login to Xplora® API failed.", 2)
 
     def isAdmin(self, ownId, query, variables, key):
         contacts = self.getContacts(ownId)
