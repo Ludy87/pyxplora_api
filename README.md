@@ -28,6 +28,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
 ```
 # Watch Info
 getContacts()
+getUserID()
 getUserName()
 getUserIcon()
 getUserXcoin()
@@ -36,18 +37,20 @@ getUserTotalStep()
 getUserCreate()
 getUserUpdate()
 
-# Watch Location Info
-getWatchCurrentStep()
-getWatchTotalStep()
-getWatchAlarm()
+# Watch Info
 getWatchUserID()
 getWatchUserName()
 getWatchXcoin()
+getWatchCurrentStep()
+getWatchTotalStep()
+getWatchAlarm()
 getWatchBattery()
 getWatchIsCharging()
 getWatchOnlineStatus()
 getWatchUnReadChatMsgCount()
 getWatchChats()
+
+# Watch Location Info
 getWatchLastLocation()
 getWatchLocateType()
 getWatchLocate()
@@ -121,12 +124,12 @@ reboot()
 | Alarms            | read | list |
 | Battery           | read | int |
 | Charging          | read | bool |
-| Online Status     | read | str | ?BUG?|
+| Online Status     | read | str |
 | Unread Msg Count  | read | int | ?BUG? |
 | Chats             | read | list | Don't all chats - confused |
 | last locate       | read | dict |
-| locate now        | read | dict |
 | locate Type       | read | str | GPS/WiFi |
+| locate now        | read | dict |
 | is in Safezone    | read | bool |
 | Safezone Lable    | read | str |
 | Safezone          | read/write | list |
