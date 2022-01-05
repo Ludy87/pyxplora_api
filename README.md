@@ -75,8 +75,8 @@ reboot()
 ---
 # Country Support
 
-| CountryCode | Country |
-|-------------|---------|
+| Country Code | Country |
+|-------------:|---------|
 | 44 | United Kingdom |
 | 34 | Spain |
 | 49 | Germany |
