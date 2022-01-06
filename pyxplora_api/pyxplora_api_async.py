@@ -45,7 +45,7 @@ class PyXploraApi:
         self.school_silent_mode = []
 
     def version(self) -> str:
-        return "1.0.31"
+        return "1.0.32"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
@@ -186,6 +186,8 @@ class PyXploraApi:
 
 ##### Feature #####
     async def schoolSilentMode_a(self) -> list:
+        await self.update_a()
+        await self.askWatchLocate_a()
         for sientTime in (await self.__handler.silentTimes_a(self.watch_user_id))['silentTimes']:
             self.school_silent_mode.append({
                 'id': sientTime['id'],
