@@ -6,4 +6,5 @@ MUTATION = {
     "rebootM": "mutation reboot($uid : String!) {\n  reboot(uid: $uid)\n}",
     "addStepM": "mutation AddStep($stepCount: Int) {\n  addStep(stepCount: $stepCount)\n}",
     "setEnableSlientTimeM": "mutation SetEnableSlientTime($silentId : String!, $status: NormalStatus!) {\n  setEnableSilentTime(silentId: $silentId, status: $status)\n}",
+    "setReadChatMsg": "mutation setReadChatMsg($uid: String!, $msgId : String, $id : String) {\n  setReadChatMsg(uid: $uid, msgId: $msgId, id: $id)\n}",
 }

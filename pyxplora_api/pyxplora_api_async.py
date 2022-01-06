@@ -1,4 +1,4 @@
-from .gql_handler import *
+from .gql_handler_async import *
 from datetime import datetime
 
 class PyXploraApi:
@@ -8,39 +8,35 @@ class PyXploraApi:
         self._password = password
         self._userLang = userLang
         self._timeZone = timeZone
-        self._watchNo = watchNo
+        self.watch_no = watchNo
         self.__handler: GQLHandler = []
-        #self.__login()
 
-    def __checkLogin(self) -> None:
+    async def __checkLogin_a(self) -> None:
         self.__handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
-        self.__handler.login()
+        await self.__handler.login_a()
         #print("Login!")
-        self.update()
+        #await self.update_a()
 
-    def __login(self) -> None:
+    async def __login_a(self) -> None:
         if not self.__handler:
             try:
-                self.__checkLogin()
+                await self.__checkLogin_a()
             except LoginError as error:
                 #print(f"Error: -> First faill. {error.args[0]}")
                 try:
-                    self.__checkLogin()
+                    await self.__checkLogin_a()
                 except LoginError as error:
                     #print(f"Error: -> Login canceled! {error.args[0]}")
                     raise Exception(f"{error.args[0]}")
 
-    def update(self) -> None:
-        self.__login()
-        #print("update")
+    async def update_a(self) -> None:
+        await self.__login_a()
 
-        self.watch_no = self._watchNo
-
-        self.myInfo = self.__handler.getMyInfo()['readMyInfo']
+        self.myInfo = (await self.__handler.getMyInfo_a())['readMyInfo']
         self.watch_user_id = self.myInfo['children'][self.watch_no]['ward']['id']
         self.watch_user_name = self.myInfo['children'][self.watch_no]['ward']['name']
 
-        self.watch_last_location = self.__handler.getWatchLastLocation(self.watch_user_id)['watchLastLocate']
+        self.watch_last_location = (await self.__handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
 
         self.contacts = []
         self.alarms = []
@@ -49,12 +45,11 @@ class PyXploraApi:
         self.school_silent_mode = []
 
     def version(self) -> str:
-        return "1.0.30"
+        return "1.0.31"
 
 ##### Contact Info #####
-    def getContacts(self) -> list:
-        self.__login()
-        for contact in self.__handler.getContacts(self.watch_user_id)['contacts']['contacts']:
+    async def getContacts_a(self) -> list:
+        for contact in (await self.__handler.getContacts_a(self.watch_user_id))['contacts']['contacts']:
             try:
                 xcoin = contact['contactUser']['xcoin']
                 id = contact['contactUser']['id']
@@ -74,48 +69,35 @@ class PyXploraApi:
 
 ##### User Info #####
     def getUserID(self) -> str:
-        self.__login()
         return self.__checkMyInfo(self.myInfo, 'id', 'n/a')
     def getUserName(self) -> str:
-        self.__login()
         return self.__checkMyInfo(self.myInfo, 'name', 'n/a')
     def getUserIcon(self) -> str:
-        self.__login()
         return self.__checkMyInfo(self.__checkMyInfo(self.myInfo, 'extra', 'n/a'), 'profileIcon', 'n/a')
     def getUserXcoin(self) -> int:
-        self.__login()
         return self.__checkMyInfo(self.myInfo, 'xcoin', -1)
     def getUserCurrentStep(self) -> int:
-        self.__login()
         return self.__checkMyInfo(self.myInfo, 'currentStep', -1)
     def getUserTotalStep(self) -> int:
-        self.__login()
         return self.__checkMyInfo(self.myInfo, 'totalStep', -1)
     def getUserCreate(self) -> str:
-        self.__login()
         return datetime.fromtimestamp(self.__checkMyInfo(self.myInfo, 'create', 0)).strftime('%Y-%m-%d %H:%M:%S')
     def getUserUpdate(self) -> str:
         return datetime.fromtimestamp(self.__checkMyInfo(self.myInfo, 'update', 0)).strftime('%Y-%m-%d %H:%M:%S')
 
 ##### Watch Info #####
     def getWatchUserID(self) -> str:
-        self.__login()
         return self.watch_user_id
     def getWatchUserName(self) -> str:
-        self.__login()
         return self.watch_user_name
     def getWatchXcoin(self) -> int:
-        self.__login()
         return self.myInfo['children'][self.watch_no]['ward']['xcoin']
     def getWatchCurrentStep(self) -> int:
-        self.__login()
         return self.myInfo['children'][self.watch_no]['ward']['currentStep']
     def getWatchTotalStep(self) -> int:
-        self.__login()
         return self.myInfo['children'][self.watch_no]['ward']['totalStep']
-    def getWatchAlarm(self) -> list:
-        self.__login()
-        for alarm in self.__handler.getAlarms(self.watch_user_id)['alarms']:
+    async def getWatchAlarm_a(self) -> list:
+        for alarm in (await self.__handler.getAlarms_a(self.watch_user_id))['alarms']:
             self.alarms.append({
                 'name': alarm['name'],
                 'start': alarm['start'],
@@ -123,33 +105,30 @@ class PyXploraApi:
                 'status': alarm['status'],
             })
         return self.alarms
-    def getWatchBattery(self) -> int:
-        self.getWatchLocate()
+    async def getWatchBattery_a(self) -> int:
+        await self.getWatchLocate_a()
         return self.watch_last_location['battery']
-    def getWatchIsCharging(self) -> bool:
-        self.getWatchLocate()
+    async def getWatchIsCharging_a(self) -> bool:
+        await self.getWatchLocate_a()
         try:
             return self.watch_last_location['isCharging']
         except TypeError:
             return False
-    def getWatchOnlineStatus(self) -> WatchOnlineStatus:
-        if self.askWatchLocate() == True:
-            return WatchOnlineStatus.ONLINE.value
-        self.__handler: GQLHandler = []
-        if self.askWatchLocate() == True:
+    async def getWatchOnlineStatus_a(self) -> WatchOnlineStatus:
+        if await self.askWatchLocate_a() == True:
             return WatchOnlineStatus.ONLINE.value
         try:
-            if self.trackWatchInterval() == -1:
+            if await self.trackWatchInterval_a() == -1:
                 return WatchOnlineStatus.OFFLINE.value
-            return self.__handler.getWatches(self.watch_user_id)['watches'][self.watch_no]['onlineStatus']
+            return (await self.__handler.getWatches_a(self.watch_user_id))['watches'][self.watch_no]['onlineStatus']
         except TypeError:
             return WatchOnlineStatus.UNKNOWN.value
-    def getWatchUnReadChatMsgCount(self) -> int: # bug?
-        self.__login()
-        return self.__handler.unReadChatMsgCount(self.watch_user_id)['unReadChatMsgCount']
-    def getWatchChats(self) -> list: # bug?
-        self.__login()
-        for chat in self.__handler.chats(self.watch_user_id)['chats']['list']:
+    async def setReadChatMsg(self, msgId, id):
+        return (await self.__handler.setReadChatMsg(self.watch_user_id, msgId, id))['setReadChatMsg']
+    async def getWatchUnReadChatMsgCount_a(self) -> int: # bug?
+        return (await self.__handler.unReadChatMsgCount_a(self.watch_user_id))['unReadChatMsgCount']
+    async def getWatchChats_a(self) -> list: # bug?
+        for chat in (await self.__handler.chats_a(self.watch_user_id))['chats']['list']:
             self.chats.append({
                 'msgId': chat['msgId'],
                 'type': chat['type'],
@@ -167,14 +146,11 @@ class PyXploraApi:
 
 ##### Watch Location Info #####
     def getWatchLastLocation(self) -> dict:
-        self.__login()
         return self.watch_last_location
     def getWatchLocateType(self) -> str:
-        self.getWatchLastLocation()
         return self.watch_last_location['locateType']
-    def getWatchLocate(self) -> dict:
-        self.askWatchLocate()
-        self.getWatchLastLocation()
+    async def getWatchLocate_a(self) -> dict:
+        await self.askWatchLocate_a()
         return {
             'tm': datetime.fromtimestamp(self.watch_last_location['tm']).strftime('%Y-%m-%d %H:%M:%S'),
             'lat': self.watch_last_location['lat'],
@@ -185,15 +161,14 @@ class PyXploraApi:
             'province': self.watch_last_location['province'],
             'country': self.watch_last_location['country'],
         }
-    def getWatchIsInSafeZone(self) -> bool:
-        self.getWatchLocate()
+    async def getWatchIsInSafeZone_a(self) -> bool:
+        await self.getWatchLocate_a()
         return self.watch_last_location['isInSafeZone']
     def getWatchSafeZoneLabel(self) -> str:
-        self.getWatchLocate()
+        self.getWatchLastLocation()
         return self.watch_last_location['safeZoneLabel']
-    def getSafeZones(self) -> list:
-        self.__login()
-        for safeZone in self.__handler.safeZones(self.watch_user_id)['safeZones']:
+    async def getSafeZones_a(self) -> list:
+        for safeZone in (await self.__handler.safeZones_a(self.watch_user_id))['safeZones']:
             self.safe_zones.append({
                 #safeZone,
                 'groupName': safeZone['groupName'],
@@ -204,17 +179,14 @@ class PyXploraApi:
                 'address': safeZone['address'],
             })
         return self.safe_zones
-    def trackWatchInterval(self) -> int:
-        self.__login()
-        return self.__handler.trackWatch(self.watch_user_id)['trackWatch']
-    def askWatchLocate(self) -> bool:
-        self.update()
-        return self.__handler.askWatchLocate(self.watch_user_id)['askWatchLocate']
+    async def trackWatchInterval_a(self) -> int:
+        return (await self.__handler.trackWatch_a(self.watch_user_id))['trackWatch']
+    async def askWatchLocate_a(self) -> bool:
+        return (await self.__handler.askWatchLocate_a(self.watch_user_id))['askWatchLocate']
 
 ##### Feature #####
-    def schoolSilentMode(self) -> list:
-        self.update()
-        for sientTime in self.__handler.silentTimes(self.watch_user_id)['silentTimes']:
+    async def schoolSilentMode_a(self) -> list:
+        for sientTime in (await self.__handler.silentTimes_a(self.watch_user_id))['silentTimes']:
             self.school_silent_mode.append({
                 'id': sientTime['id'],
                 'start': self.__helperTime(sientTime['start']),
@@ -223,31 +195,26 @@ class PyXploraApi:
                 'status': sientTime['status'],
             })
         return self.school_silent_mode
-    def setEnableSilentTime(self, silentId) -> bool:
-        self.__login()
-        return bool(self.__handler.setEnableSlientTime(silentId)['setEnableSilentTime'])
-    def setDisableSilentTime(self, silentId) -> bool:
-        self.__login()
-        return bool(self.__handler.setEnableSlientTime(silentId, NormalStatus.DISABLE)['setEnableSilentTime'])
-    def setAllEnableSilentTime(self) -> list:
+    async def setEnableSilentTime_a(self, silentId) -> bool:
+        return bool((await self.__handler.setEnableSlientTime_a(silentId))['setEnableSilentTime'])
+    async def setDisableSilentTime_a(self, silentId) -> bool:
+        return bool((await self.__handler.setEnableSlientTime_a(silentId, NormalStatus.DISABLE.value))['setEnableSilentTime'])
+    async def setAllEnableSilentTime_a(self) -> list:
         res = []
-        for silentTime in self.schoolSilentMode():
-            res.append(bool(self.setEnableSilentTime(silentTime['id'])))
+        for silentTime in (await self.schoolSilentMode_a()):
+            res.append(bool(await self.setEnableSilentTime_a(silentTime['id'])))
         return res
-    def setAllDisableSilentTime(self) -> list:
+    async def setAllDisableSilentTime_a(self) -> list:
         res = []
-        for silentTime in self.schoolSilentMode():
-            res.append(bool(self.setDisableSilentTime(silentTime['id'])))
+        for silentTime in (await self.schoolSilentMode_a()):
+            res.append(bool(await self.setDisableSilentTime(silentTime['id'])))
         return res
-    def sendText(self, text): # sender is login User
-        self.__login()
-        return self.__handler.sendText(self.watch_user_id, text)
-    def shutdown(self) -> bool:
-        self.__login()
-        return self.__handler.shutdown(self.watch_user_id)
-    def reboot(self) -> bool:
-        self.__login()
-        return self.__handler.reboot(self.watch_user_id)
+    async def sendText(self, text): # sender is login User
+        return await self.__handler.sendText_a(self.watch_user_id, text)
+    async def shutdown(self) -> bool:
+        return await self.__handler.shutdown_a(self.watch_user_id)
+    async def reboot(self) -> bool:
+        return await self.__handler.reboot_a(self.watch_user_id)
 
 ##### - #####
     def __helperTime(self, time) -> str:
