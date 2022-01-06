@@ -11,7 +11,7 @@ class PyXploraApi:
         self._timeZone = timeZone
         self._watchNo = watchNo
         self.__handler: GQLHandler = []
-        self.__login()
+        #self.__login()
 
     def __checkLogin(self) -> None:
         self.__handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
@@ -50,7 +50,7 @@ class PyXploraApi:
         self.school_silent_mode = []
 
     def version(self) -> str:
-        return "1.0.27"
+        return "1.0.29"
 
 ##### Contact Info #####
     def getContacts(self) -> list:
@@ -75,18 +75,25 @@ class PyXploraApi:
 
 ##### User Info #####
     def getUserID(self) -> str:
+        self.__login()
         return self.__checkMyInfo(self.myInfo, 'id', 'n/a')
     def getUserName(self) -> str:
+        self.__login()
         return self.__checkMyInfo(self.myInfo, 'name', 'n/a')
     def getUserIcon(self) -> str:
+        self.__login()
         return self.__checkMyInfo(self.__checkMyInfo(self.myInfo, 'extra', 'n/a'), 'profileIcon', 'n/a')
     def getUserXcoin(self) -> int:
+        self.__login()
         return self.__checkMyInfo(self.myInfo, 'xcoin', -1)
     def getUserCurrentStep(self) -> int:
+        self.__login()
         return self.__checkMyInfo(self.myInfo, 'currentStep', -1)
     def getUserTotalStep(self) -> int:
+        self.__login()
         return self.__checkMyInfo(self.myInfo, 'totalStep', -1)
     def getUserCreate(self) -> str:
+        self.__login()
         return datetime.fromtimestamp(self.__checkMyInfo(self.myInfo, 'create', 0)).strftime('%Y-%m-%d %H:%M:%S')
     def getUserUpdate(self) -> str:
         return datetime.fromtimestamp(self.__checkMyInfo(self.myInfo, 'update', 0)).strftime('%Y-%m-%d %H:%M:%S')
@@ -118,7 +125,7 @@ class PyXploraApi:
             })
         return self.alarms
     def getWatchBattery(self) -> int:
-        self.__login()
+        self.getWatchLocate()
         return self.watch_last_location['battery']
     async def __getWatchBattery_a(self) -> int:
         await self.__askWatchLocate_async()
@@ -131,7 +138,7 @@ class PyXploraApi:
         await asyncio.sleep(1)
         return watch_location['battery']
     def getWatchIsCharging(self) -> bool:
-        self.__login()
+        self.getWatchLocate()
         try:
             return self.watch_last_location['isCharging']
         except TypeError:
@@ -174,10 +181,11 @@ class PyXploraApi:
         self.__login()
         return self.watch_last_location
     def getWatchLocateType(self) -> str:
-        self.__login()
+        self.getWatchLastLocation()
         return self.watch_last_location['locateType']
     def getWatchLocate(self) -> dict:
-        self.__login()
+        self.askWatchLocate()
+        self.getWatchLastLocation()
         return {
             'tm': datetime.fromtimestamp(self.watch_last_location['tm']).strftime('%Y-%m-%d %H:%M:%S'),
             'lat': self.watch_last_location['lat'],
@@ -189,10 +197,10 @@ class PyXploraApi:
             'country': self.watch_last_location['country'],
         }
     def getWatchIsInSafeZone(self) -> bool:
-        self.__login()
+        self.getWatchLocate()
         return self.watch_last_location['isInSafeZone']
     def getWatchSafeZoneLabel(self) -> str:
-        self.__login()
+        self.getWatchLocate()
         return self.watch_last_location['safeZoneLabel']
     def getSafeZones(self) -> list:
         self.__login()

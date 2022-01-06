@@ -249,7 +249,7 @@ class GQLHandler:
     def modifyAlert(self, id, YesOrNo): # function?
         return self.runAuthorizedGqlQuery(gm.MUTATION['modifyAlertM'], { "uid": id, "remind": YesOrNo })
 
-    def setEnableSlientTime(self, silentId, status: NormalStatus=NormalStatus.ENABLE):
+    def setEnableSlientTime(self, silentId, status: NormalStatus=NormalStatus.ENABLE.value):
         return self.runAuthorizedGqlQuery(gm.MUTATION['setEnableSlientTimeM'], { 'silentId': silentId, 'status': status.value })['data']
 
 ########## SECTION MUTATION end ##########
