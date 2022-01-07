@@ -43,7 +43,7 @@ class PyXploraApi:
         self.school_silent_mode = []
 
     def version(self) -> str:
-        return "1.0.32"
+        return "1.0.34"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
