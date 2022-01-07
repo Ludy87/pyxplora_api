@@ -24,6 +24,7 @@ class PyXploraApi:
         self.watch = (await self.__handler.login_a())
         self.watch_user_id = self.watch['user']['children'][self.watch_no]['ward']['id']
         self.watch_user_name = self.watch['user']['children'][self.watch_no]['ward']['name']
+        self.accessToken = self.watch['token'];
         _LOGGER.warning(self.watch_user_id)
         #self.myInfo = (await self.__handler.getMyInfo_a())['readMyInfo']
 
@@ -42,7 +43,7 @@ class PyXploraApi:
         await self.__login_a()
 
     def version(self) -> str:
-        return "1.0.45"
+        return "1.0.46"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
@@ -186,9 +187,10 @@ class PyXploraApi:
 
 ##### Feature #####
     async def schoolSilentMode_a(self) -> list:
-        await self.update_a()
         await self.askWatchLocate_a()
-        for sientTime in (await self.__handler.silentTimes_a(self.watch_user_id))['silentTimes']:
+        await self.update_a()
+        sientTimes = (await self.__handler.silentTimes_a(self.watch_user_id))['silentTimes']
+        for sientTime in sientTimes:
             self.school_silent_mode.append({
                 'id': sientTime['id'],
                 'start': self.__helperTime(sientTime['start']),
