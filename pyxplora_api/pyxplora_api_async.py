@@ -10,12 +10,21 @@ class PyXploraApi:
         self._timeZone = timeZone
         self.watch_no = watchNo
         self.__handler: GQLHandler = []
+        self.contacts = []
+        self.alarms = []
+        self.chats = []
+        self.safe_zones = []
+        self.school_silent_mode = []
 
     async def __init_a(self) -> None:
         self.__handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
-        await self.__handler.login_a()
+        self.watch = (await self.__handler.login_a())
+        self.watch_user_id = self.watch['user']['children'][self.watch_no]['ward']['id']
+        self.watch_user_name = self.watch['user']['children'][self.watch_no]['ward']['name']
 
-    async def __login_a(self) -> None:
+        self.myInfo = (await self.__handler.getMyInfo_a())['readMyInfo']
+
+    async def update_a(self) -> None:
         try:
             await self.__init_a()
         except LoginError as error:
@@ -26,24 +35,11 @@ class PyXploraApi:
                 #print(f"Error: -> Login canceled! {error.args[0]}")
                 raise Exception(f"{error.args[0]}")
 
-    async def update_a(self) -> None:
+    async def __update_a(self) -> None:
         await self.__login_a()
 
-        self.myInfo = (await self.__handler.getMyInfo_a())['readMyInfo']
-        self.watch_user_id = self.myInfo['children'][self.watch_no]['ward']['id']
-        self.watch_user_name = self.myInfo['children'][self.watch_no]['ward']['name']
-
-        await self.askWatchLocate_a()
-        self.watch_last_location = (await self.__handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
-
-        self.contacts = []
-        self.alarms = []
-        self.chats = []
-        self.safe_zones = []
-        self.school_silent_mode = []
-
     def version(self) -> str:
-        return "1.0.35"
+        return "1.0.37"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
@@ -121,7 +117,7 @@ class PyXploraApi:
             return (await self.__handler.getWatches_a(self.watch_user_id))['watches'][self.watch_no]['onlineStatus']
         except TypeError:
             return WatchOnlineStatus.UNKNOWN.value
-    async def setReadChatMsg(self, msgId, id):
+    async def setReadChatMsg_a(self, msgId, id):
         return (await self.__handler.setReadChatMsg(self.watch_user_id, msgId, id))['setReadChatMsg']
     async def getWatchUnReadChatMsgCount_a(self) -> int: # bug?
         return (await self.__handler.unReadChatMsgCount_a(self.watch_user_id))['unReadChatMsgCount']
@@ -143,12 +139,14 @@ class PyXploraApi:
         return self.chats
 
 ##### Watch Location Info #####
-    def getWatchLastLocation(self) -> dict:
-        return self.watch_last_location
-    def getWatchLocateType(self) -> str:
+    async def getWatchLastLocation_a(self) -> dict:
+        self.watch_last_location = (await self.__handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
+    async def getWatchLocateType_a(self) -> str:
+        await self.askWatchLocate_a()
         return self.watch_last_location['locateType']
     async def getWatchLocate_a(self) -> dict:
         await self.askWatchLocate_a()
+        await self.getWatchLastLocation_a()
         return {
             'tm': datetime.fromtimestamp(self.watch_last_location['tm']).strftime('%Y-%m-%d %H:%M:%S'),
             'lat': self.watch_last_location['lat'],
@@ -162,9 +160,8 @@ class PyXploraApi:
     async def getWatchIsInSafeZone_a(self) -> bool:
         await self.getWatchLocate_a()
         return self.watch_last_location['isInSafeZone']
-    def getWatchSafeZoneLabel(self) -> str:
-        self.getWatchLastLocation()
-        return self.watch_last_location['safeZoneLabel']
+    async def getWatchSafeZoneLabel_a(self) -> str:
+        return (await self.getWatchLastLocation_a())['safeZoneLabel']
     async def getSafeZones_a(self) -> list:
         for safeZone in (await self.__handler.safeZones_a(self.watch_user_id))['safeZones']:
             self.safe_zones.append({
