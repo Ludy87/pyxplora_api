@@ -1,5 +1,8 @@
 from .gql_handler_async import *
 from datetime import datetime
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 class PyXploraApi:
     def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
@@ -21,8 +24,8 @@ class PyXploraApi:
         self.watch = (await self.__handler.login_a())
         self.watch_user_id = self.watch['user']['children'][self.watch_no]['ward']['id']
         self.watch_user_name = self.watch['user']['children'][self.watch_no]['ward']['name']
-
-        self.myInfo = (await self.__handler.getMyInfo_a())['readMyInfo']
+        _LOGGER.warning(self.watch_user_id)
+        #self.myInfo = (await self.__handler.getMyInfo_a())['readMyInfo']
 
     async def update_a(self) -> None:
         try:
@@ -39,7 +42,7 @@ class PyXploraApi:
         await self.__login_a()
 
     def version(self) -> str:
-        return "1.0.42"
+        return "1.0.43"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
