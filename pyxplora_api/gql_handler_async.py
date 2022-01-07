@@ -85,6 +85,7 @@ class GQLHandler:
         return data
 
     async def runAuthorizedGqlQuery_a(self, query: str, variables):
+        await self.login_a()
         if self.accessToken == None:
             raise Exception("You have to login to the Xplora® API first.")
         # Run GraphQL query and return

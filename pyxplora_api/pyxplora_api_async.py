@@ -39,7 +39,7 @@ class PyXploraApi:
         await self.__login_a()
 
     def version(self) -> str:
-        return "1.0.38"
+        return "1.0.39"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
