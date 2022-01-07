@@ -133,7 +133,6 @@ class GQLHandler:
 ########## SECTION QUERY start ##########
 
     async def getMyInfo_a(self): # Profil from login Account
-        await self.login_a()
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['readMyInfoQ'], {}))['data']
 
     async def getContacts_a(self, ownId): # Contacts from ownUser
