@@ -39,7 +39,7 @@ class PyXploraApi:
         await self.__login_a()
 
     def version(self) -> str:
-        return "1.0.40"
+        return "1.0.41"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
@@ -178,11 +178,11 @@ class PyXploraApi:
     async def trackWatchInterval_a(self) -> int:
         return (await self.__handler.trackWatch_a(self.watch_user_id))['trackWatch']
     async def askWatchLocate_a(self) -> bool:
+        await self.update_a()
         return (await self.__handler.askWatchLocate_a(self.watch_user_id))['askWatchLocate']
 
 ##### Feature #####
     async def schoolSilentMode_a(self) -> list:
-        await self.update_a()
         await self.askWatchLocate_a()
         for sientTime in (await self.__handler.silentTimes_a(self.watch_user_id))['silentTimes']:
             self.school_silent_mode.append({
