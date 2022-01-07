@@ -11,23 +11,20 @@ class PyXploraApi:
         self.watch_no = watchNo
         self.__handler: GQLHandler = []
 
-    async def __checkLogin_a(self) -> None:
+    async def __init_a(self) -> None:
         self.__handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
         await self.__handler.login_a()
-        #print("Login!")
-        #await self.update_a()
 
     async def __login_a(self) -> None:
-        if not self.__handler:
+        try:
+            await self.__init_a()
+        except LoginError as error:
+            #print(f"Error: -> First faill. {error.args[0]}")
             try:
-                await self.__checkLogin_a()
+                await self.__init_a()
             except LoginError as error:
-                #print(f"Error: -> First faill. {error.args[0]}")
-                try:
-                    await self.__checkLogin_a()
-                except LoginError as error:
-                    #print(f"Error: -> Login canceled! {error.args[0]}")
-                    raise Exception(f"{error.args[0]}")
+                #print(f"Error: -> Login canceled! {error.args[0]}")
+                raise Exception(f"{error.args[0]}")
 
     async def update_a(self) -> None:
         await self.__login_a()
@@ -36,6 +33,7 @@ class PyXploraApi:
         self.watch_user_id = self.myInfo['children'][self.watch_no]['ward']['id']
         self.watch_user_name = self.myInfo['children'][self.watch_no]['ward']['name']
 
+        await self.askWatchLocate_a()
         self.watch_last_location = (await self.__handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
 
         self.contacts = []

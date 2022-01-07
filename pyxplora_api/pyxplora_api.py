@@ -12,7 +12,7 @@ class PyXploraApi:
         self.__handler: GQLHandler = []
         #self.__login()
 
-    def __checkLogin(self) -> None:
+    def __init(self) -> None:
         self.__handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
         self.__handler.login()
         #print("Login!")
@@ -21,18 +21,17 @@ class PyXploraApi:
     def __login(self) -> None:
         if not self.__handler:
             try:
-                self.__checkLogin()
+                self.__init()
             except LoginError as error:
                 #print(f"Error: -> First faill. {error.args[0]}")
                 try:
-                    self.__checkLogin()
+                    self.__init()
                 except LoginError as error:
                     #print(f"Error: -> Login canceled! {error.args[0]}")
                     raise Exception(f"{error.args[0]}")
 
     def update(self) -> None:
         self.__login()
-        #print("update")
 
         self.watch_no = self._watchNo
 
