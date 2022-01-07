@@ -26,10 +26,11 @@ jobs:
           prerelease: false
           token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Checkout code for release
+        if: steps.check-tag.outputs.match == 'true'
         uses: actions/checkout@v1
       - name: Set up Python
-        uses: actions/setup-python@v1
         if: steps.check-tag.outputs.match == 'true'
+        uses: actions/setup-python@v1
         with:
           python-version: "3.x"
       - name: Install dependencies
