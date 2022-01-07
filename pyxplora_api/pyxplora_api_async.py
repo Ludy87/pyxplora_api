@@ -39,7 +39,7 @@ class PyXploraApi:
         await self.__login_a()
 
     def version(self) -> str:
-        return "1.0.39"
+        return "1.0.40"
 
 ##### Contact Info #####
     async def getContacts_a(self) -> list:
@@ -109,7 +109,7 @@ class PyXploraApi:
         except TypeError:
             return False
     async def getWatchOnlineStatus_a(self) -> WatchOnlineStatus:
-        await self.update_a()
+        #await self.update_a()
         if await self.askWatchLocate_a() == True:
             return WatchOnlineStatus.ONLINE.value
         try:
