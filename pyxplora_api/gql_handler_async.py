@@ -110,7 +110,7 @@ class GQLHandler:
                 self.API_KEY = self.issueToken['app']['apiKey']
             if self.issueToken['app']['apiSecret']:
                 self.API_SECRET = self.issueToken['app']['apiSecret']
-        return self.issueToken
+        #return self.issueToken
 
     def isLogged(self):
         if self.issueToken:
