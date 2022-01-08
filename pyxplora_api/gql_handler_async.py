@@ -47,7 +47,6 @@ class GQLHandler:
             "userLang": self.userLocale,
             "timeZone": self.timeZone
         }
-
         self.issueToken = None
 
     def getRequestHeaders(self, acceptedContentType: str):
@@ -92,7 +91,6 @@ class GQLHandler:
 
     async def login_a(self):
         data = (await self.runGqlQuery_a(gm.MUTATION["tokenM"], self.variables))['data']
-        print(data)
         if data['issueToken'] == None:
             # Login failed.
             raise LoginError("Login to Xplora® API failed. Check your input!")

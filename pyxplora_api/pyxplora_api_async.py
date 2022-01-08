@@ -5,128 +5,291 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 class PyXploraApi:
-    def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
-        self._countryPhoneNumber = countryPhoneNumber
+    def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
+        self._countrycode = countrycode
         self._phoneNumber = phoneNumber
         self._password = password
         self._userLang = userLang
         self._timeZone = timeZone
         self.watch_no = watchNo
-        self.__handler: GQLHandler = []
+
+        self.tokenExpiresAfter = 240
+        self.maxRetries = 3
+        self.retryDelay = 3
+
         self.contacts = []
         self.alarms = []
         self.chats = []
         self.safe_zones = []
         self.school_silent_mode = []
+        self.watch_location = []
+        self.watch_last_location = []
+        self.watch_battery = None
+        self.watch_charging = None
 
-    async def __init_a(self) -> None:
-        self.__handler = GQLHandler(self._countryPhoneNumber, self._phoneNumber, self._password, self._userLang, self._timeZone)
-        self.watch = (await self.__handler.login_a())
-        self.watch_user_id = self.watch['user']['children'][self.watch_no]['ward']['id']
-        self.watch_user_name = self.watch['user']['children'][self.watch_no]['ward']['name']
-        self.accessToken = self.watch['token'];
-        _LOGGER.warning(self.watch_user_id)
-        #self.myInfo = (await self.__handler.getMyInfo_a())['readMyInfo']
+        self.gqlHandler = None
+        self.issueToken = None
+        self.watch = None
+        self.user = None
 
-    async def update_a(self) -> None:
-        try:
-            await self.__init_a()
-        except LoginError as error:
-            #print(f"Error: -> First faill. {error.args[0]}")
+    async def login(self, forceLogin=False):
+        if not self.isConnected() or self.hasTokenExpired() or forceLogin:
             try:
-                await self.__init_a()
-            except LoginError as error:
-                #print(f"Error: -> Login canceled! {error.args[0]}")
-                raise Exception(f"{error.args[0]}")
+                self.logoff()
+                self.gqlHandler = GQLHandler(self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone)
+                if (self.gqlHandler):
+                    retryCounter = 0
+                    while (not self.isConnected() and (retryCounter < self.maxRetries + 2)):
+                        retryCounter += 1
 
-    async def __update_a(self) -> None:
-        await self.__login_a()
+                        # Try to login
+                        try:
+                            self.issueToken = await self.gqlHandler.login_a();
+                        except Exception:
+                            pass
+
+                        # Wait for next try
+                        if (not self.issueToken):
+                            time.sleep(self.retryDelay)
+                    if (self.issueToken):
+                        self.dtIssueToken = int(time.time())
+                else:
+                    raise Exception("Unknown error creating a new GraphQL handler instance.")
+            except Exception as error:
+                print(error)
+                # Login failed.
+                self.gqlHandler = None
+                self.issueToken = None
+        return self.issueToken
+
+    def isConnected(self):
+        return (self.gqlHandler and self.issueToken)
+
+    def logoff(self):
+        self.gqlHandler = None
+        self.issueToken = None
+
+    def hasTokenExpired(self):
+        return ((int(time.time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000))
+
+    async def init_async(self, forceLogin=False):
+        token = await self.login(forceLogin)
+        if token:
+            if ('user' in token):
+                self.watch = token['user']['children'][self.watch_no]['ward']
+                self.user = token['user']
+                return
+        raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.46"
+        return "1.0.47"
 
 ##### Contact Info #####
-    async def getContacts_a(self) -> list:
-        for contact in (await self.__handler.getContacts_a(self.watch_user_id))['contacts']['contacts']:
+    async def getContacts_async(self):
+        retryCounter = 0
+        dataOk = False
+        contacts_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
             try:
-                xcoin = contact['contactUser']['xcoin']
-                id = contact['contactUser']['id']
-            except KeyError and TypeError:
-                xcoin = -1 # None - XCoins
-                id = None
-            self.contacts.append({
-                'id': id,
-                'guardianType': contact['guardianType'],
-                'create': datetime.fromtimestamp(contact['create']).strftime('%Y-%m-%d %H:%M:%S'),
-                'update': datetime.fromtimestamp(contact['update']).strftime('%Y-%m-%d %H:%M:%S'),
-                'name': contact['name'],
-                'phoneNumber': f"+{contact['countryPhoneNumber']}{contact['phoneNumber']}",
-                'xcoin': xcoin,
-            })
-        return self.contacts
+                contacts_raw = await self.gqlHandler.getContacts_a(self.watch_user_id)
+                if 'contacts' in contacts_raw:
+                    if 'contacts' in contacts_raw['contacts']:
+                        for contact in contacts_raw['contacts']['contacts']:
+                            try:
+                                xcoin = contact['contactUser']['xcoin']
+                                id = contact['contactUser']['id']
+                            except TypeError:
+                                xcoin = -1 # None - XCoins
+                                id = None
+                            self.contacts.append({
+                                'id': id,
+                                'guardianType': contact['guardianType'],
+                                'create': datetime.fromtimestamp(contact['create']).strftime('%Y-%m-%d %H:%M:%S'),
+                                'update': datetime.fromtimestamp(contact['update']).strftime('%Y-%m-%d %H:%M:%S'),
+                                'name': contact['name'],
+                                'phoneNumber': f"+{contact['countryPhoneNumber']}{contact['phoneNumber']}",
+                                'xcoin': xcoin,
+                            })
+            except Exception as error:
+                print(error)
+            dataOk = self.contacts
+            print(not dataOk)
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.contacts
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
 
 ##### User Info #####
-    def getUserID(self) -> str:
-        return self.__checkMyInfo(self.myInfo, 'id', 'n/a')
-    def getUserName(self) -> str:
-        return self.__checkMyInfo(self.myInfo, 'name', 'n/a')
-    def getUserIcon(self) -> str:
-        return self.__checkMyInfo(self.__checkMyInfo(self.myInfo, 'extra', 'n/a'), 'profileIcon', 'n/a')
-    def getUserXcoin(self) -> int:
-        return self.__checkMyInfo(self.myInfo, 'xcoin', -1)
-    def getUserCurrentStep(self) -> int:
-        return self.__checkMyInfo(self.myInfo, 'currentStep', -1)
-    def getUserTotalStep(self) -> int:
-        return self.__checkMyInfo(self.myInfo, 'totalStep', -1)
-    def getUserCreate(self) -> str:
-        return datetime.fromtimestamp(self.__checkMyInfo(self.myInfo, 'create', 0)).strftime('%Y-%m-%d %H:%M:%S')
-    def getUserUpdate(self) -> str:
-        return datetime.fromtimestamp(self.__checkMyInfo(self.myInfo, 'update', 0)).strftime('%Y-%m-%d %H:%M:%S')
+    async def getUserID_async(self) -> str:
+        await self.init_async()
+        return self.user['id']
+    async def getUserName_async(self) -> str:
+        await self.init_async()
+        return self.user['name']
+    async def getUserIcon_async(self) -> str:
+        await self.init_async()
+        return self.user['extra']['profileIcon']
+    async def getUserXcoin_async(self) -> int:
+        await self.init_async()
+        return self.user['xcoin']
+    async def getUserCurrentStep_async(self) -> int:
+        await self.init_async()
+        return self.user['currentStep']
+    async def getUserTotalStep_async(self) -> int:
+        await self.init_async()
+        return self.user['totalStep']
+    async def getUserCreate_async(self) -> str:
+        await self.init_async()
+        return datetime.fromtimestamp(self.user['create']).strftime('%Y-%m-%d %H:%M:%S')
+    async def getUserUpdate_async(self) -> str:
+        await self.init_async()
+        return datetime.fromtimestamp(self.user['update']).strftime('%Y-%m-%d %H:%M:%S')
 
 ##### Watch Info #####
-    def getWatchUserID(self) -> str:
-        return self.watch_user_id
-    def getWatchUserName(self) -> str:
-        return self.watch_user_name
-    def getWatchXcoin(self) -> int:
-        return self.myInfo['children'][self.watch_no]['ward']['xcoin']
-    def getWatchCurrentStep(self) -> int:
-        return self.myInfo['children'][self.watch_no]['ward']['currentStep']
-    def getWatchTotalStep(self) -> int:
-        return self.myInfo['children'][self.watch_no]['ward']['totalStep']
-    async def getWatchAlarm_a(self) -> list:
-        for alarm in (await self.__handler.getAlarms_a(self.watch_user_id))['alarms']:
-            self.alarms.append({
-                'name': alarm['name'],
-                'start': alarm['start'],
-                'weekRepeat': alarm['weekRepeat'],
-                'status': alarm['status'],
-            })
+    async def getWatchUserID_async(self) -> str:
+        await self.init_async()
+        return self.watch['id']
+    async def getWatchUserName_async(self) -> str:
+        await self.init_async()
+        return self.watch['name']
+    async def getWatchXcoin_async(self) -> int:
+        await self.init_async()
+        return self.watch['xcoin']
+    async def getWatchCurrentStep_async(self) -> int:
+        await self.init_async()
+        return self.watch['currentStep']
+    async def getWatchTotalStep_async(self) -> int:
+        await self.init_async()
+        return self.watch['totalStep']
+
+    async def getWatchAlarm_async(self) -> list:
+        retryCounter = 0
+        dataOk = False
+        alarms_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                alarms_raw = await self.gqlHandler.getAlarms_a(self.watch_user_id)
+                if 'alarms' in alarms_raw:
+                    if not alarms_raw['alarms']:
+                        dataOk = True
+                        return self.alarms
+                    for alarm in alarms_raw['alarms']:
+                        self.alarms.append({
+                            'name': alarm['name'],
+                            'start': alarm['start'],
+                            'weekRepeat': alarm['weekRepeat'],
+                            'status': alarm['status'],
+                        })
+            except Exception as error:
+                print(error)
+            dataOk = self.alarms
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.alarms
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
         return self.alarms
-    async def getWatchBattery_a(self) -> int:
-        await self.getWatchLocate_a()
-        return self.watch_last_location['battery']
-    async def getWatchIsCharging_a(self) -> bool:
-        await self.getWatchLocate_a()
-        try:
-            return self.watch_last_location['isCharging']
-        except TypeError:
-            return False
-    async def getWatchOnlineStatus_a(self) -> WatchOnlineStatus:
-        await self.update_a()
-        if await self.askWatchLocate_a() == True:
-            return WatchOnlineStatus.ONLINE.value
-        try:
-            if await self.trackWatchInterval_a() == -1:
-                return WatchOnlineStatus.OFFLINE.value
-            return (await self.__handler.getWatches_a(self.watch_user_id))['watches'][self.watch_no]['onlineStatus']
-        except TypeError:
-            return WatchOnlineStatus.UNKNOWN.value
-    async def setReadChatMsg_a(self, msgId, id):
-        return (await self.__handler.setReadChatMsg(self.watch_user_id, msgId, id))['setReadChatMsg']
-    async def getWatchUnReadChatMsgCount_a(self) -> int: # bug?
-        return (await self.__handler.unReadChatMsgCount_a(self.watch_user_id))['unReadChatMsgCount']
-    async def getWatchChats_a(self) -> list: # bug?
+
+    async def loadWatchLocation_async(self, withAsk=True):
+        retryCounter = 0
+        dataOk = False
+        location_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                if withAsk:
+                    await self.askWatchLocate_async()
+                time.sleep(2)
+                location_raw = await self.gqlHandler.getWatchLastLocation_a(self.watch_user_id)
+                if 'watchLastLocate' in location_raw:
+                    self.watch_location.append({
+                        'tm': datetime.fromtimestamp(location_raw['watchLastLocate']['tm']).strftime('%Y-%m-%d %H:%M:%S'),
+                        'lat': location_raw['watchLastLocate']['lat'],
+                        'lng': location_raw['watchLastLocate']['lng'],
+                        'rad': location_raw['watchLastLocate']['rad'],
+                        'poi': location_raw['watchLastLocate']['poi'],
+                        'city': location_raw['watchLastLocate']['city'],
+                        'province': location_raw['watchLastLocate']['province'],
+                        'country': location_raw['watchLastLocate']['country'],
+                    })
+                    self.watch_battery = location_raw['watchLastLocate']['battery']
+                    self.watch_charging = location_raw['watchLastLocate']['isCharging']
+                    self.watch_last_location = location_raw['watchLastLocate']
+            except Exception as error:
+                print(error)
+            dataOk = self.watch_location
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.watch_location
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+
+    async def getWatchBattery_async(self) -> int:
+        await self.loadWatchLocation_async()
+        return self.watch_battery
+    async def getWatchIsCharging_async(self) -> bool:
+        await self.loadWatchLocation_async()
+        if self.watch_charging:
+            return True
+        return False
+    async def getWatchOnlineStatus_async(self) -> WatchOnlineStatus:
+        await self.init_async()
+        if not await self.askWatchLocate_async() and await self.trackWatchInterval_a() == -1:
+            return WatchOnlineStatus.OFFLINE.value
+        return WatchOnlineStatus.ONLINE.value
+    async def __setReadChatMsg_a(self, msgId, id):
+        return (await self.gqlHandler.setReadChatMsg(self.watch_user_id, msgId, id))['setReadChatMsg']
+    async def __getWatchUnReadChatMsgCount_a(self) -> int: # bug?
+        return (await self.gqlHandler.unReadChatMsgCount_a(self.watch_user_id))['unReadChatMsgCount']
+    async def getWatchChats_async(self) -> list: # bug?
+        retryCounter = 0
+        dataOk = False
+        chat_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                await self.askWatchLocate_async()
+                time.sleep(2)
+                chats_raw = await self.gqlHandler.chats_a(self.watch_user_id)
+                if 'chats' in chats_raw:
+                    if 'list' in chats_raw['chats']:
+                        for chat in chats_raw['chats']['list']:
+                            self.chats.append({
+                                'msgId': chat['msgId'],
+                                'type': chat['type'],
+                                #chat['sender'],
+                                'sender_id': chat['sender']['id'],
+                                'sender_name': chat['sender']['name'],
+                                #chat['receiver'],
+                                'receiver_id': chat['receiver']['id'],
+                                'receiver_name': chat['receiver']['name'],
+                                #chat['data'],
+                                'data_text': chat['data']['text'],
+                                'data_sender_name': chat['data']['sender_name'],
+                            })
+            except Exception as error:
+                print(error)
+            dataOk = self.chats
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.chats
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
         for chat in (await self.__handler.chats_a(self.watch_user_id))['chats']['list']:
             self.chats.append({
                 'msgId': chat['msgId'],
@@ -144,93 +307,159 @@ class PyXploraApi:
         return self.chats
 
 ##### Watch Location Info #####
-    async def getWatchLastLocation_a(self) -> dict:
-        self.watch_last_location = (await self.__handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
-    async def getWatchLocateType_a(self) -> str:
-        await self.askWatchLocate_a()
+    async def getWatchLastLocation_async(self) -> dict:
+        await self.loadWatchLocation_async(False)
+        return self.watch_last_location
+    async def getWatchLocate_async(self) -> dict:
+        await self.loadWatchLocation_async()
+        return self.watch_location
+    async def getWatchLocateType_async(self) -> str:
+        await self.getWatchLocate_async()
         return self.watch_last_location['locateType']
-    async def getWatchLocate_a(self) -> dict:
-        await self.askWatchLocate_a()
-        await self.getWatchLastLocation_a()
-        return {
-            'tm': datetime.fromtimestamp(self.watch_last_location['tm']).strftime('%Y-%m-%d %H:%M:%S'),
-            'lat': self.watch_last_location['lat'],
-            'lng': self.watch_last_location['lng'],
-            'rad': self.watch_last_location['rad'],
-            'poi': self.watch_last_location['poi'],
-            'city': self.watch_last_location['city'],
-            'province': self.watch_last_location['province'],
-            'country': self.watch_last_location['country'],
-        }
-    async def getWatchIsInSafeZone_a(self) -> bool:
-        await self.getWatchLocate_a()
+    async def getWatchIsInSafeZone_async(self) -> bool:
+        await self.getWatchLocate_async()
         return self.watch_last_location['isInSafeZone']
     async def getWatchSafeZoneLabel_a(self) -> str:
-        return (await self.getWatchLastLocation_a())['safeZoneLabel']
-    async def getSafeZones_a(self) -> list:
-        for safeZone in (await self.__handler.safeZones_a(self.watch_user_id))['safeZones']:
-            self.safe_zones.append({
-                #safeZone,
-                'groupName': safeZone['groupName'],
-                'name': safeZone['name'],
-                'lat': safeZone['lat'],
-                'lng': safeZone['lng'],
-                'rad': safeZone['rad'],
-                'address': safeZone['address'],
-            })
-        return self.safe_zones
+        await self.getWatchLocate_async()
+        return self.watch_last_location['safeZoneLabel']
+    async def getSafeZones_async(self) -> list:
+        retryCounter = 0
+        dataOk = False
+        safeZones_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                await self.askWatchLocate_async()
+                time.sleep(2)
+                safeZones_raw = await self.gqlHandler.safeZones_a(self.watch_user_id)
+                if 'safeZones' in safeZones_raw:
+                    for safeZone in safeZones_raw['safeZones']:
+                        self.safe_zones.append({
+                            #safeZone,
+                            'groupName': safeZone['groupName'],
+                            'name': safeZone['name'],
+                            'lat': safeZone['lat'],
+                            'lng': safeZone['lng'],
+                            'rad': safeZone['rad'],
+                            'address': safeZone['address'],
+                        })
+            except Exception as error:
+                print(error)
+            dataOk = self.safe_zones
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.safe_zones
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
     async def trackWatchInterval_a(self) -> int:
-        return (await self.__handler.trackWatch_a(self.watch_user_id))['trackWatch']
-    async def askWatchLocate_a(self) -> bool:
-        await self.update_a()
-        return (await self.__handler.askWatchLocate_a(self.watch_user_id))['askWatchLocate']
+        await self.init_async()
+        return (await self.gqlHandler.trackWatch_a(self.watch_user_id))['trackWatch']
+    async def askWatchLocate_async(self) -> bool:
+        await self.init_async()
+        return (await self.gqlHandler.askWatchLocate_a(self.watch_user_id))['askWatchLocate']
 
 ##### Feature #####
     async def schoolSilentMode_a(self) -> list:
-        await self.askWatchLocate_a()
-        await self.update_a()
-        sientTimes = (await self.__handler.silentTimes_a(self.watch_user_id))['silentTimes']
-        for sientTime in sientTimes:
-            self.school_silent_mode.append({
-                'id': sientTime['id'],
-                'start': self.__helperTime(sientTime['start']),
-                'end': self.__helperTime(sientTime['end']),
-                'weekRepeat': sientTime['weekRepeat'],
-                'status': sientTime['status'],
-            })
-        return self.school_silent_mode
-    async def setEnableSilentTime_a(self, silentId) -> bool:
-        return bool((await self.__handler.setEnableSlientTime_a(silentId))['setEnableSilentTime'])
-    async def setDisableSilentTime_a(self, silentId) -> bool:
-        return bool((await self.__handler.setEnableSlientTime_a(silentId, NormalStatus.DISABLE.value))['setEnableSilentTime'])
-    async def setAllEnableSilentTime_a(self) -> list:
+        retryCounter = 0
+        dataOk = False
+        sientTimes_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                await self.askWatchLocate_async()
+                time.sleep(2)
+                sientTimes_raw = await self.gqlHandler.silentTimes_a(self.watch_user_id)
+                if 'silentTimes' in sientTimes_raw:
+                    for sientTime in sientTimes_raw['silentTimes']:
+                        self.school_silent_mode.append({
+                            'id': sientTime['id'],
+                            'start': self.__helperTime(sientTime['start']),
+                            'end': self.__helperTime(sientTime['end']),
+                            'weekRepeat': sientTime['weekRepeat'],
+                            'status': sientTime['status'],
+                        })
+            except Exception as error:
+                print(error)
+            dataOk = self.school_silent_mode
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.school_silent_mode
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    async def setEnableSilentTime_async(self, silentId) -> bool:
+        retryCounter = 0
+        dataOk = False
+        _raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                await self.askWatchLocate_async()
+                time.sleep(2)
+                enable_raw = await self.gqlHandler.setEnableSlientTime_a(silentId)
+                if 'setEnableSilentTime' in enable_raw:
+                    _raw = enable_raw['setEnableSilentTime']
+            except Exception as error:
+                print(error)
+            dataOk = _raw
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return bool(_raw)
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    async def setDisableSilentTime_async(self, silentId) -> bool:
+        retryCounter = 0
+        dataOk = False
+        _raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                await self.askWatchLocate_async()
+                time.sleep(2)
+                disable_raw = await self.gqlHandler.setEnableSlientTime_a(silentId, NormalStatus.DISABLE.value)
+                if 'setEnableSilentTime' in disable_raw:
+                    _raw = disable_raw['setEnableSilentTime']
+            except Exception as error:
+                print(error)
+            dataOk = _raw
+            if (not dataOk):
+                self.logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return bool(_raw)
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    async def setAllEnableSilentTime_async(self) -> list:
         res = []
         for silentTime in (await self.schoolSilentMode_a()):
-            res.append(bool(await self.setEnableSilentTime_a(silentTime['id'])))
+            res.append(await self.setEnableSilentTime_async(silentTime['id']))
         return res
-    async def setAllDisableSilentTime_a(self) -> list:
+    async def setAllDisableSilentTime_async(self) -> list:
         res = []
         for silentTime in (await self.schoolSilentMode_a()):
-            res.append(bool(await self.setDisableSilentTime(silentTime['id'])))
+            res.append(await self.setDisableSilentTime_async(silentTime['id']))
         return res
     async def sendText(self, text): # sender is login User
-        return await self.__handler.sendText_a(self.watch_user_id, text)
+        await self.init_async()
+        return await self.gqlHandler.sendText_a(self.watch_user_id, text)
     async def shutdown(self) -> bool:
-        return await self.__handler.shutdown_a(self.watch_user_id)
+        await self.init_async()
+        return await self.gqlHandler.shutdown_a(self.watch_user_id)
     async def reboot(self) -> bool:
-        return await self.__handler.reboot_a(self.watch_user_id)
+        await self.init_async()
+        return await self.gqlHandler.reboot_a(self.watch_user_id)
 
 ##### - #####
     def __helperTime(self, time) -> str:
         h = str(int(time) /60).split('.')
         h2 = str(int(h[1]) *60).zfill(2)[:2]
         return h[0].zfill(2) + ":" + str(h2).zfill(2)
-    async def __askHelper(self) -> int:
-        try:
-            return (await self.__handler.getWatchLastLocation_a(self.watch_user_id))['watchLastLocate']
-        except TypeError:
-            return 0
-    def __checkMyInfo(self, func, value: str, res):
-        if value in func:
-            return func[value]
-        return res
