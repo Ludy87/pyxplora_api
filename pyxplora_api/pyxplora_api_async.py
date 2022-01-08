@@ -78,7 +78,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.50"
+        return "1.0.51"
 
 ##### Contact Info #####
     async def getContacts_async(self):
@@ -111,9 +111,8 @@ class PyXploraApi:
             except Exception as error:
                 print(error)
             dataOk = self.contacts
-            print(not dataOk)
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return self.contacts
@@ -174,7 +173,7 @@ class PyXploraApi:
                 print(error)
             dataOk = self.alarms
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return self.alarms
@@ -212,7 +211,7 @@ class PyXploraApi:
                 print(error)
             dataOk = self.watch_location
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return self.watch_location
@@ -233,7 +232,7 @@ class PyXploraApi:
         return WatchOnlineStatus.ONLINE.value
     async def __setReadChatMsg_a(self, msgId, id):
         return (await self.__gqlHandler.setReadChatMsg(await self.getWatchUserID_async(), msgId, id))['setReadChatMsg']
-    async def __getWatchUnReadChatMsgCount_a(self) -> int: # bug?
+    async def getWatchUnReadChatMsgCount_a(self) -> int: # bug?
         return (await self.__gqlHandler.unReadChatMsgCount_a(await self.getWatchUserID_async()))['unReadChatMsgCount']
     async def getWatchChats_async(self) -> list: # bug?
         retryCounter = 0
@@ -266,7 +265,7 @@ class PyXploraApi:
                 print(error)
             dataOk = self.chats
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return self.chats
@@ -315,7 +314,7 @@ class PyXploraApi:
                 print(error)
             dataOk = self.safe_zones
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return self.safe_zones
@@ -351,7 +350,7 @@ class PyXploraApi:
                 print(error)
             dataOk = self.school_silent_mode
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return self.school_silent_mode
@@ -374,7 +373,7 @@ class PyXploraApi:
                 print(error)
             dataOk = _raw
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return bool(_raw)
@@ -397,7 +396,7 @@ class PyXploraApi:
                 print(error)
             dataOk = _raw
             if (not dataOk):
-                self.logoff()
+                self.__logoff()
                 time.sleep(self.retryDelay)
         if (dataOk):
             return bool(_raw)

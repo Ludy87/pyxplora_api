@@ -1,7 +1,6 @@
 import hashlib
 import math
 import time
-import logging
 from datetime import date, datetime, timezone
 from python_graphql_client import GraphqlClient
 
@@ -9,8 +8,6 @@ from enum import Enum
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
-
-_LOGGER = logging.getLogger(__name__)
 
 class NormalStatus(Enum):
     ENABLE = "ENABLE"
@@ -47,7 +44,6 @@ class GQLHandler:
             "userLang": self.userLocale,
             "timeZone": self.timeZone
         }
-
         self.issueToken = None
 
     def getRequestHeaders(self, acceptedContentType: str):
@@ -92,7 +88,6 @@ class GQLHandler:
 
     def login(self):
         data = self.runGqlQuery(gm.MUTATION["tokenM"], self.variables)['data']
-        _LOGGER.debug(data)
         if data['issueToken'] == None:
             # Login failed.
             raise LoginError("Login to Xplora® API failed. Check your input!")
@@ -113,12 +108,6 @@ class GQLHandler:
                 self.API_SECRET = self.issueToken['app']['apiSecret']
         return self.issueToken
 
-    def isLogged(self):
-        if self.issueToken:
-            return True
-        else: # login failed
-            raise LoginError("Login to Xplora® API failed.", 2)
-
     def isAdmin(self, ownId, query, variables, key):
         contacts = self.getContacts(ownId)
         for contact in contacts['contacts']['contacts']:
@@ -129,8 +118,7 @@ class GQLHandler:
             if self.userId == id:
                 if contact['guardianType'] == 'FIRST':
                     return self.runAuthorizedGqlQuery(query, variables)['data'][key]
-        return False
-        #raise Exception("no Admin!")
+        raise Exception("no Admin!")
 
 ########## SECTION QUERY start ##########
 
@@ -226,7 +214,10 @@ class GQLHandler:
         return self.runAuthorizedGqlQuery(gm.MUTATION['modifyAlertM'], { "uid": id, "remind": YesOrNo })
 
     def setEnableSlientTime(self, silentId, status: NormalStatus=NormalStatus.ENABLE.value):
-        return self.runAuthorizedGqlQuery(gm.MUTATION['setEnableSlientTimeM'], { 'silentId': silentId, 'status': status.value })['data']
+        return self.runAuthorizedGqlQuery(gm.MUTATION['setEnableSlientTimeM'], { 'silentId': silentId, 'status': status })['data']
+
+    def setReadChatMsg(self, ownId, msgId, id):
+        return self.runAuthorizedGqlQuery(gm.MUTATION['setReadChatMsg'], { "uid": ownId, 'msgId': msgId, 'id': id })['data']
 
 ########## SECTION MUTATION end ##########
 
