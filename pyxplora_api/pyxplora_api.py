@@ -78,7 +78,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.52"
+        return "1.0.53"
 
 ##### Contact Info #####
     def getContacts(self):
@@ -227,9 +227,31 @@ class PyXploraApi:
             return True
         return False
     def getWatchOnlineStatus(self) -> WatchOnlineStatus:
-        if not self.askWatchLocate() and self.trackWatchInterval() == -1:
-            return WatchOnlineStatus.OFFLINE.value
-        return WatchOnlineStatus.ONLINE.value
+        retryCounter = 0
+        dataOk = False
+        asktrack_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            self.init()
+            try:
+                self.askWatchLocate()
+                time.sleep(2)
+                ask_raw = self.askWatchLocate()
+                track_raw = self.trackWatchInterval()
+                if ask_raw or (track_raw != -1):
+                    asktrack_raw = WatchOnlineStatus.ONLINE.value
+                else:
+                    asktrack_raw = WatchOnlineStatus.OFFLINE.value
+            except Exception as error:
+                print(error)
+            dataOk = asktrack_raw
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return asktrack_raw
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
     def __setReadChatMsg(self, msgId, id):
         return (self.__gqlHandler.setReadChatMsg(self.getWatchUserID(), msgId, id))['setReadChatMsg']
     def getWatchUnReadChatMsgCount(self) -> int: # bug?
@@ -321,9 +343,9 @@ class PyXploraApi:
         else:
             raise Exception('Xplora API call finally failed with response: ')
     def trackWatchInterval(self) -> int:
-        return (self.__gqlHandler.trackWatch(self.getWatchUserID()))['trackWatch']
+        return self.__gqlHandler.trackWatch(self.getWatchUserID())['trackWatch']
     def askWatchLocate(self) -> bool:
-        return (self.__gqlHandler.askWatchLocate(self.getWatchUserID()))['askWatchLocate']
+        return self.__gqlHandler.askWatchLocate(self.getWatchUserID())['askWatchLocate']
 
 ##### Feature #####
     def schoolSilentMode(self) -> list:

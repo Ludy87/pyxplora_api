@@ -78,7 +78,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.52"
+        return "1.0.53"
 
 ##### Contact Info #####
     async def getContacts_async(self):
@@ -227,9 +227,31 @@ class PyXploraApi:
             return True
         return False
     async def getWatchOnlineStatus_async(self) -> WatchOnlineStatus:
-        if not await self.askWatchLocate_async() and await self.trackWatchInterval_async() == -1:
-            return WatchOnlineStatus.OFFLINE.value
-        return WatchOnlineStatus.ONLINE.value
+        retryCounter = 0
+        dataOk = False
+        asktrack_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                await self.askWatchLocate_async()
+                time.sleep(2)
+                ask_raw = await self.askWatchLocate_async()
+                track_raw = await self.trackWatchInterval_async()
+                if ask_raw or (track_raw != -1):
+                    asktrack_raw = WatchOnlineStatus.ONLINE.value
+                else:
+                    asktrack_raw = WatchOnlineStatus.OFFLINE.value
+            except Exception as error:
+                print(error)
+            dataOk = asktrack_raw
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return asktrack_raw
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
     async def __setReadChatMsg_a(self, msgId, id):
         return (await self.__gqlHandler.setReadChatMsg(await self.getWatchUserID_async(), msgId, id))['setReadChatMsg']
     async def getWatchUnReadChatMsgCount_async(self) -> int: # bug?
