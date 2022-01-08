@@ -1,7 +1,6 @@
 import hashlib
 import math
 import time
-import logging
 from datetime import date, datetime, timezone
 from python_graphql_client import GraphqlClient
 
@@ -9,8 +8,6 @@ from enum import Enum
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
-
-_LOGGER = logging.getLogger(__name__)
 
 class NormalStatus(Enum):
     ENABLE = "ENABLE"
@@ -110,12 +107,6 @@ class GQLHandler:
             if self.issueToken['app']['apiSecret']:
                 self.API_SECRET = self.issueToken['app']['apiSecret']
         return self.issueToken
-
-    def isLogged(self):
-        if self.issueToken:
-            return True
-        else: # login failed
-            raise LoginError("Login to Xplora® API failed.", 2)
 
     async def isAdmin_a(self, ownId, query, variables, key):
         contacts = await self.getContacts_a(ownId)
