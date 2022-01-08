@@ -82,7 +82,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.47"
+        return "1.0.48"
 
 ##### Contact Info #####
     async def getContacts_async(self):
@@ -246,7 +246,7 @@ class PyXploraApi:
         return False
     async def getWatchOnlineStatus_async(self) -> WatchOnlineStatus:
         await self.init_async()
-        if not await self.askWatchLocate_async() and await self.trackWatchInterval_a() == -1:
+        if not await self.askWatchLocate_async() and await self.trackWatchInterval_async() == -1:
             return WatchOnlineStatus.OFFLINE.value
         return WatchOnlineStatus.ONLINE.value
     async def __setReadChatMsg_a(self, msgId, id):
@@ -290,21 +290,6 @@ class PyXploraApi:
             return self.chats
         else:
             raise Exception('Xplora API call finally failed with response: ')
-        for chat in (await self.__handler.chats_a(self.watch_user_id))['chats']['list']:
-            self.chats.append({
-                'msgId': chat['msgId'],
-                'type': chat['type'],
-                #chat['sender'],
-                'sender_id': chat['sender']['id'],
-                'sender_name': chat['sender']['name'],
-                #chat['receiver'],
-                'receiver_id': chat['receiver']['id'],
-                'receiver_name': chat['receiver']['name'],
-                #chat['data'],
-                'data_text': chat['data']['text'],
-                'data_sender_name': chat['data']['sender_name'],
-            })
-        return self.chats
 
 ##### Watch Location Info #####
     async def getWatchLastLocation_async(self) -> dict:
@@ -319,7 +304,7 @@ class PyXploraApi:
     async def getWatchIsInSafeZone_async(self) -> bool:
         await self.getWatchLocate_async()
         return self.watch_last_location['isInSafeZone']
-    async def getWatchSafeZoneLabel_a(self) -> str:
+    async def getWatchSafeZoneLabel_async(self) -> str:
         await self.getWatchLocate_async()
         return self.watch_last_location['safeZoneLabel']
     async def getSafeZones_async(self) -> list:
@@ -354,7 +339,7 @@ class PyXploraApi:
             return self.safe_zones
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    async def trackWatchInterval_a(self) -> int:
+    async def trackWatchInterval_async(self) -> int:
         await self.init_async()
         return (await self.gqlHandler.trackWatch_a(self.watch_user_id))['trackWatch']
     async def askWatchLocate_async(self) -> bool:
@@ -362,7 +347,7 @@ class PyXploraApi:
         return (await self.gqlHandler.askWatchLocate_a(self.watch_user_id))['askWatchLocate']
 
 ##### Feature #####
-    async def schoolSilentMode_a(self) -> list:
+    async def schoolSilentMode_async(self) -> list:
         retryCounter = 0
         dataOk = False
         sientTimes_raw = None
@@ -440,12 +425,12 @@ class PyXploraApi:
             raise Exception('Xplora API call finally failed with response: ')
     async def setAllEnableSilentTime_async(self) -> list:
         res = []
-        for silentTime in (await self.schoolSilentMode_a()):
+        for silentTime in (await self.schoolSilentMode_async()):
             res.append(await self.setEnableSilentTime_async(silentTime['id']))
         return res
     async def setAllDisableSilentTime_async(self) -> list:
         res = []
-        for silentTime in (await self.schoolSilentMode_a()):
+        for silentTime in (await self.schoolSilentMode_async()):
             res.append(await self.setDisableSilentTime_async(silentTime['id']))
         return res
     async def sendText(self, text): # sender is login User
