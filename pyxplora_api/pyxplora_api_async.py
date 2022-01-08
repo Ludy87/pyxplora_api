@@ -82,7 +82,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.48"
+        return "1.0.49"
 
 ##### Contact Info #####
     async def getContacts_async(self):
@@ -93,7 +93,7 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                contacts_raw = await self.gqlHandler.getContacts_a(self.watch_user_id)
+                contacts_raw = await self.gqlHandler.getContacts_a(await self.getWatchUserID_async())
                 if 'contacts' in contacts_raw:
                     if 'contacts' in contacts_raw['contacts']:
                         for contact in contacts_raw['contacts']['contacts']:
@@ -175,7 +175,7 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                alarms_raw = await self.gqlHandler.getAlarms_a(self.watch_user_id)
+                alarms_raw = await self.gqlHandler.getAlarms_a(await self.getWatchUserID_async())
                 if 'alarms' in alarms_raw:
                     if not alarms_raw['alarms']:
                         dataOk = True
@@ -210,7 +210,7 @@ class PyXploraApi:
                 if withAsk:
                     await self.askWatchLocate_async()
                 time.sleep(2)
-                location_raw = await self.gqlHandler.getWatchLastLocation_a(self.watch_user_id)
+                location_raw = await self.gqlHandler.getWatchLastLocation_a(await self.getWatchUserID_async())
                 if 'watchLastLocate' in location_raw:
                     self.watch_location.append({
                         'tm': datetime.fromtimestamp(location_raw['watchLastLocate']['tm']).strftime('%Y-%m-%d %H:%M:%S'),
@@ -250,9 +250,9 @@ class PyXploraApi:
             return WatchOnlineStatus.OFFLINE.value
         return WatchOnlineStatus.ONLINE.value
     async def __setReadChatMsg_a(self, msgId, id):
-        return (await self.gqlHandler.setReadChatMsg(self.watch_user_id, msgId, id))['setReadChatMsg']
+        return (await self.gqlHandler.setReadChatMsg(await self.getWatchUserID_async(), msgId, id))['setReadChatMsg']
     async def __getWatchUnReadChatMsgCount_a(self) -> int: # bug?
-        return (await self.gqlHandler.unReadChatMsgCount_a(self.watch_user_id))['unReadChatMsgCount']
+        return (await self.gqlHandler.unReadChatMsgCount_a(await self.getWatchUserID_async()))['unReadChatMsgCount']
     async def getWatchChats_async(self) -> list: # bug?
         retryCounter = 0
         dataOk = False
@@ -263,7 +263,7 @@ class PyXploraApi:
             try:
                 await self.askWatchLocate_async()
                 time.sleep(2)
-                chats_raw = await self.gqlHandler.chats_a(self.watch_user_id)
+                chats_raw = await self.gqlHandler.chats_a(await self.getWatchUserID_async())
                 if 'chats' in chats_raw:
                     if 'list' in chats_raw['chats']:
                         for chat in chats_raw['chats']['list']:
@@ -317,7 +317,7 @@ class PyXploraApi:
             try:
                 await self.askWatchLocate_async()
                 time.sleep(2)
-                safeZones_raw = await self.gqlHandler.safeZones_a(self.watch_user_id)
+                safeZones_raw = await self.gqlHandler.safeZones_a(await self.getWatchUserID_async())
                 if 'safeZones' in safeZones_raw:
                     for safeZone in safeZones_raw['safeZones']:
                         self.safe_zones.append({
@@ -341,10 +341,10 @@ class PyXploraApi:
             raise Exception('Xplora API call finally failed with response: ')
     async def trackWatchInterval_async(self) -> int:
         await self.init_async()
-        return (await self.gqlHandler.trackWatch_a(self.watch_user_id))['trackWatch']
+        return (await self.gqlHandler.trackWatch_a(await self.getWatchUserID_async()))['trackWatch']
     async def askWatchLocate_async(self) -> bool:
         await self.init_async()
-        return (await self.gqlHandler.askWatchLocate_a(self.watch_user_id))['askWatchLocate']
+        return (await self.gqlHandler.askWatchLocate_a(await self.getWatchUserID_async()))['askWatchLocate']
 
 ##### Feature #####
     async def schoolSilentMode_async(self) -> list:
@@ -357,7 +357,7 @@ class PyXploraApi:
             try:
                 await self.askWatchLocate_async()
                 time.sleep(2)
-                sientTimes_raw = await self.gqlHandler.silentTimes_a(self.watch_user_id)
+                sientTimes_raw = await self.gqlHandler.silentTimes_a(await self.getWatchUserID_async())
                 if 'silentTimes' in sientTimes_raw:
                     for sientTime in sientTimes_raw['silentTimes']:
                         self.school_silent_mode.append({
@@ -435,13 +435,13 @@ class PyXploraApi:
         return res
     async def sendText(self, text): # sender is login User
         await self.init_async()
-        return await self.gqlHandler.sendText_a(self.watch_user_id, text)
+        return await self.gqlHandler.sendText_a(await self.getWatchUserID_async(), text)
     async def shutdown(self) -> bool:
         await self.init_async()
-        return await self.gqlHandler.shutdown_a(self.watch_user_id)
+        return await self.gqlHandler.shutdown_a(await self.getWatchUserID_async())
     async def reboot(self) -> bool:
         await self.init_async()
-        return await self.gqlHandler.reboot_a(self.watch_user_id)
+        return await self.gqlHandler.reboot_a(await self.getWatchUserID_async())
 
 ##### - #####
     def __helperTime(self, time) -> str:
