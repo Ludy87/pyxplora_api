@@ -78,7 +78,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.51"
+        return "1.0.52"
 
 ##### Contact Info #####
     def getContacts(self):

@@ -78,7 +78,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.51"
+        return "1.0.52"
 
 ##### Contact Info #####
     async def getContacts_async(self):
@@ -232,7 +232,7 @@ class PyXploraApi:
         return WatchOnlineStatus.ONLINE.value
     async def __setReadChatMsg_a(self, msgId, id):
         return (await self.__gqlHandler.setReadChatMsg(await self.getWatchUserID_async(), msgId, id))['setReadChatMsg']
-    async def getWatchUnReadChatMsgCount_a(self) -> int: # bug?
+    async def getWatchUnReadChatMsgCount_async(self) -> int: # bug?
         return (await self.__gqlHandler.unReadChatMsgCount_a(await self.getWatchUserID_async()))['unReadChatMsgCount']
     async def getWatchChats_async(self) -> list: # bug?
         retryCounter = 0
