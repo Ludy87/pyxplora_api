@@ -78,7 +78,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.53"
+        return "1.0.54"
 
 ##### Contact Info #####
     async def getContacts_async(self):
@@ -434,6 +434,95 @@ class PyXploraApi:
         for silentTime in (await self.schoolSilentMode_async()):
             res.append(await self.setDisableSilentTime_async(silentTime['id']))
         return res
+
+    async def alarmMode_async(self) -> list:
+        retryCounter = 0
+        dataOk = False
+        alarms_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            await self.init_async()
+            try:
+                await self.askWatchLocate_async()
+                time.sleep(2)
+                alarms_raw = await self.__gqlHandler.getAlarms_a(await self.getWatchUserID_async())
+                if 'alarms' in alarms_raw:
+                    for alarm in alarms_raw['alarms']:
+                        self.alarms.append({
+                            'id': alarm['id'],
+                            'name': alarm['name'],
+                            'start': self.__helperTime(alarm['start']),
+                            'end': self.__helperTime(alarm['end']),
+                            'weekRepeat': alarm['weekRepeat'],
+                            'status': alarm['status'],
+                        })
+            except Exception as error:
+                print(error)
+            dataOk = self.alarms
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.alarms
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    async def setEnableAlarmTime_async(self, alarmId) -> bool:
+        retryCounter = 0
+        dataOk = False
+        _raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            self.init()
+            try:
+                await self.askWatchLocate()
+                time.sleep(2)
+                enable_raw = await self.__gqlHandler.setEnableAlarmTime_a(alarmId)
+                if 'modifyAlarm' in enable_raw:
+                    _raw = enable_raw['modifyAlarm']
+            except Exception as error:
+                print(error)
+            dataOk = _raw
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return bool(_raw)
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    async def setDisableAlarmTime_async(self, alarmId) -> bool:
+        retryCounter = 0
+        dataOk = False
+        _raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            self.init()
+            try:
+                await self.askWatchLocate()
+                time.sleep(2)
+                disable_raw = await self.__gqlHandler.setEnableAlarmTime_a(alarmId, NormalStatus.DISABLE.value)
+                if 'modifyAlarm' in disable_raw:
+                    _raw = disable_raw['modifyAlarm']
+            except Exception as error:
+                print(error)
+            dataOk = _raw
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return bool(_raw)
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    async def setAllEnableAlarmTime_async(self) -> list:
+        res = []
+        for alarmTime in (await self.alarmMode_async()):
+            res.append(await self.setEnableAlarmTime_async(alarmTime['id']))
+        return res
+    async def setAllDisableAlarmTime_async(self) -> list:
+        res = []
+        for alarmTime in (await self.alarmMode_async()):
+            res.append(await self.setDisableAlarmTime_async(alarmTime['id']))
+        return res
+
     async def sendText(self, text): # sender is login User
         return await self.__gqlHandler.sendText_a(await self.getWatchUserID_async(), text)
     async def isAdmin(self):

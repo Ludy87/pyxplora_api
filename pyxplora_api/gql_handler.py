@@ -216,6 +216,9 @@ class GQLHandler:
     def setEnableSlientTime(self, silentId, status: NormalStatus=NormalStatus.ENABLE.value):
         return self.runAuthorizedGqlQuery(gm.MUTATION['setEnableSlientTimeM'], { 'silentId': silentId, 'status': status })['data']
 
+    def setEnableAlarmTime(self, alarmId, status: NormalStatus=NormalStatus.ENABLE.value):
+        return self.runAuthorizedGqlQuery(gm.MUTATION['ModifyAlarmM'], { 'alarmId': alarmId, 'status': status })['data']
+
     def setReadChatMsg(self, ownId, msgId, id):
         return self.runAuthorizedGqlQuery(gm.MUTATION['setReadChatMsg'], { "uid": ownId, 'msgId': msgId, 'id': id })['data']
 

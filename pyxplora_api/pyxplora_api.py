@@ -78,7 +78,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.53"
+        return "1.0.54"
 
 ##### Contact Info #####
     def getContacts(self):
@@ -434,6 +434,95 @@ class PyXploraApi:
         for silentTime in (self.schoolSilentMode()):
             res.append(self.setDisableSilentTime(silentTime['id']))
         return res
+
+    def alarmMode(self) -> list:
+        retryCounter = 0
+        dataOk = False
+        alarms_raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            self.init()
+            try:
+                self.askWatchLocate()
+                time.sleep(2)
+                alarms_raw = self.__gqlHandler.getAlarms(self.getWatchUserID())
+                if 'alarms' in alarms_raw:
+                    for alarm in alarms_raw['alarms']:
+                        self.alarms.append({
+                            'id': alarm['id'],
+                            'name': alarm['name'],
+                            'start': self.__helperTime(alarm['start']),
+                            'end': self.__helperTime(alarm['end']),
+                            'weekRepeat': alarm['weekRepeat'],
+                            'status': alarm['status'],
+                        })
+            except Exception as error:
+                print(error)
+            dataOk = self.alarms
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return self.alarms
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    def setEnableAlarmTime(self, alarmId) -> bool:
+        retryCounter = 0
+        dataOk = False
+        _raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            self.init()
+            try:
+                self.askWatchLocate()
+                time.sleep(2)
+                enable_raw = self.__gqlHandler.setEnableAlarmTime(alarmId)
+                if 'modifyAlarm' in enable_raw:
+                    _raw = enable_raw['modifyAlarm']
+            except Exception as error:
+                print(error)
+            dataOk = _raw
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return bool(_raw)
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    def setDisableAlarmTime(self, alarmId) -> bool:
+        retryCounter = 0
+        dataOk = False
+        _raw = None
+        while (not dataOk and (retryCounter < self.maxRetries + 2)):
+            retryCounter +=1
+            self.init()
+            try:
+                self.askWatchLocate()
+                time.sleep(2)
+                disable_raw = self.__gqlHandler.setEnableAlarmTime(alarmId, NormalStatus.DISABLE.value)
+                if 'modifyAlarm' in disable_raw:
+                    _raw = disable_raw['modifyAlarm']
+            except Exception as error:
+                print(error)
+            dataOk = _raw
+            if (not dataOk):
+                self.__logoff()
+                time.sleep(self.retryDelay)
+        if (dataOk):
+            return bool(_raw)
+        else:
+            raise Exception('Xplora API call finally failed with response: ')
+    def setAllEnableAlarmTime(self) -> list:
+        res = []
+        for alarmTime in (self.alarmMode()):
+            res.append(self.setEnableAlarmTime(alarmTime['id']))
+        return res
+    def setAllDisableAlarmTime(self) -> list:
+        res = []
+        for alarmTime in (self.alarmMode()):
+            res.append(self.setDisableAlarmTime(alarmTime['id']))
+        return res
+
     def sendText(self, text): # sender is login User
         return self.__gqlHandler.sendText(self.getWatchUserID(), text)
     def isAdmin(self):

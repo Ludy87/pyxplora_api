@@ -7,4 +7,5 @@ MUTATION = {
     "addStepM": "mutation AddStep($stepCount: Int) {\n  addStep(stepCount: $stepCount)\n}",
     "setEnableSlientTimeM": "mutation SetEnableSlientTime($silentId : String!, $status: NormalStatus!) {\n  setEnableSilentTime(silentId: $silentId, status: $status)\n}",
     "setReadChatMsg": "mutation setReadChatMsg($uid: String!, $msgId : String, $id : String) {\n  setReadChatMsg(uid: $uid, msgId: $msgId, id: $id)\n}",
+    "ModifyAlarmM": "mutation ModifyAlarm($alarmId: String!, $name: String, $occurMin: Int, $start: Int, $end: Int, $weekRepeat: String, $description: String, $status: NormalStatus, $extra: JSON, $timeZone: String) {\n  modifyAlarm(alarmId: $alarmId, name: $name, occurMin: $occurMin, status: $status, end: $end, weekRepeat:     $weekRepeat, description: $description, start: $start, extra: $extra, timeZone: $timeZone)\n}",
 }
