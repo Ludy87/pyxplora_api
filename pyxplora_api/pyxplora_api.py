@@ -1,6 +1,6 @@
 from hashlib import md5
 
-from pyxplora_api.const import VERSION
+from .const import VERSION
 from .gql_handler import *
 from datetime import datetime
 
