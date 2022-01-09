@@ -1,13 +1,11 @@
 import setuptools
 
-from .pyxplora_api.const import VERSION
-
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name = "pyxplora_api",
-    version = VERSION,
+    version = "1.0.59",
     author = "Ludy87",
     author_email = "android@astra-g.org",
     description = "Python Xplora® Api",
