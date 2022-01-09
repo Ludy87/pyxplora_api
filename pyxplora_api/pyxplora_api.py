@@ -1,3 +1,4 @@
+from hashlib import md5
 from .gql_handler import *
 from datetime import datetime
 
@@ -78,7 +79,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.55"
+        return "1.0.56"
 
 ##### Contact Info #####
     def getContacts(self):
@@ -164,6 +165,7 @@ class PyXploraApi:
                         return self.alarms
                     for alarm in alarms_raw['alarms']:
                         self.alarms.append({
+                            'id': md5(f"{alarm['name']}{alarm['occurMin']}{alarm['weekRepeat']}".encode('utf-8')).hexdigest()
                             'name': alarm['name'],
                             'start': self.__helperTime(alarm['occurMin']),
                             'weekRepeat': alarm['weekRepeat'],
