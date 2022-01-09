@@ -1,4 +1,6 @@
 from hashlib import md5
+
+from pyxplora_api.const import VERSION
 from .gql_handler_async import *
 from datetime import datetime
 
@@ -79,7 +81,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.56"
+        return VERSION
 
 ##### Contact Info #####
     async def getContacts_async(self):
@@ -443,7 +445,7 @@ class PyXploraApi:
         _raw = None
         while (not dataOk and (retryCounter < self.maxRetries + 2)):
             retryCounter +=1
-            self.init()
+            await self.init_async()
             try:
                 await self.askWatchLocate_async()
                 time.sleep(2)
@@ -466,7 +468,7 @@ class PyXploraApi:
         _raw = None
         while (not dataOk and (retryCounter < self.maxRetries + 2)):
             retryCounter +=1
-            self.init()
+            await self.init_async()
             try:
                 await self.askWatchLocate_async()
                 time.sleep(2)

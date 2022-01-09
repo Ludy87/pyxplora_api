@@ -1,4 +1,6 @@
 from hashlib import md5
+
+from pyxplora_api.const import VERSION
 from .gql_handler import *
 from datetime import datetime
 
@@ -79,7 +81,7 @@ class PyXploraApi:
         raise Exception("Fail")
 
     def version(self) -> str:
-        return "1.0.56"
+        return VERSION
 
 ##### Contact Info #####
     def getContacts(self):
