@@ -1,5 +1,3 @@
-from hashlib import md5
-
 from .const import VERSION
 from .gql_handler_async import *
 from datetime import datetime
@@ -167,7 +165,7 @@ class PyXploraApi:
                         return self.alarms
                     for alarm in alarms_raw['alarms']:
                         self.alarms.append({
-                            'id': md5(f"{alarm['name']}{alarm['occurMin']}{alarm['weekRepeat']}".encode('utf-8')).hexdigest(),
+                            'id': alarm['id'],
                             'name': alarm['name'],
                             'start': self.__helperTime(alarm['occurMin']),
                             'weekRepeat': alarm['weekRepeat'],
