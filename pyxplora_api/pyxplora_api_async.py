@@ -1,6 +1,8 @@
+from time import sleep
 from .const import VERSION
 from .gql_handler_async import *
 from datetime import datetime
+from asyncio import sleep
 
 class PyXploraApi:
     def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
@@ -13,7 +15,9 @@ class PyXploraApi:
 
         self.tokenExpiresAfter = 240
         self.maxRetries = 3
-        self.retryDelay = 3
+        self.retryDelay = 2
+
+        self.dtIssueToken = int(time.time()) - (self.tokenExpiresAfter * 1000)
 
         self.contacts = []
         self.alarms = []
@@ -30,7 +34,7 @@ class PyXploraApi:
         self.watch = None
         self.user = None
 
-    async def __login(self, forceLogin=False):
+    async def __login(self, forceLogin=False) -> dict:
         if not self.__isConnected() or self.__hasTokenExpired() or forceLogin:
             try:
                 self.__logoff()
@@ -48,7 +52,7 @@ class PyXploraApi:
 
                         # Wait for next try
                         if (not self.__issueToken):
-                            time.sleep(self.retryDelay)
+                            await sleep(self.retryDelay)
                     if (self.__issueToken):
                         self.dtIssueToken = int(time.time())
                 else:
@@ -59,17 +63,17 @@ class PyXploraApi:
                 self.__issueToken = None
         return self.__issueToken
 
-    def __isConnected(self):
+    def __isConnected(self) -> bool:
         return (self.__gqlHandler and self.__issueToken)
 
-    def __logoff(self):
+    def __logoff(self) -> None:
         self.__gqlHandler = None
         self.__issueToken = None
 
-    def __hasTokenExpired(self):
+    def __hasTokenExpired(self) -> bool:
         return ((int(time.time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000))
 
-    async def init_async(self, forceLogin=False):
+    async def init_async(self, forceLogin=False) -> None:
         token = await self.__login(forceLogin)
         if token:
             if ('user' in token):
@@ -82,7 +86,7 @@ class PyXploraApi:
         return VERSION
 
 ##### Contact Info #####
-    async def getContacts_async(self):
+    async def getContacts_async(self) -> list:
         retryCounter = 0
         dataOk = False
         contacts_raw = None
@@ -114,7 +118,7 @@ class PyXploraApi:
             dataOk = self.contacts
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return self.contacts
         else:
@@ -176,14 +180,14 @@ class PyXploraApi:
             dataOk = self.alarms
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return self.alarms
         else:
             raise Exception('Xplora API call finally failed with response: ')
         return self.alarms
 
-    async def loadWatchLocation_async(self, withAsk=True):
+    async def loadWatchLocation_async(self, withAsk=True) -> list:
         retryCounter = 0
         dataOk = False
         location_raw = None
@@ -193,28 +197,43 @@ class PyXploraApi:
             try:
                 if withAsk:
                     await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 location_raw = await self.__gqlHandler.getWatchLastLocation_a(await self.getWatchUserID_async())
                 if 'watchLastLocate' in location_raw:
-                    self.watch_location.append({
-                        'tm': datetime.fromtimestamp(location_raw['watchLastLocate']['tm']).strftime('%Y-%m-%d %H:%M:%S'),
-                        'lat': location_raw['watchLastLocate']['lat'],
-                        'lng': location_raw['watchLastLocate']['lng'],
-                        'rad': location_raw['watchLastLocate']['rad'],
-                        'poi': location_raw['watchLastLocate']['poi'],
-                        'city': location_raw['watchLastLocate']['city'],
-                        'province': location_raw['watchLastLocate']['province'],
-                        'country': location_raw['watchLastLocate']['country'],
-                    })
-                    self.watch_battery = location_raw['watchLastLocate']['battery']
-                    self.watch_charging = location_raw['watchLastLocate']['isCharging']
-                    self.watch_last_location = location_raw['watchLastLocate']
+                    if location_raw['watchLastLocate'] == None:
+                        self.watch_location.append({
+                            'tm': datetime.fromtimestamp(datetime.now().timestamp()).strftime('%Y-%m-%d %H:%M:%S'),
+                            'lat': 42.8491703,
+                            'lng': 33.5659302,
+                            'rad': 0,
+                            'poi': '',
+                            'city': '',
+                            'province': '',
+                            'country': '',
+                        })
+                        self.watch_battery = 0
+                        self.watch_charging = False
+                        self.watch_last_location = []
+                    else:
+                        self.watch_location.append({
+                            'tm': datetime.fromtimestamp(location_raw['watchLastLocate']['tm']).strftime('%Y-%m-%d %H:%M:%S'),
+                            'lat': location_raw['watchLastLocate']['lat'],
+                            'lng': location_raw['watchLastLocate']['lng'],
+                            'rad': location_raw['watchLastLocate']['rad'],
+                            'poi': location_raw['watchLastLocate']['poi'],
+                            'city': location_raw['watchLastLocate']['city'],
+                            'province': location_raw['watchLastLocate']['province'],
+                            'country': location_raw['watchLastLocate']['country'],
+                        })
+                        self.watch_battery = location_raw['watchLastLocate']['battery']
+                        self.watch_charging = location_raw['watchLastLocate']['isCharging']
+                        self.watch_last_location = location_raw['watchLastLocate']
             except Exception as error:
                 print(error)
             dataOk = self.watch_location
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return self.watch_location
         else:
@@ -237,7 +256,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 ask_raw = await self.askWatchLocate_async()
                 track_raw = await self.trackWatchInterval_async()
                 if ask_raw or (track_raw != -1):
@@ -249,7 +268,7 @@ class PyXploraApi:
             dataOk = asktrack_raw
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return asktrack_raw
         else:
@@ -267,7 +286,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 chats_raw = await self.__gqlHandler.chats_a(await self.getWatchUserID_async())
                 if 'chats' in chats_raw:
                     if 'list' in chats_raw['chats']:
@@ -290,7 +309,7 @@ class PyXploraApi:
             dataOk = self.chats
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return self.chats
         else:
@@ -321,7 +340,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 safeZones_raw = await self.__gqlHandler.safeZones_a(await self.getWatchUserID_async())
                 if 'safeZones' in safeZones_raw:
                     for safeZone in safeZones_raw['safeZones']:
@@ -339,7 +358,7 @@ class PyXploraApi:
             dataOk = self.safe_zones
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return self.safe_zones
         else:
@@ -359,7 +378,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 sientTimes_raw = await self.__gqlHandler.silentTimes_a(await self.getWatchUserID_async())
                 if 'silentTimes' in sientTimes_raw:
                     for sientTime in sientTimes_raw['silentTimes']:
@@ -375,7 +394,7 @@ class PyXploraApi:
             dataOk = self.school_silent_mode
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return self.school_silent_mode
         else:
@@ -389,7 +408,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 enable_raw = await self.__gqlHandler.setEnableSlientTime_a(silentId)
                 if 'setEnableSilentTime' in enable_raw:
                     _raw = enable_raw['setEnableSilentTime']
@@ -398,7 +417,7 @@ class PyXploraApi:
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return bool(_raw)
         else:
@@ -412,7 +431,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 disable_raw = await self.__gqlHandler.setEnableSlientTime_a(silentId, NormalStatus.DISABLE.value)
                 if 'setEnableSilentTime' in disable_raw:
                     _raw = disable_raw['setEnableSilentTime']
@@ -421,7 +440,7 @@ class PyXploraApi:
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return bool(_raw)
         else:
@@ -446,7 +465,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 enable_raw = await self.__gqlHandler.setEnableAlarmTime_a(alarmId)
                 if 'modifyAlarm' in enable_raw:
                     _raw = enable_raw['modifyAlarm']
@@ -455,7 +474,7 @@ class PyXploraApi:
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return bool(_raw)
         else:
@@ -469,7 +488,7 @@ class PyXploraApi:
             await self.init_async()
             try:
                 await self.askWatchLocate_async()
-                time.sleep(2)
+                await sleep(self.retryDelay)
                 disable_raw = await self.__gqlHandler.setEnableAlarmTime_a(alarmId, NormalStatus.DISABLE.value)
                 if 'modifyAlarm' in disable_raw:
                     _raw = disable_raw['modifyAlarm']
@@ -478,7 +497,7 @@ class PyXploraApi:
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
-                time.sleep(self.retryDelay)
+                await sleep(self.retryDelay)
         if (dataOk):
             return bool(_raw)
         else:
@@ -494,9 +513,9 @@ class PyXploraApi:
             res.append(await self.setDisableAlarmTime_async(alarmTime['id']))
         return res
 
-    async def sendText(self, text): # sender is login User
+    async def sendText(self, text) -> bool: # sender is login User
         return await self.__gqlHandler.sendText_a(await self.getWatchUserID_async(), text)
-    async def isAdmin(self):
+    async def isAdmin(self) -> bool:
         for contact in await self.getContacts_async():
             if (contact['id'] == await self.getUserID_async()):
                 return True
