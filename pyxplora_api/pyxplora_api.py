@@ -145,6 +145,8 @@ class PyXploraApi:
         return self.watch['id']
     def getWatchUserName(self) -> str:
         return self.watch['name']
+    def getWatchUserIcon(self) -> str:
+        return f"https://api.myxplora.com/file?id={self.watch['file']['id']}"
     def getWatchXcoin(self) -> int:
         return self.watch['xcoin']
     def getWatchCurrentStep(self) -> int:
@@ -198,21 +200,7 @@ class PyXploraApi:
                 time.sleep(self.retryDelay)
                 location_raw = self.__gqlHandler.getWatchLastLocation(self.getWatchUserID())
                 if 'watchLastLocate' in location_raw:
-                    if location_raw['watchLastLocate'] == None:
-                        self.watch_location.append({
-                            'tm': datetime.fromtimestamp(datetime.now().timestamp()).strftime('%Y-%m-%d %H:%M:%S'),
-                            'lat': 42.8491703,
-                            'lng': 33.5659302,
-                            'rad': 0,
-                            'poi': '',
-                            'city': '',
-                            'province': '',
-                            'country': '',
-                        })
-                        self.watch_battery = 0
-                        self.watch_charging = False
-                        self.watch_last_location = []
-                    else:
+                    if location_raw['watchLastLocate'] != None:
                         self.watch_location.append({
                             'tm': datetime.fromtimestamp(location_raw['watchLastLocate']['tm']).strftime('%Y-%m-%d %H:%M:%S'),
                             'lat': location_raw['watchLastLocate']['lat'],
@@ -222,6 +210,9 @@ class PyXploraApi:
                             'city': location_raw['watchLastLocate']['city'],
                             'province': location_raw['watchLastLocate']['province'],
                             'country': location_raw['watchLastLocate']['country'],
+                            'locateType': location_raw['watchLastLocate']['locateType'],
+                            'isInSafeZone': location_raw['watchLastLocate']['isInSafeZone'],
+                            'safeZoneLabel': location_raw['watchLastLocate']['safeZoneLabel'],
                         })
                         self.watch_battery = location_raw['watchLastLocate']['battery']
                         self.watch_charging = location_raw['watchLastLocate']['isCharging']
