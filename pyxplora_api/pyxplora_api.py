@@ -335,6 +335,7 @@ class PyXploraApi:
                     for safeZone in safeZones_raw['safeZones']:
                         self.safe_zones.append({
                             #safeZone,
+                            'vendorId': safeZone['vendorId'],
                             'groupName': safeZone['groupName'],
                             'name': safeZone['name'],
                             'lat': safeZone['lat'],
