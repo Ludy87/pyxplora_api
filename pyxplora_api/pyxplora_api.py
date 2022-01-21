@@ -305,8 +305,8 @@ class PyXploraApi:
             raise Exception('Xplora API call finally failed with response: ')
 
 ##### Watch Location Info #####
-    def getWatchLastLocation(self) -> dict:
-        self.loadWatchLocation(False)
+    def getWatchLastLocation(self, withAsk: bool = False) -> dict:
+        self.loadWatchLocation(withAsk)
         return self.watch_last_location
     def getWatchLocate(self) -> dict:
         self.loadWatchLocation()
