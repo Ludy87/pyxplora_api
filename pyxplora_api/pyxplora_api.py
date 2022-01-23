@@ -1,6 +1,7 @@
 from .const import VERSION
 from .gql_handler import *
 from datetime import datetime
+from .exeption_classes import LoginError
 
 class PyXploraApi:
     def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
@@ -78,7 +79,7 @@ class PyXploraApi:
                 self.watch = token['user']['children'][self.watch_no]['ward']
                 self.user = token['user']
                 return
-        raise Exception("Fail")
+        raise LoginError("Login to Xplora® API failed. Check your input!")
 
     def version(self) -> str:
         return VERSION

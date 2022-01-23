@@ -1,10 +1,12 @@
 import hashlib
 import math
 import time
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from python_graphql_client import GraphqlClient
 
 from enum import Enum
+
+from .exeption_classes import LoginError
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
@@ -222,15 +224,3 @@ class GQLHandler:
         return (await self.runAuthorizedGqlQuery_a(gm.MUTATION['setReadChatMsg'], { "uid": ownId, 'msgId': msgId, 'id': id }))['data']
 
 ########## SECTION MUTATION end ##########
-
-class Error(Exception):
-    pass
-
-class LoginError(Error):
-    def __init__(self, message, res=1):
-        self.message = message
-        self.res = res
-        super().__init__(self.message, self.res)
-
-    def __str__(self):
-        return f'{self.message} - {self.res}'
