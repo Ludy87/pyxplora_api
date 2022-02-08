@@ -162,7 +162,7 @@ class PyXploraApi:
         raise Exception("Child phonenumber not found!")
     def getWatchUserIcon(self) -> str:
         if self._childPhoneNumber == 0:
-            return self.watchs[self._childPhoneNumber]['ward']['ward']['file']['id']
+            return self.watchs[self._childPhoneNumber]['ward']['file']['id']
         for watch in self.watchs:
             if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
                 return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
