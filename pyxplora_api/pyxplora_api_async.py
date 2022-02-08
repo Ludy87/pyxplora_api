@@ -6,13 +6,14 @@ from asyncio import sleep
 from .exception_classes import LoginError
 
 class PyXploraApi:
-    def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
+    def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, childPhoneNumber=[]) -> None:
         self._countrycode = countrycode
         self._phoneNumber = phoneNumber
         self._password = password
         self._userLang = userLang
         self._timeZone = timeZone
-        self._childPhoneNumber = watchNo
+
+        self._childPhoneNumber = childPhoneNumber
 
         self.tokenExpiresAfter = 240
         self.maxRetries = 3
@@ -82,7 +83,12 @@ class PyXploraApi:
         if token:
             if ('user' in token):
                 # self.watch = token['user']['children'][self.watch_no]['ward']
-                self.watchs = token['user']['children']
+                if not self._childPhoneNumber:
+                    self.watchs = token['user']['children']
+                else:
+                    for watch in token['user']['children']:
+                        if int(watch['ward']['phoneNumber']) in self._childPhoneNumber:
+                            self.watchs.append(watch)
                 self.user = token['user']
                 return
         raise LoginError("Login to Xplora® API failed. Check your input!")
@@ -91,7 +97,7 @@ class PyXploraApi:
         return VERSION
 
 ##### Contact Info #####
-    async def getContacts_async(self) -> list:
+    async def getContacts_async(self, watchID) -> list:
         retryCounter = 0
         dataOk = False
         contacts_raw = None
@@ -99,8 +105,10 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                contacts_raw = await self.__gqlHandler.getContacts_a(await self.getWatchUserID_async())
+                contacts_raw = await self.__gqlHandler.getContacts_a(watchID)
                 if 'contacts' in contacts_raw:
+                    if contacts_raw['contacts'] == None:
+                        continue
                     if 'contacts' in contacts_raw['contacts']:
                         for contact in contacts_raw['contacts']['contacts']:
                             try:
@@ -124,7 +132,7 @@ class PyXploraApi:
             if (not dataOk):
                 self.__logoff()
                 await sleep(self.retryDelay)
-        if (dataOk):
+        if dataOk:
             return self.contacts
         else:
             raise Exception('Xplora API call finally failed with response: ')
@@ -148,50 +156,47 @@ class PyXploraApi:
         return datetime.fromtimestamp(self.user['update']).strftime('%Y-%m-%d %H:%M:%S')
 
 ##### Watch Info #####
-    async def getWatchUserID_async(self) -> str:
-        if self._childPhoneNumber == 0:
-            return self.watchs[self._childPhoneNumber]['ward']['id']
+    async def getWatchUserID_async(self, child_no: list=[]) -> str:
+        watch_IDs = []
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
-                return watch['ward']['id']
-        raise Exception("Child phonenumber not found!")
-    async def getWatchUserName_async(self) -> str:
-        if self._childPhoneNumber == 0:
-            return self.watchs[self._childPhoneNumber]['ward']['name']
+            if child_no:
+                if watch['ward']['phoneNumber'] in child_no:
+                    watch_IDs.append(watch['ward']['id'])
+            else:
+                watch_IDs.append(watch['ward']['id'])
+        return watch_IDs
+    async def getWatchUserPhoneNumber_async(self) -> str:
+        watch_IDs = []
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
+            watch_IDs.append(watch['ward']['phoneNumber'])
+        return watch_IDs
+    async def getWatchUserName_async(self, watchID) -> str:
+        for watch in self.watchs:
+            if watch['ward']['id'] == watchID:
                 return watch['ward']['name']
         raise Exception("Child phonenumber not found!")
-    async def getWatchUserIcon_async(self) -> str:
-        if self._childPhoneNumber == 0:
-            return self.watchs[self._childPhoneNumber]['ward']['file']['id']
+    async def getWatchUserIcon_async(self, watchID) -> str:
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
+            if watch['ward']['id'] == watchID:
                 return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
         raise Exception("Child phonenumber not found!")
-    async def getWatchXcoin_async(self) -> int:
-        if self._childPhoneNumber == 0:
-            return self.watchs[self._childPhoneNumber]['ward']['xcoin']
+    async def getWatchXcoin_async(self, watchID) -> int:
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
+            if watch['ward']['id'] == watchID:
                 return watch['ward']['xcoin']
         raise Exception("Child phonenumber not found!")
-    async def getWatchCurrentStep_async(self) -> int:
-        if self._childPhoneNumber == 0:
-            return self.watchs[self._childPhoneNumber]['ward']['currentStep']
+    async def getWatchCurrentStep_async(self, watchID) -> int:
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
+            if watch['ward']['id'] == watchID:
                 return watch['ward']['currentStep']
         raise Exception("Child phonenumber not found!")
-    async def getWatchTotalStep_async(self) -> int:
-        if self._childPhoneNumber == 0:
-            return self.watchs[self._childPhoneNumber]['ward']['totalStep']
+    async def getWatchTotalStep_async(self, watchID) -> int:
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
+            if watch['ward']['id'] == watchID:
                 return watch['ward']['totalStep']
         raise Exception("Child phonenumber not found!")
 
-    async def getWatchAlarm_async(self) -> list:
+    async def getWatchAlarm_async(self, watchID) -> list:
         retryCounter = 0
         dataOk = False
         alarms_raw = None
@@ -199,7 +204,7 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                alarms_raw = await self.__gqlHandler.getAlarms_a(await self.getWatchUserID_async())
+                alarms_raw = await self.__gqlHandler.getAlarms_a(watchID)
                 if 'alarms' in alarms_raw:
                     if not alarms_raw['alarms']:
                         dataOk = True
@@ -224,7 +229,7 @@ class PyXploraApi:
             raise Exception('Xplora API call finally failed with response: ')
         return self.alarms
 
-    async def loadWatchLocation_async(self, withAsk=True) -> list:
+    async def loadWatchLocation_async(self, withAsk=True, watchID=0) -> list:
         retryCounter = 0
         dataOk = False
         location_raw = None
@@ -233,9 +238,9 @@ class PyXploraApi:
             await self.init_async()
             try:
                 if withAsk:
-                    await self.askWatchLocate_async()
+                    await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
-                location_raw = await self.__gqlHandler.getWatchLastLocation_a(await self.getWatchUserID_async())
+                location_raw = await self.__gqlHandler.getWatchLastLocation_a(watchID)
                 if 'watchLastLocate' in location_raw:
                     if location_raw['watchLastLocate'] != None:
                         self.watch_location.append({
@@ -265,15 +270,15 @@ class PyXploraApi:
         else:
             raise Exception('Xplora API call finally failed with response: ')
 
-    async def getWatchBattery_async(self) -> int:
-        await self.loadWatchLocation_async()
+    async def getWatchBattery_async(self, watchID) -> int:
+        await self.loadWatchLocation_async(watchID=watchID)
         return self.watch_battery
-    async def getWatchIsCharging_async(self) -> bool:
-        await self.loadWatchLocation_async()
+    async def getWatchIsCharging_async(self, watchID) -> bool:
+        await self.loadWatchLocation_async(watchID=watchID)
         if self.watch_charging:
             return True
         return False
-    async def getWatchOnlineStatus_async(self) -> WatchOnlineStatus:
+    async def getWatchOnlineStatus_async(self, watchID) -> WatchOnlineStatus:
         retryCounter = 0
         dataOk = False
         asktrack_raw = None
@@ -281,10 +286,10 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
-                ask_raw = await self.askWatchLocate_async()
-                track_raw = await self.trackWatchInterval_async()
+                ask_raw = await self.askWatchLocate_async(watchID)
+                track_raw = await self.trackWatchInterval_async(watchID)
                 if ask_raw or (track_raw != -1):
                     asktrack_raw = WatchOnlineStatus.ONLINE.value
                 else:
@@ -301,9 +306,9 @@ class PyXploraApi:
             raise Exception('Xplora API call finally failed with response: ')
     async def __setReadChatMsg_a(self, msgId, id):
         return (await self.__gqlHandler.setReadChatMsg(await self.getWatchUserID_async(), msgId, id))['setReadChatMsg']
-    async def getWatchUnReadChatMsgCount_async(self) -> int: # bug?
-        return (await self.__gqlHandler.unReadChatMsgCount_a(await self.getWatchUserID_async()))['unReadChatMsgCount']
-    async def getWatchChats_async(self) -> list: # bug?
+    async def getWatchUnReadChatMsgCount_async(self, watchID) -> int: # bug?
+        return (await self.__gqlHandler.unReadChatMsgCount_a(watchID))['unReadChatMsgCount']
+    async def getWatchChats_async(self, watchID) -> list: # bug?
         retryCounter = 0
         dataOk = False
         chats_raw = None
@@ -311,9 +316,9 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
-                chats_raw = await self.__gqlHandler.chats_a(await self.getWatchUserID_async())
+                chats_raw = await self.__gqlHandler.chats_a(watchID)
                 if 'chats' in chats_raw:
                     if 'list' in chats_raw['chats']:
                         for chat in chats_raw['chats']['list']:
@@ -342,22 +347,22 @@ class PyXploraApi:
             raise Exception('Xplora API call finally failed with response: ')
 
 ##### Watch Location Info #####
-    async def getWatchLastLocation_async(self, withAsk: bool = False) -> dict:
-        await self.loadWatchLocation_async(withAsk)
+    async def getWatchLastLocation_async(self, withAsk: bool = False, watchID=0) -> dict:
+        await self.loadWatchLocation_async(withAsk, watchID=watchID)
         return self.watch_last_location
-    async def getWatchLocate_async(self) -> dict:
-        await self.loadWatchLocation_async()
+    async def getWatchLocate_async(self, watchID) -> dict:
+        await self.loadWatchLocation_async(watchID=watchID)
         return self.watch_location
-    async def getWatchLocateType_async(self) -> str:
-        await self.getWatchLocate_async()
+    async def getWatchLocateType_async(self, watchID) -> str:
+        await self.getWatchLocate_async(watchID)
         return self.watch_last_location['locateType']
-    async def getWatchIsInSafeZone_async(self) -> bool:
-        await self.getWatchLocate_async()
+    async def getWatchIsInSafeZone_async(self, watchID) -> bool:
+        await self.getWatchLocate_async(watchID)
         return self.watch_last_location['isInSafeZone']
-    async def getWatchSafeZoneLabel_async(self) -> str:
-        await self.getWatchLocate_async()
+    async def getWatchSafeZoneLabel_async(self, watchID) -> str:
+        await self.getWatchLocate_async(watchID)
         return self.watch_last_location['safeZoneLabel']
-    async def getSafeZones_async(self) -> list:
+    async def getSafeZones_async(self, watchID) -> list:
         retryCounter = 0
         dataOk = False
         safeZones_raw = None
@@ -365,9 +370,9 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
-                safeZones_raw = await self.__gqlHandler.safeZones_a(await self.getWatchUserID_async())
+                safeZones_raw = await self.__gqlHandler.safeZones_a(watchID)
                 if 'safeZones' in safeZones_raw:
                     for safeZone in safeZones_raw['safeZones']:
                         self.safe_zones.append({
@@ -390,13 +395,13 @@ class PyXploraApi:
             return self.safe_zones
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    async def trackWatchInterval_async(self) -> int:
-        return (await self.__gqlHandler.trackWatch_a(await self.getWatchUserID_async()))['trackWatch']
-    async def askWatchLocate_async(self) -> bool:
-        return (await self.__gqlHandler.askWatchLocate_a(await self.getWatchUserID_async()))['askWatchLocate']
+    async def trackWatchInterval_async(self, watchID) -> int:
+        return (await self.__gqlHandler.trackWatch_a(watchID))['trackWatch']
+    async def askWatchLocate_async(self, watchID) -> bool:
+        return (await self.__gqlHandler.askWatchLocate_a(watchID))['askWatchLocate']
 
 ##### Feature #####
-    async def schoolSilentMode_async(self) -> list:
+    async def schoolSilentMode_async(self, watchID) -> list:
         retryCounter = 0
         dataOk = False
         sientTimes_raw = None
@@ -404,9 +409,9 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
-                sientTimes_raw = await self.__gqlHandler.silentTimes_a(await self.getWatchUserID_async())
+                sientTimes_raw = await self.__gqlHandler.silentTimes_a(watchID)
                 if 'silentTimes' in sientTimes_raw:
                     for sientTime in sientTimes_raw['silentTimes']:
                         self.school_silent_mode.append({
@@ -426,7 +431,7 @@ class PyXploraApi:
             return self.school_silent_mode
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    async def setEnableSilentTime_async(self, silentId) -> bool:
+    async def setEnableSilentTime_async(self, silentId, watchID) -> bool:
         retryCounter = 0
         dataOk = False
         _raw = None
@@ -434,7 +439,7 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
                 enable_raw = await self.__gqlHandler.setEnableSlientTime_a(silentId)
                 if 'setEnableSilentTime' in enable_raw:
@@ -449,7 +454,7 @@ class PyXploraApi:
             return bool(_raw)
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    async def setDisableSilentTime_async(self, silentId) -> bool:
+    async def setDisableSilentTime_async(self, silentId, watchID) -> bool:
         retryCounter = 0
         dataOk = False
         _raw = None
@@ -457,7 +462,7 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
                 disable_raw = await self.__gqlHandler.setEnableSlientTime_a(silentId, NormalStatus.DISABLE.value)
                 if 'setEnableSilentTime' in disable_raw:
@@ -472,18 +477,18 @@ class PyXploraApi:
             return bool(_raw)
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    async def setAllEnableSilentTime_async(self) -> list:
+    async def setAllEnableSilentTime_async(self, watchID) -> list:
         res = []
-        for silentTime in (await self.schoolSilentMode_async()):
-            res.append(await self.setEnableSilentTime_async(silentTime['id']))
+        for silentTime in (await self.schoolSilentMode_async(watchID)):
+            res.append(await self.setEnableSilentTime_async(silentTime['id'], watchID))
         return res
-    async def setAllDisableSilentTime_async(self) -> list:
+    async def setAllDisableSilentTime_async(self, watchID) -> list:
         res = []
-        for silentTime in (await self.schoolSilentMode_async()):
-            res.append(await self.setDisableSilentTime_async(silentTime['id']))
+        for silentTime in (await self.schoolSilentMode_async(watchID)):
+            res.append(await self.setDisableSilentTime_async(silentTime['id'], watchID))
         return res
 
-    async def setEnableAlarmTime_async(self, alarmId) -> bool:
+    async def setEnableAlarmTime_async(self, alarmId, watchID) -> bool:
         retryCounter = 0
         dataOk = False
         _raw = None
@@ -491,7 +496,7 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
                 enable_raw = await self.__gqlHandler.setEnableAlarmTime_a(alarmId)
                 if 'modifyAlarm' in enable_raw:
@@ -506,7 +511,7 @@ class PyXploraApi:
             return bool(_raw)
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    async def setDisableAlarmTime_async(self, alarmId) -> bool:
+    async def setDisableAlarmTime_async(self, alarmId, watchID) -> bool:
         retryCounter = 0
         dataOk = False
         _raw = None
@@ -514,7 +519,7 @@ class PyXploraApi:
             retryCounter +=1
             await self.init_async()
             try:
-                await self.askWatchLocate_async()
+                await self.askWatchLocate_async(watchID)
                 await sleep(self.retryDelay)
                 disable_raw = await self.__gqlHandler.setEnableAlarmTime_a(alarmId, NormalStatus.DISABLE.value)
                 if 'modifyAlarm' in disable_raw:
@@ -540,20 +545,20 @@ class PyXploraApi:
             res.append(await self.setDisableAlarmTime_async(alarmTime['id']))
         return res
 
-    async def sendText(self, text) -> bool: # sender is login User
-        return await self.__gqlHandler.sendText_a(await self.getWatchUserID_async(), text)
+    async def sendText(self, text, watchID) -> bool: # sender is login User
+        return await self.__gqlHandler.sendText_a(watchID, text)
     async def isAdmin(self) -> bool:
         for contact in await self.getContacts_async():
             if (contact['id'] == await self.getUserID_async()):
                 return True
         return False
-    async def shutdown(self) -> bool:
+    async def shutdown(self, watchID) -> bool:
         if self.isAdmin():
-            return await self.__gqlHandler.shutdown_a(await self.getWatchUserID_async())
+            return await self.__gqlHandler.shutdown_a(watchID)
         raise Exception("no Admin")
-    async def reboot(self) -> bool:
+    async def reboot(self, watchID) -> bool:
         if self.isAdmin():
-            return await self.__gqlHandler.reboot_a(await self.getWatchUserID_async())
+            return await self.__gqlHandler.reboot_a(watchID)
         raise Exception("no Admin")
 
 ##### - #####
