@@ -10,7 +10,7 @@ class PyXploraApi:
         self._password = password
         self._userLang = userLang
         self._timeZone = timeZone
-        self.watch_no = watchNo
+        self._childPhoneNumber = watchNo
 
         self.tokenExpiresAfter = 240
         self.maxRetries = 3
@@ -146,46 +146,46 @@ class PyXploraApi:
         return datetime.fromtimestamp(self.user['update']).strftime('%Y-%m-%d %H:%M:%S')
 
 ##### Watch Info #####
-    def getWatchUserID(self, childPhoneNumber: int=0) -> str:
-        if childPhoneNumber == 0:
-            return self.watchs[childPhoneNumber]['ward']['id']
+    def getWatchUserID(self) -> str:
+        if self._childPhoneNumber == 0:
+            return self.watchs[self._childPhoneNumber]['ward']['id']
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
                 return watch['ward']['id']
         raise Exception("Child phonenumber not found!")
-    def getWatchUserName(self, childPhoneNumber: int=0) -> str:
-        if childPhoneNumber == 0:
-            return self.watchs[childPhoneNumber]['ward']['name']
+    def getWatchUserName(self) -> str:
+        if self._childPhoneNumber == 0:
+            return self.watchs[self._childPhoneNumber]['ward']['name']
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
                 return watch['ward']['name']
         raise Exception("Child phonenumber not found!")
-    def getWatchUserIcon(self, childPhoneNumber: int=0) -> str:
-        if childPhoneNumber == 0:
-            return self.watchs[childPhoneNumber]['ward']['ward']['file']['id']
+    def getWatchUserIcon(self) -> str:
+        if self._childPhoneNumber == 0:
+            return self.watchs[self._childPhoneNumber]['ward']['ward']['file']['id']
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
                 return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
         raise Exception("Child phonenumber not found!")
-    def getWatchXcoin(self, childPhoneNumber: int=0) -> int:
-        if childPhoneNumber == 0:
-            return self.watchs[childPhoneNumber]['ward']['xcoin']
+    def getWatchXcoin(self) -> int:
+        if self._childPhoneNumber == 0:
+            return self.watchs[self._childPhoneNumber]['ward']['xcoin']
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
                 return watch['ward']['xcoin']
         raise Exception("Child phonenumber not found!")
-    def getWatchCurrentStep(self, childPhoneNumber: int=0) -> int:
-        if childPhoneNumber == 0:
-            return self.watchs[childPhoneNumber]['ward']['currentStep']
+    def getWatchCurrentStep(self) -> int:
+        if self._childPhoneNumber == 0:
+            return self.watchs[self._childPhoneNumber]['ward']['currentStep']
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
                 return watch['ward']['currentStep']
         raise Exception("Child phonenumber not found!")
-    def getWatchTotalStep(self, childPhoneNumber: int=0) -> int:
-        if childPhoneNumber == 0:
-            return self.watchs[childPhoneNumber]['ward']['totalStep']
+    def getWatchTotalStep(self) -> int:
+        if self._childPhoneNumber == 0:
+            return self.watchs[self._childPhoneNumber]['ward']['totalStep']
         for watch in self.watchs:
-            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+            if watch['ward']['phoneNumber'] == str(self._childPhoneNumber):
                 return watch['ward']['totalStep']
         raise Exception("Child phonenumber not found!")
 
