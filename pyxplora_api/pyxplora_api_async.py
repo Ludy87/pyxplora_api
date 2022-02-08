@@ -3,7 +3,7 @@ from .const import VERSION
 from .gql_handler_async import *
 from datetime import datetime
 from asyncio import sleep
-from .exeption_classes import LoginError
+from .exception_classes import LoginError
 
 class PyXploraApi:
     def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, watchNo: int=0) -> None:
@@ -32,7 +32,10 @@ class PyXploraApi:
 
         self.__gqlHandler = None
         self.__issueToken = None
-        self.watch = None
+        # self.watch = None
+
+        self.watchs = []
+
         self.user = None
 
     async def __login(self, forceLogin=False) -> dict:
@@ -78,7 +81,8 @@ class PyXploraApi:
         token = await self.__login(forceLogin)
         if token:
             if ('user' in token):
-                self.watch = token['user']['children'][self.watch_no]['ward']
+                # self.watch = token['user']['children'][self.watch_no]['ward']
+                self.watchs = token['user']['children']
                 self.user = token['user']
                 return
         raise LoginError("Login to Xplora® API failed. Check your input!")
@@ -144,18 +148,48 @@ class PyXploraApi:
         return datetime.fromtimestamp(self.user['update']).strftime('%Y-%m-%d %H:%M:%S')
 
 ##### Watch Info #####
-    async def getWatchUserID_async(self) -> str:
-        return self.watch['id']
-    async def getWatchUserName_async(self) -> str:
-        return self.watch['name']
-    async def getWatchUserIcon_async(self) -> str:
-        return f"https://api.myxplora.com/file?id={self.watch['file']['id']}"
-    async def getWatchXcoin_async(self) -> int:
-        return self.watch['xcoin']
-    async def getWatchCurrentStep_async(self) -> int:
-        return self.watch['currentStep']
-    async def getWatchTotalStep_async(self) -> int:
-        return self.watch['totalStep']
+    async def getWatchUserID_async(self, childPhoneNumber: int=0) -> str:
+        if childPhoneNumber == 0:
+            return self.watchs[childPhoneNumber]['ward']['id']
+        for watch in self.watchs:
+            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+                return watch['ward']['id']
+        raise Exception("Child phonenumber not found!")
+    async def getWatchUserName_async(self, childPhoneNumber: int=0) -> str:
+        if childPhoneNumber == 0:
+            return self.watchs[childPhoneNumber]['ward']['name']
+        for watch in self.watchs:
+            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+                return watch['ward']['name']
+        raise Exception("Child phonenumber not found!")
+    async def getWatchUserIcon_async(self, childPhoneNumber: int=0) -> str:
+        if childPhoneNumber == 0:
+            return self.watchs[childPhoneNumber]['ward']['ward']['file']['id']
+        for watch in self.watchs:
+            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+                return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
+        raise Exception("Child phonenumber not found!")
+    async def getWatchXcoin_async(self, childPhoneNumber: int=0) -> int:
+        if childPhoneNumber == 0:
+            return self.watchs[childPhoneNumber]['ward']['xcoin']
+        for watch in self.watchs:
+            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+                return watch['ward']['xcoin']
+        raise Exception("Child phonenumber not found!")
+    async def getWatchCurrentStep_async(self, childPhoneNumber: int=0) -> int:
+        if childPhoneNumber == 0:
+            return self.watchs[childPhoneNumber]['ward']['currentStep']
+        for watch in self.watchs:
+            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+                return watch['ward']['currentStep']
+        raise Exception("Child phonenumber not found!")
+    async def getWatchTotalStep_async(self, childPhoneNumber: int=0) -> int:
+        if childPhoneNumber == 0:
+            return self.watchs[childPhoneNumber]['ward']['totalStep']
+        for watch in self.watchs:
+            if watch['ward']['phoneNumber'] == str(childPhoneNumber):
+                return watch['ward']['totalStep']
+        raise Exception("Child phonenumber not found!")
 
     async def getWatchAlarm_async(self) -> list:
         retryCounter = 0

@@ -6,7 +6,7 @@ from python_graphql_client import GraphqlClient
 
 from enum import Enum
 
-from .exeption_classes import LoginError
+from .exception_classes import LoginError
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
