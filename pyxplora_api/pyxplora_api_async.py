@@ -534,15 +534,15 @@ class PyXploraApi:
             return bool(_raw)
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    async def setAllEnableAlarmTime_async(self) -> list:
+    async def setAllEnableAlarmTime_async(self, watchID) -> list:
         res = []
-        for alarmTime in (await self.getWatchAlarm_async()):
-            res.append(await self.setEnableAlarmTime_async(alarmTime['id']))
+        for alarmTime in (await self.getWatchAlarm_async(watchID)):
+            res.append(await self.setEnableAlarmTime_async(alarmTime['id'], watchID))
         return res
-    async def setAllDisableAlarmTime_async(self) -> list:
+    async def setAllDisableAlarmTime_async(self, watchID) -> list:
         res = []
-        for alarmTime in (await self.getWatchAlarm_async()):
-            res.append(await self.setDisableAlarmTime_async(alarmTime['id']))
+        for alarmTime in (await self.getWatchAlarm_async(watchID)):
+            res.append(await self.setDisableAlarmTime_async(alarmTime['id'], watchID))
         return res
 
     async def sendText(self, text, watchID) -> bool: # sender is login User
