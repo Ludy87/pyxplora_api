@@ -11,16 +11,19 @@ from .exception_classes import LoginError
 from . import gql_mutations as gm
 from . import gql_queries as gq
 
+
 class NormalStatus(Enum):
     ENABLE = "ENABLE"
     DISABLE = "DISABLE"
     UNKNOWN__ = "UNKNOWN__"
+
 
 class WatchOnlineStatus(Enum):
     UNKNOWN = "UNKNOWN"
     ONLINE = "ONLINE"
     OFFLINE = "OFFLINE"
     UNKNOWN__ = "UNKNOWN__"
+
 
 class GQLHandler:
     def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str):
@@ -49,14 +52,14 @@ class GQLHandler:
         self.issueToken = None
 
     def getRequestHeaders(self, acceptedContentType: str):
-        if acceptedContentType == "" or acceptedContentType == None:
+        if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")
-        if self.API_KEY == None:
+        if self.API_KEY is None:
             raise Exception("Xplorao2o API_KEY MUST NOT be empty!")
-        if self.API_SECRET == None:
+        if self.API_SECRET is None:
             raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
         requestHeaders = {}
-        if self.accessToken == None:
+        if self.accessToken is None:
             # OPEN authorization
             authorizationHeader = f"Open {self.API_KEY}:{self.API_SECRET}"
         else:
@@ -72,7 +75,7 @@ class GQLHandler:
         return requestHeaders
 
     async def runGqlQuery_a(self, query: str, variables):
-        if query == None:
+        if query is None:
             raise Exception("GraphQL guery string MUST NOT be empty!")
         # Add Xplora® API headers
         requestHeaders = self.getRequestHeaders("application/json; charset=UTF-8")
@@ -83,26 +86,26 @@ class GQLHandler:
         return data
 
     async def runAuthorizedGqlQuery_a(self, query: str, variables):
-        if self.accessToken == None:
+        if self.accessToken is None:
             raise Exception("You have to login to the Xplora® API first.")
         # Run GraphQL query and return
         return (await self.runGqlQuery_a(query, variables))
 
     async def login_a(self):
         data = (await self.runGqlQuery_a(gm.MUTATION["tokenM"], self.variables))['data']
-        if data['issueToken'] == None:
+        if data['issueToken'] is None:
             # Login failed.
             raise LoginError("Login to Xplora® API failed. Check your input!")
         self.issueToken = data['issueToken']
 
         #  Login succeeded
-        self.sessionId = self.issueToken['id'];
-        self.userId = self.issueToken['user']['id'];
-        self.accessToken = self.issueToken['token'];
-        self.issueDate = self.issueToken['issueDate'];
-        self.expireDate = self.issueToken['expireDate'];
-    
-        if self.issueToken['app'] != None:
+        self.sessionId = self.issueToken['id']
+        self.userId = self.issueToken['user']['id']
+        self.accessToken = self.issueToken['token']
+        self.issueDate = self.issueToken['issueDate']
+        self.expireDate = self.issueToken['expireDate']
+
+        if self.issueToken['app'] is not None:
             #  Update API_KEY and API_SECRET?
             if self.issueToken['app']['apiKey']:
                 self.API_KEY = self.issueToken['app']['apiKey']
@@ -124,10 +127,12 @@ class GQLHandler:
 
 ########## SECTION QUERY start ##########
 
-    async def getMyInfo_a(self): # Profil from login Account
+    async def getMyInfo_a(self):
+        # Profil from login Account
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['readMyInfoQ'], {}))['data']
 
-    async def getContacts_a(self, ownId): # Contacts from ownUser
+    async def getContacts_a(self, ownId):
+        # Contacts from ownUser
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['contactsQ'], { "uid": ownId }))['data']
 
     async def getWatchCount_a(self):
@@ -139,34 +144,39 @@ class GQLHandler:
     async def getWatchLastLocation_a(self, ownId):
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['watchLastLocateQ'], { "uid": ownId }))['data']
 
-    async def trackWatch_a(self, ownId): # tracking time - seconds
+    async def trackWatch_a(self, ownId):
+        # tracking time - seconds
         res = (await self.runAuthorizedGqlQuery_a(gq.QUERY['trackWatchQ'], { "uid": ownId }))['data']
-        if res['trackWatch'] != None:
+        if res['trackWatch'] is not None:
             return res
         return { 'trackWatch': -1 }
 
     async def askWatchLocate_a(self, ownId):
         res = (await self.runAuthorizedGqlQuery_a(gq.QUERY['askWatchLocateQ'], { "uid": ownId }))['data']
-        if res['askWatchLocate'] != None:
+        if res['askWatchLocate'] is not None:
             return res
         return { 'askWatchLocate': False }
 
     async def getAlarms_a(self, ownId):
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['alarmsQ'], { "uid": ownId }))['data']
 
-    async def getWifi_a(self, id): # without function?
+    async def getWifi_a(self, id):
+        # without function?
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['getWifiQ'], { "uid": id }))['data']
 
-    async def avatars_a(self, id): # without function?
+    async def avatars_a(self, id):
+        # without function?
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['avatarsQ'], { 'id': id }))['data']
 
     async def unReadChatMsgCount_a(self, ownId):
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['unReadChatMsgCountQ'], { 'uid': ownId }))['data']
 
-    async def chats_a(self, ownId): # ownUser id
+    async def chats_a(self, ownId):
+        # ownUser id
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['chatsQ'], { 'uid': ownId }))['data']
 
-    async def notice_a(self): # without function?
+    async def notice_a(self):
+        # without function?
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['noticeQ'], {}))['data']
 
     async def staticCard_a(self):
@@ -181,7 +191,8 @@ class GQLHandler:
     async def getReviewStatus_a(self, id):
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['GetReviewStatusQ'], { 'uid': id }))['data']
 
-    async def countries_a(self): # Country Support
+    async def countries_a(self):
+        # Country Support
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['CountriesQ'], {}))['data']
 
     async def safeZones_a(self, ownId):
@@ -194,30 +205,34 @@ class GQLHandler:
         return (await self.runAuthorizedGqlQuery_a(gq.QUERY['silentTimesQ'], { 'uid': ownId }))['data']
 
 ########## SECTION QUERY end ##########
-    
+
 ########## SECTION MUTATION start ##########
 
-    async def sendText_a(self, ownId, text): # ownUser id
-        if (await self.runAuthorizedGqlQuery_a(gm.MUTATION['sendTextM'], { "uid": ownId, "text": text }))['data']['sendChatText'] != None:
+    async def sendText_a(self, ownId, text):
+        # ownUser id
+        if (await self.runAuthorizedGqlQuery_a(gm.MUTATION['sendTextM'], { "uid": ownId, "text": text }))['data']['sendChatText'] is not None:
             return True
         return False
 
     async def addStep_a(self, stepCount):
         return (await self.runAuthorizedGqlQuery_a(gm.MUTATION['addStepM'], { "stepCount": stepCount }))['data']
 
-    async def shutdown_a(self, ownId): # ownUser id
+    async def shutdown_a(self, ownId):
+        # ownUser id
         return await self.isAdmin_a(ownId, gm.MUTATION['shutdownM'], { "uid": ownId }, 'reboot')
 
-    async def reboot_a(self, ownId): # ownUser id
+    async def reboot_a(self, ownId):
+        # ownUser id
         return await self.isAdmin_a(ownId, gm.MUTATION['rebootM'], { "uid": ownId }, 'reboot')
 
-    async def modifyAlert_a(self, id, YesOrNo): # function?
+    async def modifyAlert_a(self, id, YesOrNo):
+        # function?
         return await self.runAuthorizedGqlQuery_a(gm.MUTATION['modifyAlertM'], { "uid": id, "remind": YesOrNo })
 
-    async def setEnableSlientTime_a(self, silentId, status: NormalStatus=NormalStatus.ENABLE.value):
+    async def setEnableSlientTime_a(self, silentId, status: NormalStatus = NormalStatus.ENABLE.value):
         return (await self.runAuthorizedGqlQuery_a(gm.MUTATION['setEnableSlientTimeM'], { 'silentId': silentId, 'status': status }))['data']
 
-    async def setEnableAlarmTime_a(self, alarmId, status: NormalStatus=NormalStatus.ENABLE.value):
+    async def setEnableAlarmTime_a(self, alarmId, status: NormalStatus = NormalStatus.ENABLE.value):
         return (await self.runAuthorizedGqlQuery_a(gm.MUTATION['ModifyAlarmM'], { 'alarmId': alarmId, 'status': status }))['data']
 
     async def setReadChatMsg(self, ownId, msgId, id):

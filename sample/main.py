@@ -1,5 +1,6 @@
 from pyxplora_api import pyxplora_api as PXA
 
+
 def main():
     countryCode = "+49"
     phoneNummer = "123456789"
@@ -9,6 +10,7 @@ def main():
 
     xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
     print(xplora.getUserName())
+
 
 if __name__ == '__main__':
     main()

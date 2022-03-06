@@ -11,16 +11,19 @@ from .exception_classes import LoginError
 from . import gql_mutations as gm
 from . import gql_queries as gq
 
+
 class NormalStatus(Enum):
     ENABLE = "ENABLE"
     DISABLE = "DISABLE"
     UNKNOWN__ = "UNKNOWN__"
+
 
 class WatchOnlineStatus(Enum):
     UNKNOWN = "UNKNOWN"
     ONLINE = "ONLINE"
     OFFLINE = "OFFLINE"
     UNKNOWN__ = "UNKNOWN__"
+
 
 class GQLHandler:
     def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str):
@@ -49,14 +52,14 @@ class GQLHandler:
         self.issueToken = None
 
     def getRequestHeaders(self, acceptedContentType: str):
-        if acceptedContentType == "" or acceptedContentType == None:
+        if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")
-        if self.API_KEY == None:
+        if self.API_KEY is None:
             raise Exception("Xplorao2o API_KEY MUST NOT be empty!")
-        if self.API_SECRET == None:
+        if self.API_SECRET is None:
             raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
         requestHeaders = {}
-        if self.accessToken == None:
+        if self.accessToken is None:
             # OPEN authorization
             authorizationHeader = f"Open {self.API_KEY}:{self.API_SECRET}"
         else:
@@ -72,7 +75,7 @@ class GQLHandler:
         return requestHeaders
 
     def runGqlQuery(self, query: str, variables):
-        if query == None:
+        if query is None:
             raise Exception("GraphQL guery string MUST NOT be empty!")
         # Add Xplora® API headers
         requestHeaders = self.getRequestHeaders("application/json; charset=UTF-8")
@@ -83,27 +86,27 @@ class GQLHandler:
         return data
 
     def runAuthorizedGqlQuery(self, query: str, variables):
-        if self.accessToken == None:
+        if self.accessToken is None:
             raise Exception("You have to login to the Xplora® API first.")
         # Run GraphQL query and return
         return self.runGqlQuery(query, variables)
 
     def login(self):
         data = self.runGqlQuery(gm.MUTATION["tokenM"], self.variables)['data']
-        if data['issueToken'] == None:
+        if data['issueToken'] is None:
             # Login failed.
             raise LoginError("Login to Xplora® API failed. Check your input!")
         self.issueToken = data['issueToken']
 
-        #  Login succeeded
-        self.sessionId = self.issueToken['id'];
-        self.userId = self.issueToken['user']['id'];
-        self.accessToken = self.issueToken['token'];
-        self.issueDate = self.issueToken['issueDate'];
-        self.expireDate = self.issueToken['expireDate'];
-    
-        if self.issueToken['app'] != None:
-            #  Update API_KEY and API_SECRET?
+        # Login succeeded
+        self.sessionId = self.issueToken['id']
+        self.userId = self.issueToken['user']['id']
+        self.accessToken = self.issueToken['token']
+        self.issueDate = self.issueToken['issueDate']
+        self.expireDate = self.issueToken['expireDate']
+
+        if self.issueToken['app'] is not None:
+            # Update API_KEY and API_SECRET?
             if self.issueToken['app']['apiKey']:
                 self.API_KEY = self.issueToken['app']['apiKey']
             if self.issueToken['app']['apiSecret']:
@@ -124,11 +127,13 @@ class GQLHandler:
 
 ########## SECTION QUERY start ##########
 
-    def getMyInfo(self): # Profil from login Account
+    def getMyInfo(self):
+        # Profil from login Account
         self.isLogged()
         return self.runAuthorizedGqlQuery(gq.QUERY['readMyInfoQ'], {})['data']
 
-    def getContacts(self, ownId): # Contacts from ownUser
+    def getContacts(self, ownId):
+        # Contacts from ownUser
         return self.runAuthorizedGqlQuery(gq.QUERY['contactsQ'], { "uid": ownId })['data']
 
     def getWatchCount(self):
@@ -140,34 +145,39 @@ class GQLHandler:
     def getWatchLastLocation(self, ownId):
         return self.runAuthorizedGqlQuery(gq.QUERY['watchLastLocateQ'], { "uid": ownId })['data']
 
-    def trackWatch(self, ownId): # tracking time - seconds
+    def trackWatch(self, ownId):
+        # tracking time - seconds
         res = self.runAuthorizedGqlQuery(gq.QUERY['trackWatchQ'], { "uid": ownId })['data']
-        if res['trackWatch'] != None:
+        if res['trackWatch'] is not None:
             return res
         return { 'trackWatch': -1 }
 
     def askWatchLocate(self, ownId):
         res = self.runAuthorizedGqlQuery(gq.QUERY['askWatchLocateQ'], { "uid": ownId })['data']
-        if res['askWatchLocate'] != None:
+        if res['askWatchLocate'] is not None:
             return res
         return { 'askWatchLocate': False }
 
     def getAlarms(self, ownId):
         return self.runAuthorizedGqlQuery(gq.QUERY['alarmsQ'], { "uid": ownId })['data']
 
-    def getWifi(self, id): # without function?
+    def getWifi(self, id):
+        # without function?
         return self.runAuthorizedGqlQuery(gq.QUERY['getWifiQ'], { "uid": id })['data']
 
-    def avatars(self, id): # without function?
+    def avatars(self, id):
+        # without function?
         return self.runAuthorizedGqlQuery(gq.QUERY['avatarsQ'], { 'id': id })['data']
 
     def unReadChatMsgCount(self, ownId):
         return self.runAuthorizedGqlQuery(gq.QUERY['unReadChatMsgCountQ'], { 'uid': ownId })['data']
 
-    def chats(self, ownId): # ownUser id
+    def chats(self, ownId):
+        # ownUser id
         return self.runAuthorizedGqlQuery(gq.QUERY['chatsQ'], { 'uid': ownId })['data']
 
-    def notice(self): # without function?
+    def notice(self):
+        # without function?
         return self.runAuthorizedGqlQuery(gq.QUERY['noticeQ'], {})['data']
 
     def staticCard(self):
@@ -182,7 +192,8 @@ class GQLHandler:
     def getReviewStatus(self, id):
         return self.runAuthorizedGqlQuery(gq.QUERY['GetReviewStatusQ'], { 'uid': id })['data']
 
-    def countries(self): # Country Support
+    def countries(self):
+        # Country Support
         return self.runAuthorizedGqlQuery(gq.QUERY['CountriesQ'], {})['data']
 
     def safeZones(self, ownId):
@@ -195,30 +206,34 @@ class GQLHandler:
         return self.runAuthorizedGqlQuery(gq.QUERY['silentTimesQ'], { 'uid': ownId })['data']
 
 ########## SECTION QUERY end ##########
-    
+
 ########## SECTION MUTATION start ##########
 
-    def sendText(self, ownId, text): # ownUser id
-        if self.runAuthorizedGqlQuery(gm.MUTATION['sendTextM'], { "uid": ownId, "text": text })['data']['sendChatText'] != None:
+    def sendText(self, ownId, text):
+        # ownUser id
+        if self.runAuthorizedGqlQuery(gm.MUTATION['sendTextM'], { "uid": ownId, "text": text })['data']['sendChatText'] is not None:
             return True
         return False
 
     def addStep(self, stepCount):
         return self.runAuthorizedGqlQuery(gm.MUTATION['addStepM'], { "stepCount": stepCount })['data']
 
-    def shutdown(self, ownId): # ownUser id
+    def shutdown(self, ownId):
+        # ownUser id
         return self.isAdmin(ownId, gm.MUTATION['shutdownM'], { "uid": ownId }, 'reboot')
 
-    def reboot(self, ownId): # ownUser id
+    def reboot(self, ownId):
+        # ownUser id
         return self.isAdmin(ownId, gm.MUTATION['rebootM'], { "uid": ownId }, 'reboot')
 
-    def modifyAlert(self, id, YesOrNo): # function?
+    def modifyAlert(self, id, YesOrNo):
+        # function?
         return self.runAuthorizedGqlQuery(gm.MUTATION['modifyAlertM'], { "uid": id, "remind": YesOrNo })
 
-    def setEnableSlientTime(self, silentId, status: NormalStatus=NormalStatus.ENABLE.value):
+    def setEnableSlientTime(self, silentId, status: NormalStatus = NormalStatus.ENABLE.value):
         return self.runAuthorizedGqlQuery(gm.MUTATION['setEnableSlientTimeM'], { 'silentId': silentId, 'status': status })['data']
 
-    def setEnableAlarmTime(self, alarmId, status: NormalStatus=NormalStatus.ENABLE.value):
+    def setEnableAlarmTime(self, alarmId, status: NormalStatus = NormalStatus.ENABLE.value):
         return self.runAuthorizedGqlQuery(gm.MUTATION['ModifyAlarmM'], { 'alarmId': alarmId, 'status': status })['data']
 
     def setReadChatMsg(self, ownId, msgId, id):

@@ -1,6 +1,7 @@
 class Error(Exception):
     pass
 
+
 class LoginError(Error):
     def __init__(self, message, res=1):
         self.message = message
