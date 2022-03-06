@@ -557,17 +557,17 @@ class PyXploraApi:
     async def sendText(self, text, watchID) -> bool:
         # sender is login User
         return await self.__gqlHandler.sendText_a(watchID, text)
-    async def isAdmin(self) -> bool:
-        for contact in await self.getContacts_async():
+    async def isAdmin(self, watchID) -> bool:
+        for contact in await self.getContacts_async(watchID):
             if (contact['id'] == await self.getUserID_async()):
                 return True
         return False
     async def shutdown(self, watchID) -> bool:
-        if self.isAdmin():
+        if self.isAdmin(watchID):
             return await self.__gqlHandler.shutdown_a(watchID)
         raise Exception("no Admin")
     async def reboot(self, watchID) -> bool:
-        if self.isAdmin():
+        if self.isAdmin(watchID):
             return await self.__gqlHandler.reboot_a(watchID)
         raise Exception("no Admin")
 
