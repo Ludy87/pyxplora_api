@@ -15,7 +15,7 @@ Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com
 # [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
 
 # Usage
-```
+```python
 from pyxplora_api import pyxplora_api as PXA
 
 xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
@@ -25,9 +25,8 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
 # Feature
 ---
 
-```
+```python
 # Watch Info
-getContacts()
 getUserID()
 getUserName()
 getUserIcon()
@@ -38,38 +37,39 @@ getUserCreate()
 getUserUpdate()
 
 # Watch Info
-getWatchUserID()
-getWatchUserName()
-getWatchXcoin()
-getWatchCurrentStep()
-getWatchTotalStep()
-getWatchAlarm()
-getWatchBattery()
-getWatchIsCharging()
-getWatchOnlineStatus()
-getWatchUnReadChatMsgCount()
-getWatchChats()
+id:list = getWatchUserID()
+getContacts(watchID=id)
+getWatchUserName(watchID=id)
+getWatchXcoin(watchID=id)
+getWatchCurrentStep(watchID=id)
+getWatchTotalStep(watchID=id)
+getWatchAlarm(watchID=id)
+getWatchBattery(watchID=id)
+getWatchIsCharging(watchID=id)
+getWatchOnlineStatus(watchID=id)
+getWatchUnReadChatMsgCount(watchID=id)
+getWatchChats(watchID=id)
 
 # Watch Location Info
-getWatchLastLocation()
-getWatchLocateType()
-getWatchLocate()
-getWatchIsInSafeZone()
-getWatchSafeZoneLabel()
-getSafeZones()
-trackWatchInterval()
-askWatchLocate()
+getWatchLastLocation(watchID=id)
+getWatchLocateType(watchID=id)
+getWatchLocate(watchID=id)
+getWatchIsInSafeZone(watchID=id)
+getWatchSafeZoneLabel(watchID=id)
+getSafeZones(watchID=id)
+trackWatchInterval(watchID=id)
+askWatchLocate(watchID=id)
 
 # Feature
-schoolSilentMode()
-setEnableSilentTime()
-setDisableSilentTime()
-setAllEnableSilentTime()
-setAllDisableSilentTime()
+schoolSilentMode(watchID=id)
+setEnableSilentTime(silentId='', watchID=id)
+setDisableSilentTime(silentId='', watchID=id)
+setAllEnableSilentTime(watchID=id)
+setAllDisableSilentTime(watchID=id)
 
-sentText()
-shutdown()
-reboot()
+sentText(text='', watchID=id)
+shutdown(watchID=id)
+reboot(watchID=id)
 ```
 
 ---
@@ -77,6 +77,7 @@ reboot()
 
 | Country Code | Country |
 |-------------:|---------|
+| 45 | Denmark |
 | 44 | United Kingdom |
 | 34 | Spain |
 | 49 | Germany |
