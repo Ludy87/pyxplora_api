@@ -1,9 +1,13 @@
-from time import sleep
 from .const import VERSION
-from .gql_handler_async import *
-from datetime import datetime
-from asyncio import sleep
 from .exception_classes import LoginError
+from .gql_handler_async import *
+
+from asyncio import sleep
+from datetime import datetime
+
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 class PyXploraApi:
     def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, childPhoneNumber=[]) -> None:
@@ -127,7 +131,7 @@ class PyXploraApi:
                                 'xcoin': xcoin,
                             })
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = self.contacts
             if (not dataOk):
                 self.__logoff()
@@ -218,7 +222,7 @@ class PyXploraApi:
                             'status': alarm['status'],
                         })
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = self.alarms
             if (not dataOk):
                 self.__logoff()
@@ -260,7 +264,7 @@ class PyXploraApi:
                         self.watch_charging = location_raw['watchLastLocate']['isCharging']
                         self.watch_last_location = location_raw['watchLastLocate']
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = self.watch_location
             if (not dataOk):
                 self.__logoff()
@@ -295,7 +299,7 @@ class PyXploraApi:
                 else:
                     asktrack_raw = WatchOnlineStatus.OFFLINE.value
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = asktrack_raw
             if (not dataOk):
                 self.__logoff()
@@ -336,7 +340,7 @@ class PyXploraApi:
                                 'data_sender_name': chat['data']['sender_name'],
                             })
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = self.chats
             if (not dataOk):
                 self.__logoff()
@@ -386,7 +390,7 @@ class PyXploraApi:
                             'address': safeZone['address'],
                         })
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = self.safe_zones
             if (not dataOk):
                 self.__logoff()
@@ -422,7 +426,7 @@ class PyXploraApi:
                             'status': sientTime['status'],
                         })
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = self.school_silent_mode
             if (not dataOk):
                 self.__logoff()
@@ -445,7 +449,7 @@ class PyXploraApi:
                 if 'setEnableSilentTime' in enable_raw:
                     _raw = enable_raw['setEnableSilentTime']
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
@@ -468,7 +472,7 @@ class PyXploraApi:
                 if 'setEnableSilentTime' in disable_raw:
                     _raw = disable_raw['setEnableSilentTime']
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
@@ -502,7 +506,7 @@ class PyXploraApi:
                 if 'modifyAlarm' in enable_raw:
                     _raw = enable_raw['modifyAlarm']
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
@@ -525,7 +529,7 @@ class PyXploraApi:
                 if 'modifyAlarm' in disable_raw:
                     _raw = disable_raw['modifyAlarm']
             except Exception as error:
-                print(error)
+                _LOGGER.debug(error)
             dataOk = _raw
             if (not dataOk):
                 self.__logoff()
