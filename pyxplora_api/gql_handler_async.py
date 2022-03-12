@@ -2,9 +2,8 @@ import hashlib
 import math
 import time
 from datetime import datetime, timezone
-from python_graphql_client import GraphqlClient
-
 from enum import Enum
+from python_graphql_client import GraphqlClient
 
 from .exception_classes import LoginError
 
@@ -98,7 +97,7 @@ class GQLHandler:
             raise LoginError("Login to Xplora® API failed. Check your input!")
         self.issueToken = data['issueToken']
 
-        #  Login succeeded
+        # Login succeeded
         self.sessionId = self.issueToken['id']
         self.userId = self.issueToken['user']['id']
         self.accessToken = self.issueToken['token']
@@ -106,7 +105,7 @@ class GQLHandler:
         self.expireDate = self.issueToken['expireDate']
 
         if self.issueToken['app'] is not None:
-            #  Update API_KEY and API_SECRET?
+            # Update API_KEY and API_SECRET?
             if self.issueToken['app']['apiKey']:
                 self.API_KEY = self.issueToken['app']['apiKey']
             if self.issueToken['app']['apiSecret']:

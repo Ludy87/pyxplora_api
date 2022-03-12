@@ -2,9 +2,9 @@ import hashlib
 import math
 import time
 from datetime import datetime, timezone
+from enum import Enum
 from python_graphql_client import GraphqlClient
 
-from enum import Enum
 
 from .exception_classes import LoginError
 
@@ -129,7 +129,6 @@ class GQLHandler:
 
     def getMyInfo(self):
         # Profil from login Account
-        self.isLogged()
         return self.runAuthorizedGqlQuery(gq.QUERY['readMyInfoQ'], {})['data']
 
     def getContacts(self, ownId):

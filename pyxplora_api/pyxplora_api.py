@@ -1,3 +1,5 @@
+import logging
+
 from datetime import datetime
 from time import time, sleep
 
@@ -5,7 +7,7 @@ from .const import VERSION
 from .exception_classes import LoginError
 from .gql_handler import GQLHandler, NormalStatus, WatchOnlineStatus
 
-import logging
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -542,15 +544,15 @@ class PyXploraApi:
             return bool(_raw)
         else:
             raise Exception('Xplora API call finally failed with response: ')
-    def setAllEnableAlarmTime(self) -> list:
+    def setAllEnableAlarmTime(self, watchID) -> list:
         res = []
-        for alarmTime in (self.getWatchAlarm()):
-            res.append(self.setEnableAlarmTime(alarmTime['id']))
+        for alarmTime in (self.getWatchAlarm(watchID)):
+            res.append(self.setEnableAlarmTime(alarmTime['id'], watchID))
         return res
-    def setAllDisableAlarmTime(self) -> list:
+    def setAllDisableAlarmTime(self, watchID) -> list:
         res = []
-        for alarmTime in (self.getWatchAlarm()):
-            res.append(self.setDisableAlarmTime(alarmTime['id']))
+        for alarmTime in (self.getWatchAlarm(watchID)):
+            res.append(self.setDisableAlarmTime(alarmTime['id'], watchID))
         return res
 
     def sendText(self, text, watchID) -> bool:
