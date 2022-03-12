@@ -7,8 +7,6 @@ from .const import VERSION
 from .exception_classes import LoginError
 from .gql_handler import GQLHandler, NormalStatus, WatchOnlineStatus
 
-
-
 _LOGGER = logging.getLogger(__name__)
 
 
