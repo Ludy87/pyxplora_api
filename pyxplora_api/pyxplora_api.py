@@ -76,7 +76,6 @@ class PyXploraApi:
         token = self.__login(forceLogin)
         if token:
             if ('user' in token):
-                # self.watch = token['user']['children'][self.watch_no]['ward']
                 if not self._childPhoneNumber:
                     self.watchs = token['user']['children']
                 else:
@@ -212,7 +211,8 @@ class PyXploraApi:
                         return alarms
                     for alarm in alarms_raw['alarms']:
                         alarms.append({
-                            'id': f"{watchID}-{alarm['vendorId']}",
+                            'id': alarm['id'],
+                            'vendorId': alarm['vendorId'],
                             'name': alarm['name'],
                             'start': self.__helperTime(alarm['occurMin']),
                             'weekRepeat': alarm['weekRepeat'],
@@ -260,9 +260,6 @@ class PyXploraApi:
                             'watch_charging': location_raw['watchLastLocate']['isCharging'],
                             'watch_last_location': location_raw['watchLastLocate'],
                         })
-                        # self.watch_battery = location_raw['watchLastLocate']['battery']
-                        # self.watch_charging = location_raw['watchLastLocate']['isCharging']
-                        # self.watch_last_location = location_raw['watchLastLocate']
             except Exception as error:
                 _LOGGER.debug(error)
             dataOk = watch_location
@@ -383,7 +380,6 @@ class PyXploraApi:
                         return safe_zones
                     for safeZone in safeZones_raw['safeZones']:
                         safe_zones.append({
-                            # safeZone,
                             'vendorId': safeZone['vendorId'],
                             'groupName': safeZone['groupName'],
                             'name': safeZone['name'],
@@ -411,7 +407,7 @@ class PyXploraApi:
     def schoolSilentMode(self, watchID) -> list:
         retryCounter = 0
         dataOk = False
-        sientTimes_raw = None
+        silentTimes_raw = None
         school_silent_mode = []
         while (not dataOk and (retryCounter < self.maxRetries + 2)):
             retryCounter += 1
@@ -419,18 +415,19 @@ class PyXploraApi:
             try:
                 self.askWatchLocate(watchID)
                 sleep(self.retryDelay)
-                sientTimes_raw = self.__gqlHandler.silentTimes(watchID)
-                if 'silentTimes' in sientTimes_raw:
-                    if not sientTimes_raw['silentTimes']:
+                silentTimes_raw = self.__gqlHandler.silentTimes(watchID)
+                if 'silentTimes' in silentTimes_raw:
+                    if not silentTimes_raw['silentTimes']:
                         dataOk = True
                         return school_silent_mode
-                    for sientTime in sientTimes_raw['silentTimes']:
+                    for silentTime in silentTimes_raw['silentTimes']:
                         school_silent_mode.append({
-                            'id': f"{watchID}-{sientTime['vendorId']}",
-                            'start': self.__helperTime(sientTime['start']),
-                            'end': self.__helperTime(sientTime['end']),
-                            'weekRepeat': sientTime['weekRepeat'],
-                            'status': sientTime['status'],
+                            'id': silentTime['id'],
+                            'vendorId': silentTime['vendorId'],
+                            'start': self.__helperTime(silentTime['start']),
+                            'end': self.__helperTime(silentTime['end']),
+                            'weekRepeat': silentTime['weekRepeat'],
+                            'status': silentTime['status'],
                         })
             except Exception as error:
                 _LOGGER.debug(error)
