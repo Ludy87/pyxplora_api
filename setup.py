@@ -1,11 +1,20 @@
 import setuptools
+import configparser
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+version = "0.0.0"
+
+with open("./pyxplora_api/const.py") as f:
+    config_string = '[dummy_section]\n' + f.read()
+    config = configparser.ConfigParser()
+    config.read_string(config_string)
+    version = config['dummy_section']['VERSION'].strip('"')
+
 setuptools.setup(
     name="pyxplora_api",
-    version="1.0.77",
+    version=version,
     author="Ludy87",
     author_email="android@astra-g.org",
     description="Python Xplora® Api",
