@@ -351,7 +351,7 @@ class PyXploraApi:
         if (dataOk):
             return chats
         else:
-            raise Exception('Xplora API call finally failed with response: ')
+            return chats
 
 ##### Watch Location Info #####
     async def getWatchLastLocation_async(self, withAsk: bool = False, watchID=0) -> dict:
