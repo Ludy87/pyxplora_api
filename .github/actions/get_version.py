@@ -7,7 +7,7 @@ def main():
         config_string = '[dummy_section]\n' + f.read()
         config = configparser.ConfigParser()
         config.read_string(config_string)
-        print(config['dummy_section']['VERSION'])
+        print(config['dummy_section']['VERSION'].strip('"'))
     return 0
 
 
