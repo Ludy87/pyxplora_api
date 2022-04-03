@@ -6,7 +6,8 @@ from datetime import datetime
 
 from .const import VERSION
 from .exception_classes import LoginError
-from .gql_handler_async import GQLHandler, NormalStatus, WatchOnlineStatus
+from .gql_handler_async import GQLHandler
+from .status import NormalStatus, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 

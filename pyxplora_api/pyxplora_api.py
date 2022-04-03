@@ -5,7 +5,8 @@ from time import time, sleep
 
 from .const import VERSION
 from .exception_classes import LoginError
-from .gql_handler import GQLHandler, NormalStatus, WatchOnlineStatus
+from .gql_handler import GQLHandler
+from .status import NormalStatus, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 
