@@ -1,39 +1,25 @@
+from __future__ import annotations
+
 import logging
-import time
 
 from asyncio import sleep
 from datetime import datetime
+from time import time
 
 from .const import VERSION
 from .exception_classes import LoginError
 from .gql_handler_async import GQLHandler
+from .pyxplora import PyXplora
 from .status import NormalStatus, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class PyXploraApi:
+class PyXploraApi(PyXplora):
     def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, childPhoneNumber=[]) -> None:
-        self._countrycode = countrycode
-        self._phoneNumber = phoneNumber
-        self._password = password
-        self._userLang = userLang
-        self._timeZone = timeZone
-
-        self._childPhoneNumber = childPhoneNumber
-
-        self.tokenExpiresAfter = 240
-        self.maxRetries = 3
-        self.retryDelay = 2
-
-        self.dtIssueToken = int(time.time()) - (self.tokenExpiresAfter * 1000)
-
+        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber)
         self.__gqlHandler = None
         self.__issueToken = None
-
-        self.watchs = []
-
-        self.user = None
 
     async def __login(self, forceLogin=False) -> dict:
         if not self.__isConnected() or self.__hasTokenExpired() or forceLogin:
@@ -55,7 +41,7 @@ class PyXploraApi:
                         if (not self.__issueToken):
                             await sleep(self.retryDelay)
                     if (self.__issueToken):
-                        self.dtIssueToken = int(time.time())
+                        self.dtIssueToken = int(time())
                 else:
                     raise Exception("Unknown error creating a new GraphQL handler instance.")
             except Exception:
@@ -72,7 +58,7 @@ class PyXploraApi:
         self.__issueToken = None
 
     def __hasTokenExpired(self) -> bool:
-        return ((int(time.time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000))
+        return ((int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000))
 
     async def init_async(self, forceLogin=False) -> None:
         token = await self.__login(forceLogin)
@@ -354,7 +340,7 @@ class PyXploraApi:
             return chats
 
 ##### Watch Location Info #####
-    async def getWatchLastLocation_async(self, withAsk: bool = False, watchID=0) -> dict:
+    async def getWatchLastLocation_async(self, watchID, withAsk: bool = False) -> dict:
         return (await self.loadWatchLocation_async(withAsk, watchID=watchID))[0]['watch_last_location']
     async def getWatchLocate_async(self, watchID) -> dict:
         return (await self.loadWatchLocation_async(watchID=watchID))[0]
