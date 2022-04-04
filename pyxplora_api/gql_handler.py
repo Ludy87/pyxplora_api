@@ -1,66 +1,19 @@
-import hashlib
-import math
-import time
-from datetime import datetime, timezone
+from __future__ import annotations
+
 from python_graphql_client import GraphqlClient
 
-
-from .const import API_KEY, API_SECRET, ENDPOINT
+from .const import ENDPOINT
 from .exception_classes import LoginError
+from .handler_gql import HandlerGQL
 from .status import NormalStatus, YesOrNo
-
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
 
 
-class GQLHandler:
+class GQLHandler(HandlerGQL):
     def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str):
-        # init vars
-        self.sessionId = None
-        self.accessToken = None
-        self.accessTokenExpire = 0
-        self.userLocale = userLang
-        self.timeZone = timeZone
-        self.countryPhoneNumber = countryPhoneNumber
-        self.phoneNumber = phoneNumber
-        self.passwordMD5 = hashlib.md5(password.encode()).hexdigest()
-        self._API_KEY = API_KEY
-        self._API_SECRET = API_SECRET
-        self.issueDate = 0
-        self.expireDate = 0
-        self.userId = None
-        self.variables = {
-            "countryPhoneNumber": self.countryPhoneNumber,
-            "phoneNumber": self.phoneNumber,
-            "password": self.passwordMD5,
-            "userLang": self.userLocale,
-            "timeZone": self.timeZone
-        }
-        self.issueToken = None
-
-    def getRequestHeaders(self, acceptedContentType: str):
-        if acceptedContentType == "" or acceptedContentType is None:
-            raise Exception("acceptedContentType MUST NOT be empty!")
-        if self._API_KEY is None:
-            raise Exception("Xplorao2o API_KEY MUST NOT be empty!")
-        if self._API_SECRET is None:
-            raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
-        requestHeaders = {}
-        if self.accessToken is None:
-            # OPEN authorization
-            authorizationHeader = f"Open {self._API_KEY}:{self._API_SECRET}"
-        else:
-            # BEARER authorization
-            authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
-            rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
-            requestHeaders["H-Date"] = rfc1123DateString
-            requestHeaders["H-Authorization"] = authorizationHeader
-        requestHeaders["H-BackDoor-Authorization"] = authorizationHeader
-        requestHeaders["Accept"] = acceptedContentType
-        requestHeaders["Content-Type"] = acceptedContentType
-        requestHeaders["H-Tid"] = str(math.floor(time.time()))
-        return requestHeaders
+        super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone)
 
     def runGqlQuery(self, query: str, variables):
         if query is None:

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from datetime import datetime
@@ -6,33 +8,17 @@ from time import time, sleep
 from .const import VERSION
 from .exception_classes import LoginError
 from .gql_handler import GQLHandler
+from .pyxplora import PyXplora
 from .status import NormalStatus, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class PyXploraApi:
+class PyXploraApi(PyXplora):
     def __init__(self, countrycode: str, phoneNumber: str, password: str, userLang: str, timeZone: str, childPhoneNumber=[]) -> None:
-        self._countrycode = countrycode
-        self._phoneNumber = phoneNumber
-        self._password = password
-        self._userLang = userLang
-        self._timeZone = timeZone
-
-        self._childPhoneNumber = childPhoneNumber
-
-        self.tokenExpiresAfter = 240
-        self.maxRetries = 3
-        self.retryDelay = 2
-
-        self.dtIssueToken = int(time()) - (self.tokenExpiresAfter * 1000)
-
+        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber)
         self.__gqlHandler = None
         self.__issueToken = None
-
-        self.watchs = []
-
-        self.user = None
 
     def __login(self, forceLogin=False) -> dict:
         if not self.__isConnected() or self.__hasTokenExpired() or forceLogin:
@@ -353,7 +339,7 @@ class PyXploraApi:
             return chats
 
 ##### Watch Location Info #####
-    def getWatchLastLocation(self, withAsk: bool = False, watchID=0) -> dict:
+    def getWatchLastLocation(self, watchID, withAsk: bool = False) -> dict:
         return self.loadWatchLocation(withAsk, watchID=watchID)[0]['watch_last_location']
     def getWatchLocate(self, watchID) -> dict:
         return self.loadWatchLocation(watchID=watchID)[0]
