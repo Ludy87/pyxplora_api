@@ -51,7 +51,7 @@ getWatchUnReadChatMsgCount(watchID=id)
 getWatchChats(watchID=id)
 
 # Watch Location Info
-getWatchLastLocation(watchID=id)
+getWatchLastLocation(watchID=id, withAsk: bool=False)
 getWatchLocateType(watchID=id)
 getWatchLocate(watchID=id)
 getWatchIsInSafeZone(watchID=id)
