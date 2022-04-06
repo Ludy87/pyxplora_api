@@ -221,7 +221,7 @@ class PyXploraApi(PyXplora):
         else:
             raise Exception('Xplora API call finally failed with response: ')
     async def __setReadChatMsg_a(self, msgId, id):
-        return (await self._gqlHandler.setReadChatMsg(await self.getWatchUserID(), msgId, id))['setReadChatMsg']
+        return (await self._gqlHandler.setReadChatMsg(self.getWatchUserID(), msgId, id))['setReadChatMsg']
     async def getWatchUnReadChatMsgCount(self, watchID) -> int:
         # bug?
         return (await self._gqlHandler.unReadChatMsgCount_a(watchID))['unReadChatMsgCount']
