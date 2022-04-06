@@ -66,7 +66,7 @@ class GQLHandler(HandlerGQL):
                     return self.runAuthorizedGqlQuery(query, variables)['data'][key]
         raise Exception("no Admin!")
 
-########## SECTION QUERY start ##########
+    ########## SECTION QUERY start ##########
 
     def getMyInfo(self):
         # Profil from login Account
@@ -141,9 +141,9 @@ class GQLHandler(HandlerGQL):
     def silentTimes(self, ownId):
         return self.runAuthorizedGqlQuery(gq.WATCH_Q['silentTimesQ'], { 'uid': ownId })['data']
 
-########## SECTION QUERY end ##########
+    ########## SECTION QUERY end ##########
 
-########## SECTION MUTATION start ##########
+    ########## SECTION MUTATION start ##########
 
     def sendText(self, ownId, text):
         # ownUser id
@@ -175,4 +175,4 @@ class GQLHandler(HandlerGQL):
     def setReadChatMsg(self, ownId, msgId, id):
         return self.runAuthorizedGqlQuery(gm.WATCH_M['setReadChatMsgM'], { "uid": ownId, 'msgId': msgId, 'id': id })['data']
 
-########## SECTION MUTATION end ##########
+    ########## SECTION MUTATION end ##########
