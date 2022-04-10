@@ -146,7 +146,7 @@ class PyXploraApi(PyXplora):
         else:
             raise Exception('Xplora API call finally failed with response: ')
 
-    async def loadWatchLocation(self, withAsk=True, watchID=0) -> list:
+    async def loadWatchLocation(self, watchID=0, withAsk=True) -> list:
         retryCounter = 0
         dataOk = False
         location_raw = None
@@ -270,7 +270,7 @@ class PyXploraApi(PyXplora):
 
     ##### Watch Location Info #####
     async def getWatchLastLocation(self, watchID, withAsk: bool = False) -> dict:
-        return (await self.loadWatchLocation(withAsk, watchID=watchID))[0]['watch_last_location']
+        return (await self.loadWatchLocation(watchID=watchID, withAsk=withAsk))[0]['watch_last_location']
     async def getWatchLocate(self, watchID) -> dict:
         return (await self.loadWatchLocation(watchID=watchID))[0]
     async def getWatchLocateType(self, watchID) -> str:
