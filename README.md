@@ -1,10 +1,10 @@
 # pyxlpora_api
 
 [![PyPI version](https://badge.fury.io/py/pyxplora-api.svg)](https://badge.fury.io/py/pyxplora-api)
-[![GitHub issues](https://img.shields.io/github/issues/Ludy87/pyxplora_api)](https://github.com/Ludy87/pyxplora_api/issues)
-[![GitHub forks](https://img.shields.io/github/forks/Ludy87/pyxplora_api)](https://github.com/Ludy87/pyxplora_api)
-[![GitHub stars](https://img.shields.io/github/stars/Ludy87/pyxplora_api)](https://github.com/Ludy87/pyxplora_api)
-[![GitHub license](https://img.shields.io/github/license/Ludy87/pyxplora_api)](https://github.com/Ludy87/pyxplora_api/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api)
+[![GitHub stars](https://img.shields.io/github/stars/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api)
+[![GitHub license](https://img.shields.io/github/license/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api/blob/main/LICENSE)
 
 Unofficial python library for the Xplora® API
 
