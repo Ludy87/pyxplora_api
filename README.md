@@ -1,12 +1,6 @@
 # pyxlpora_api
 
-[![PyPI version](https://badge.fury.io/py/pyxplora-api.svg)](https://badge.fury.io/py/pyxplora-api)
-
-[![Downloads](https://pepy.tech/badge/pyxplora-api)](https://pepy.tech/project/pyxplora-api)
-
-[![Downloads](https://pepy.tech/badge/pyxplora-api/month)](https://pepy.tech/project/pyxplora-api)
-
-[![Downloads](https://pepy.tech/badge/pyxplora-api/week)](https://pepy.tech/project/pyxplora-api)
+[![PyPI version](https://badge.fury.io/py/pyxplora-api.svg)](https://badge.fury.io/py/pyxplora-api) [![Downloads](https://pepy.tech/badge/pyxplora-api)](https://pepy.tech/project/pyxplora-api) [![Downloads](https://pepy.tech/badge/pyxplora-api/month)](https://pepy.tech/project/pyxplora-api) [![Downloads](https://pepy.tech/badge/pyxplora-api/week)](https://pepy.tech/project/pyxplora-api)
 
 [![GitHub issues](https://img.shields.io/github/issues/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api/issues)
 [![GitHub forks](https://img.shields.io/github/forks/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api)
