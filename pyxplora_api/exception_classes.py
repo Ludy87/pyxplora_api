@@ -12,4 +12,4 @@ class LoginError(Error):
         super().__init__(self.message, self.res)
 
     def __str__(self):
-        return f'{self.message} - {self.res}'
+        return f"{self.message} - {self.res}"

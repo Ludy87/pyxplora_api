@@ -7,10 +7,10 @@ with open("README.md", "r") as fh:
 version = "0.0.0"
 
 with open("./pyxplora_api/const.py") as f:
-    config_string = '[dummy_section]\n' + f.read()
+    config_string = "[dummy_section]\n" + f.read()
     config = configparser.ConfigParser()
     config.read_string(config_string)
-    version = config['dummy_section']['VERSION'].strip('"')
+    version = config["dummy_section"]["VERSION"].strip('"')
 
 setuptools.setup(
     name="pyxplora_api",

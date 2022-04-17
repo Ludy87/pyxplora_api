@@ -5,7 +5,6 @@ CAMPAIGN_M = {
     "addAvatarM": "mutation AddAvatar($fileId : String!, $name : String, $listOrder : Int) {\n  addAvatar(fileId: $fileId, name: $name, listOrder: $listOrder) {\n    __typename\n    ...AvatarFragment\n  }\n}\nfragment AvatarFragment on Avatar {\n  __typename\n  id\n  name\n  file {\n    __typename\n    ...FileFragment\n  }\n}\nfragment FileFragment on File {\n  __typename\n  id\n  name\n}",
     "modifyAvatarM": "mutation ModifyAvatar($id: String!, $fileId: String, $name : String, $listOrder : Int) {\n  modifyAvatar(id: $id, fileId: $fileId, name: $name, listOrder: $listOrder)\n}",
     "removeAvatarM": "mutation RemoveAvatar($id: String!) {\n  removeAvatar(id: $id)\n}",
-
 }
 FCM_M = {
     "setTokenM": "mutation setFCMToken($clientId: String!, $fcmToken: String!, $manufacturer: String, $brand: String, $model: String, $osVer: String, $userLang: String!, $timeZone: String) {\n  setFCMToken(clientId: $clientId, fcmToken: $fcmToken, terminalType: ANDROID, manufacturer: $manufacturer, brand: $brand, model: $model, osVer: $osVer, userLang: $userLang, timeZone: $timeZone, isAndroid: true)\n}",
@@ -17,7 +16,7 @@ MYINFO_M = {
 }
 REVIEW_M = {
     "updateUserFeedbackM": "mutation UpdateUserFeedback($uid: String!, $review: String!) {\n  updateUserFeedback(uid: $uid, review: $review) {\n    __typename\n    ...UserFeedbackFragment\n  }\n}\nfragment UserFeedbackFragment on UserReview {\n  __typename\n  id\n  selection\n  review\n  create\n  update\n}",
-    "updateUserSelectionM": "mutation UpdateUserSelection($uid: String!, $selection: Int!) {\n  updateUserSelection(uid: $uid, selection: $selection) {\n    __typename\n    ...UserReviewFragment\n  }\n}\nfragment UserReviewFragment on UserReview {\n  __typename\n  id\n  selection\n  review\n  create\n  update\n}"
+    "updateUserSelectionM": "mutation UpdateUserSelection($uid: String!, $selection: Int!) {\n  updateUserSelection(uid: $uid, selection: $selection) {\n    __typename\n    ...UserReviewFragment\n  }\n}\nfragment UserReviewFragment on UserReview {\n  __typename\n  id\n  selection\n  review\n  create\n  update\n}",
 }
 SIGN_M = {
     "expireTokenM": "mutation ExpireToken {\n  expireToken {\n    __typename\n    token\n  }\n}",

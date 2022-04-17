@@ -9,7 +9,14 @@ from .const import API_KEY, API_SECRET
 
 
 class HandlerGQL:
-    def __init__(self, countryPhoneNumber: str, phoneNumber: str, password: str, userLang: str, timeZone: str):
+    def __init__(
+        self,
+        countryPhoneNumber: str,
+        phoneNumber: str,
+        password: str,
+        userLang: str,
+        timeZone: str,
+    ):
         # init vars
         self.sessionId = None
         self.accessToken = None
@@ -29,7 +36,7 @@ class HandlerGQL:
             "phoneNumber": self.phoneNumber,
             "password": self.passwordMD5,
             "userLang": self.userLocale,
-            "timeZone": self.timeZone
+            "timeZone": self.timeZone,
         }
         self.issueToken = None
 
@@ -47,7 +54,9 @@ class HandlerGQL:
         else:
             # BEARER authorization
             authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
-            rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
+            rfc1123DateString = (
+                datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
+            )
             requestHeaders["H-Date"] = rfc1123DateString
             requestHeaders["H-Authorization"] = authorizationHeader
         requestHeaders["H-BackDoor-Authorization"] = authorizationHeader
