@@ -81,19 +81,13 @@ class GQLHandler(HandlerGQL):
 
     def getContacts(self, ownId):
         # Contacts from ownUser
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q["contactsQ"], {"uid": ownId})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gq.WATCH_Q["contactsQ"], {"uid": ownId})["data"]
 
     def getWatchCount(self):
-        return self.runAuthorizedGqlQuery(gq.QUERY["followRequestWatchCountQ"], {})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gq.QUERY["followRequestWatchCountQ"], {})["data"]
 
     def getWatches(self, ownId):
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q["watchesQ"], {"uid": ownId})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gq.WATCH_Q["watchesQ"], {"uid": ownId})["data"]
 
     def getWatchLastLocation(self, ownId):
         return self.runAuthorizedGqlQuery(gq.WATCH_Q["locateQ"], {"uid": ownId})["data"]
@@ -106,9 +100,7 @@ class GQLHandler(HandlerGQL):
         return {"trackWatch": -1}
 
     def askWatchLocate(self, ownId):
-        res = self.runAuthorizedGqlQuery(gq.WATCH_Q["askLocateQ"], {"uid": ownId})[
-            "data"
-        ]
+        res = self.runAuthorizedGqlQuery(gq.WATCH_Q["askLocateQ"], {"uid": ownId})["data"]
         if res["askWatchLocate"] is not None:
             return res
         return {"askWatchLocate": False}
@@ -125,9 +117,7 @@ class GQLHandler(HandlerGQL):
         return self.runAuthorizedGqlQuery(gq.CAMPAIGN_Q["avatarsQ"], {"id": id})["data"]
 
     def unReadChatMsgCount(self, ownId):
-        return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q["unReadChatMsgCountQ"], {"uid": ownId}
-        )["data"]
+        return self.runAuthorizedGqlQuery(gq.WATCH_Q["unReadChatMsgCountQ"], {"uid": ownId})["data"]
 
     def chats(self, ownId):
         # ownUser id
@@ -137,36 +127,26 @@ class GQLHandler(HandlerGQL):
         return self.runAuthorizedGqlQuery(gq.CARD_Q["staticQ"], {})["data"]
 
     def campaignUserProfiles(self):
-        return self.runAuthorizedGqlQuery(gq.MYINFO_Q["campaignUserProfilesQ"], {})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gq.MYINFO_Q["campaignUserProfilesQ"], {})["data"]
 
     def subscribedCampaign(self, id, needDetail=False):
-        return self.runAuthorizedGqlQuery(
-            gq.CAMPAIGN_Q["subscribedQ"], {"uid": id, "needDetail": needDetail}
-        )["data"]
+        return self.runAuthorizedGqlQuery(gq.CAMPAIGN_Q["subscribedQ"], {"uid": id, "needDetail": needDetail})["data"]
 
     def getReviewStatus(self, id):
-        return self.runAuthorizedGqlQuery(gq.REVIEW_Q["getStatusQ"], {"uid": id})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gq.REVIEW_Q["getStatusQ"], {"uid": id})["data"]
 
     def countries(self):
         # Country Support
         return self.runAuthorizedGqlQuery(gq.UTILS_Q["countriesQ"], {})["data"]
 
     def safeZones(self, ownId):
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q["safeZonesQ"], {"uid": ownId})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gq.WATCH_Q["safeZonesQ"], {"uid": ownId})["data"]
 
     def safeZoneGroups(self):
         return self.runAuthorizedGqlQuery(gq.WATCH_Q["safeZoneGroupsQ"], {})["data"]
 
     def silentTimes(self, ownId):
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q["silentTimesQ"], {"uid": ownId})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gq.WATCH_Q["silentTimesQ"], {"uid": ownId})["data"]
 
     ########## SECTION QUERY end ##########
 
@@ -175,18 +155,14 @@ class GQLHandler(HandlerGQL):
     def sendText(self, ownId, text):
         # ownUser id
         if (
-            self.runAuthorizedGqlQuery(
-                gm.WATCH_M["sendChatTextM"], {"uid": ownId, "text": text}
-            )["data"]["sendChatText"]
+            self.runAuthorizedGqlQuery(gm.WATCH_M["sendChatTextM"], {"uid": ownId, "text": text})["data"]["sendChatText"]
             is not None
         ):
             return True
         return False
 
     def addStep(self, stepCount):
-        return self.runAuthorizedGqlQuery(gm.STEP_M["addM"], {"stepCount": stepCount})[
-            "data"
-        ]
+        return self.runAuthorizedGqlQuery(gm.STEP_M["addM"], {"stepCount": stepCount})["data"]
 
     def shutdown(self, ownId):
         # ownUser id
@@ -198,27 +174,15 @@ class GQLHandler(HandlerGQL):
 
     def modifyAlert(self, id, yesOrNo: YesOrNo):
         # function?
-        return self.runAuthorizedGqlQuery(
-            gm.WATCH_M["modifyAlertM"], {"uid": id, "remind": yesOrNo}
-        )
+        return self.runAuthorizedGqlQuery(gm.WATCH_M["modifyAlertM"], {"uid": id, "remind": yesOrNo})
 
-    def setEnableSlientTime(
-        self, silentId, status: NormalStatus = NormalStatus.ENABLE.value
-    ):
-        return self.runAuthorizedGqlQuery(
-            gm.WATCH_M["setEnableSlientTimeM"], {"silentId": silentId, "status": status}
-        )["data"]
+    def setEnableSlientTime(self, silentId, status: NormalStatus = NormalStatus.ENABLE.value):
+        return self.runAuthorizedGqlQuery(gm.WATCH_M["setEnableSlientTimeM"], {"silentId": silentId, "status": status})["data"]
 
-    def setEnableAlarmTime(
-        self, alarmId, status: NormalStatus = NormalStatus.ENABLE.value
-    ):
-        return self.runAuthorizedGqlQuery(
-            gm.WATCH_M["modifyAlarmM"], {"alarmId": alarmId, "status": status}
-        )["data"]
+    def setEnableAlarmTime(self, alarmId, status: NormalStatus = NormalStatus.ENABLE.value):
+        return self.runAuthorizedGqlQuery(gm.WATCH_M["modifyAlarmM"], {"alarmId": alarmId, "status": status})["data"]
 
     def setReadChatMsg(self, ownId, msgId, id):
-        return self.runAuthorizedGqlQuery(
-            gm.WATCH_M["setReadChatMsgM"], {"uid": ownId, "msgId": msgId, "id": id}
-        )["data"]
+        return self.runAuthorizedGqlQuery(gm.WATCH_M["setReadChatMsgM"], {"uid": ownId, "msgId": msgId, "id": id})["data"]
 
     ########## SECTION MUTATION end ##########

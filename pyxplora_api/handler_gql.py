@@ -54,9 +54,7 @@ class HandlerGQL:
         else:
             # BEARER authorization
             authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
-            rfc1123DateString = (
-                datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
-            )
+            rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
             requestHeaders["H-Date"] = rfc1123DateString
             requestHeaders["H-Authorization"] = authorizationHeader
         requestHeaders["H-BackDoor-Authorization"] = authorizationHeader

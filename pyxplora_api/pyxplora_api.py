@@ -24,9 +24,7 @@ class PyXploraApi(PyXplora):
         timeZone: str,
         childPhoneNumber=[],
     ) -> None:
-        super().__init__(
-            countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber
-        )
+        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber)
 
     def __login(self, forceLogin=False) -> dict:
         if not self._isConnected() or self._hasTokenExpired() or forceLogin:
@@ -41,9 +39,7 @@ class PyXploraApi(PyXplora):
                 )
                 if self._gqlHandler:
                     retryCounter = 0
-                    while not self._isConnected() and (
-                        retryCounter < self.maxRetries + 2
-                    ):
+                    while not self._isConnected() and (retryCounter < self.maxRetries + 2):
                         retryCounter += 1
 
                         # Try to login
@@ -58,9 +54,7 @@ class PyXploraApi(PyXplora):
                     if self._issueToken:
                         self.dtIssueToken = int(time())
                 else:
-                    raise Exception(
-                        "Unknown error creating a new GraphQL handler instance."
-                    )
+                    raise Exception("Unknown error creating a new GraphQL handler instance.")
             except Exception:
                 # Login failed.
                 self._gqlHandler = None
@@ -115,12 +109,8 @@ class PyXploraApi(PyXplora):
                                 {
                                     "id": id,
                                     "guardianType": contact["guardianType"],
-                                    "create": datetime.fromtimestamp(
-                                        contact["create"]
-                                    ).strftime("%Y-%m-%d %H:%M:%S"),
-                                    "update": datetime.fromtimestamp(
-                                        contact["update"]
-                                    ).strftime("%Y-%m-%d %H:%M:%S"),
+                                    "create": datetime.fromtimestamp(contact["create"]).strftime("%Y-%m-%d %H:%M:%S"),
+                                    "update": datetime.fromtimestamp(contact["update"]).strftime("%Y-%m-%d %H:%M:%S"),
                                     "name": contact["name"],
                                     "phoneNumber": f"+{contact['countryPhoneNumber']}{contact['phoneNumber']}",
                                     "xcoin": xcoin,
@@ -190,9 +180,9 @@ class PyXploraApi(PyXplora):
                     if location_raw["watchLastLocate"] is not None:
                         watch_location.append(
                             {
-                                "tm": datetime.fromtimestamp(
-                                    location_raw["watchLastLocate"]["tm"]
-                                ).strftime("%Y-%m-%d %H:%M:%S"),
+                                "tm": datetime.fromtimestamp(location_raw["watchLastLocate"]["tm"]).strftime(
+                                    "%Y-%m-%d %H:%M:%S"
+                                ),
                                 "lat": location_raw["watchLastLocate"]["lat"],
                                 "lng": location_raw["watchLastLocate"]["lng"],
                                 "rad": location_raw["watchLastLocate"]["rad"],
@@ -200,21 +190,11 @@ class PyXploraApi(PyXplora):
                                 "city": location_raw["watchLastLocate"]["city"],
                                 "province": location_raw["watchLastLocate"]["province"],
                                 "country": location_raw["watchLastLocate"]["country"],
-                                "locateType": location_raw["watchLastLocate"][
-                                    "locateType"
-                                ],
-                                "isInSafeZone": location_raw["watchLastLocate"][
-                                    "isInSafeZone"
-                                ],
-                                "safeZoneLabel": location_raw["watchLastLocate"][
-                                    "safeZoneLabel"
-                                ],
-                                "watch_battery": location_raw["watchLastLocate"][
-                                    "battery"
-                                ],
-                                "watch_charging": location_raw["watchLastLocate"][
-                                    "isCharging"
-                                ],
+                                "locateType": location_raw["watchLastLocate"]["locateType"],
+                                "isInSafeZone": location_raw["watchLastLocate"]["isInSafeZone"],
+                                "safeZoneLabel": location_raw["watchLastLocate"]["safeZoneLabel"],
+                                "watch_battery": location_raw["watchLastLocate"]["battery"],
+                                "watch_charging": location_raw["watchLastLocate"]["isCharging"],
                                 "watch_last_location": location_raw["watchLastLocate"],
                             }
                         )
@@ -265,9 +245,7 @@ class PyXploraApi(PyXplora):
             raise Exception("Xplora API call finally failed with response: ")
 
     def __setReadChatMsg(self, msgId, id):
-        return (self._gqlHandler.setReadChatMsg(self.getWatchUserID(), msgId, id))[
-            "setReadChatMsg"
-        ]
+        return (self._gqlHandler.setReadChatMsg(self.getWatchUserID(), msgId, id))["setReadChatMsg"]
 
     def getWatchUnReadChatMsgCount(self, watchID) -> int:
         # bug?
@@ -320,9 +298,7 @@ class PyXploraApi(PyXplora):
 
     ##### Watch Location Info #####
     def getWatchLastLocation(self, watchID, withAsk: bool = False) -> dict:
-        return self.loadWatchLocation(watchID=watchID, withAsk=withAsk)[0][
-            "watch_last_location"
-        ]
+        return self.loadWatchLocation(watchID=watchID, withAsk=withAsk)[0]["watch_last_location"]
 
     def getWatchLocate(self, watchID) -> dict:
         return self.loadWatchLocation(watchID=watchID)[0]
@@ -454,9 +430,7 @@ class PyXploraApi(PyXplora):
             try:
                 self.askWatchLocate(watchID)
                 sleep(self.retryDelay)
-                disable_raw = self._gqlHandler.setEnableSlientTime(
-                    silentId, NormalStatus.DISABLE.value
-                )
+                disable_raw = self._gqlHandler.setEnableSlientTime(silentId, NormalStatus.DISABLE.value)
                 if "setEnableSilentTime" in disable_raw:
                     _raw = disable_raw["setEnableSilentTime"]
             except Exception as error:
@@ -516,9 +490,7 @@ class PyXploraApi(PyXplora):
             try:
                 self.askWatchLocate(watchID)
                 sleep(self.retryDelay)
-                disable_raw = self._gqlHandler.setEnableAlarmTime(
-                    alarmId, NormalStatus.DISABLE.value
-                )
+                disable_raw = self._gqlHandler.setEnableAlarmTime(alarmId, NormalStatus.DISABLE.value)
                 if "modifyAlarm" in disable_raw:
                     _raw = disable_raw["modifyAlarm"]
             except Exception as error:
