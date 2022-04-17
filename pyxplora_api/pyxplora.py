@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from time import time
+from typing import Any, Dict, List
 
 
 class PyXplora:
@@ -28,18 +29,18 @@ class PyXplora:
 
         self.dtIssueToken = int(time()) - (self.tokenExpiresAfter * 1000)
 
-        self.watchs = []
+        self.watchs: List[str] = []
 
         self.user = None
         self._gqlHandler = None
-        self._issueToken = None
+        self._issueToken: Dict[Any, Any] = {}
 
     def _isConnected(self) -> bool:
-        return self._gqlHandler and self._issueToken
+        return bool(self._gqlHandler and self._issueToken)
 
     def _logoff(self) -> None:
         self._gqlHandler = None
-        self._issueToken = None
+        self._issueToken = {}
 
     def _hasTokenExpired(self) -> bool:
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
@@ -70,8 +71,8 @@ class PyXplora:
         return datetime.fromtimestamp(self.user["update"]).strftime("%Y-%m-%d %H:%M:%S")
 
     ##### Watch Info #####
-    def getWatchUserID(self, child_no: list = []) -> str:
-        watch_IDs = []
+    def getWatchUserID(self, child_no: list = []) -> List[str]:
+        watch_IDs: List[str] = []
         for watch in self.watchs:
             if child_no:
                 if watch["ward"]["phoneNumber"] in child_no:
@@ -80,8 +81,8 @@ class PyXplora:
                 watch_IDs.append(watch["ward"]["id"])
         return watch_IDs
 
-    def getWatchUserPhoneNumber(self) -> str:
-        watch_IDs = []
+    def getWatchUserPhoneNumber(self) -> List[str]:
+        watch_IDs: List[str] = []
         for watch in self.watchs:
             watch_IDs.append(watch["ward"]["phoneNumber"])
         return watch_IDs
@@ -98,19 +99,19 @@ class PyXplora:
                 return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
         raise Exception("Child phonenumber not found!")
 
-    def getWatchXcoin(self, watchID) -> int:
+    def getWatchXcoin(self, watchID) -> str:
         for watch in self.watchs:
             if watch["ward"]["id"] == watchID:
                 return watch["ward"]["xcoin"]
         raise Exception("Child phonenumber not found!")
 
-    def getWatchCurrentStep(self, watchID) -> int:
+    def getWatchCurrentStep(self, watchID) -> str:
         for watch in self.watchs:
             if watch["ward"]["id"] == watchID:
                 return watch["ward"]["currentStep"]
         raise Exception("Child phonenumber not found!")
 
-    def getWatchTotalStep(self, watchID) -> int:
+    def getWatchTotalStep(self, watchID) -> str:
         for watch in self.watchs:
             if watch["ward"]["id"] == watchID:
                 return watch["ward"]["totalStep"]

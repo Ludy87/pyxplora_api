@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any, Dict
 
 from python_graphql_client import GraphqlClient
 
@@ -44,7 +45,7 @@ class GQLHandler(HandlerGQL):
         if data["issueToken"] is None:
             # Login failed.
             raise LoginError("Login to Xplora® API failed. Check your input!")
-        self.issueToken = data["issueToken"]
+        self.issueToken: Dict[Any, Any] = data["issueToken"]
 
         # Login succeeded
         self.sessionId = self.issueToken["id"]
@@ -176,10 +177,10 @@ class GQLHandler(HandlerGQL):
         # function?
         return self.runAuthorizedGqlQuery(gm.WATCH_M["modifyAlertM"], {"uid": id, "remind": yesOrNo})
 
-    def setEnableSlientTime(self, silentId, status: NormalStatus = NormalStatus.ENABLE.value):
+    def setEnableSlientTime(self, silentId, status: str = NormalStatus.ENABLE.value):
         return self.runAuthorizedGqlQuery(gm.WATCH_M["setEnableSlientTimeM"], {"silentId": silentId, "status": status})["data"]
 
-    def setEnableAlarmTime(self, alarmId, status: NormalStatus = NormalStatus.ENABLE.value):
+    def setEnableAlarmTime(self, alarmId, status: str = NormalStatus.ENABLE.value):
         return self.runAuthorizedGqlQuery(gm.WATCH_M["modifyAlarmM"], {"alarmId": alarmId, "status": status})["data"]
 
     def setReadChatMsg(self, ownId, msgId, id):

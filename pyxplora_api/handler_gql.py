@@ -40,6 +40,9 @@ class HandlerGQL:
         }
         self.issueToken = None
 
+    def c(self):
+        return self
+
     def getRequestHeaders(self, acceptedContentType: str):
         if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")

@@ -177,7 +177,7 @@ class GQLHandler(HandlerGQL):
         # function?
         return await self.runAuthorizedGqlQuery_a(gm.WATCH_M["modifyAlertM"], {"uid": id, "remind": yesOrNo})
 
-    async def setEnableSlientTime_a(self, silentId, status: NormalStatus = NormalStatus.ENABLE.value):
+    async def setEnableSlientTime_a(self, silentId, status: str = NormalStatus.ENABLE.value):
         return (
             await self.runAuthorizedGqlQuery_a(
                 gm.WATCH_M["setEnableSlientTimeM"],
@@ -185,7 +185,7 @@ class GQLHandler(HandlerGQL):
             )
         )["data"]
 
-    async def setEnableAlarmTime_a(self, alarmId, status: NormalStatus = NormalStatus.ENABLE.value):
+    async def setEnableAlarmTime_a(self, alarmId, status: str = NormalStatus.ENABLE.value):
         return (await self.runAuthorizedGqlQuery_a(gm.WATCH_M["modifyAlarmM"], {"alarmId": alarmId, "status": status}))["data"]
 
     async def setReadChatMsg(self, ownId, msgId, id):

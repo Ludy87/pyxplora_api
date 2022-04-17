@@ -4,6 +4,7 @@ import logging
 
 from datetime import datetime
 from time import time, sleep
+from typing import Any, Dict, List
 
 from .const import VERSION
 from .exception_classes import LoginError
@@ -36,7 +37,7 @@ class PyXploraApi(PyXplora):
                     self._password,
                     self._userLang,
                     self._timeZone,
-                )
+                ).c()
                 if self._gqlHandler:
                     retryCounter = 0
                     while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -58,7 +59,7 @@ class PyXploraApi(PyXplora):
             except Exception:
                 # Login failed.
                 self._gqlHandler = None
-                self._issueToken = None
+                self._issueToken: Dict[Any, Any] = {}
         return self._issueToken
 
     def init(self, forceLogin=False) -> None:
@@ -81,9 +82,9 @@ class PyXploraApi(PyXplora):
     ##### Contact Info #####
     def getContacts(self, watchID) -> list:
         retryCounter = 0
-        dataOk = False
+        dataOk: List[Any] = []
         contacts_raw = None
-        contacts = []
+        contacts: List[Any] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -91,11 +92,11 @@ class PyXploraApi(PyXplora):
                 contacts_raw = self._gqlHandler.getContacts(watchID)
                 if "contacts" in contacts_raw:
                     if contacts_raw["contacts"] is None:
-                        dataOk = True
+                        dataOk.append({})
                         return contacts
                     if "contacts" in contacts_raw["contacts"]:
                         if not contacts_raw["contacts"]["contacts"]:
-                            dataOk = True
+                            dataOk.append({})
                             return contacts
                         for contact in contacts_raw["contacts"]["contacts"]:
                             try:
@@ -129,9 +130,9 @@ class PyXploraApi(PyXplora):
 
     def getWatchAlarm(self, watchID) -> list:
         retryCounter = 0
-        dataOk = False
+        dataOk: List[Any] = []
         alarms_raw = None
-        alarms = []
+        alarms: List[Any] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -139,7 +140,7 @@ class PyXploraApi(PyXplora):
                 alarms_raw = self._gqlHandler.getAlarms(watchID)
                 if "alarms" in alarms_raw:
                     if not alarms_raw["alarms"]:
-                        dataOk = True
+                        dataOk.append({})
                         return alarms
                     for alarm in alarms_raw["alarms"]:
                         alarms.append(
@@ -165,9 +166,9 @@ class PyXploraApi(PyXplora):
 
     def loadWatchLocation(self, watchID=0, withAsk=True) -> list:
         retryCounter = 0
-        dataOk = False
+        dataOk: List[Any] = []
         location_raw = None
-        watch_location = []
+        watch_location: List[Any] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -217,10 +218,10 @@ class PyXploraApi(PyXplora):
             return True
         return False
 
-    def getWatchOnlineStatus(self, watchID) -> WatchOnlineStatus:
+    def getWatchOnlineStatus(self, watchID) -> str:
         retryCounter = 0
-        dataOk = False
-        asktrack_raw = None
+        dataOk = ""
+        asktrack_raw = ""
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -254,9 +255,9 @@ class PyXploraApi(PyXplora):
     def getWatchChats(self, watchID) -> list:
         # bug?
         retryCounter = 0
-        dataOk = False
+        dataOk: List[Any] = []
         chats_raw = None
-        chats = []
+        chats: List[Any] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -267,7 +268,7 @@ class PyXploraApi(PyXplora):
                 if "chats" in chats_raw:
                     if "list" in chats_raw["chats"]:
                         if not chats_raw["chats"]["list"]:
-                            dataOk = True
+                            dataOk.append({})
                             return chats
                         for chat in chats_raw["chats"]["list"]:
                             chats.append(
@@ -314,9 +315,9 @@ class PyXploraApi(PyXplora):
 
     def getSafeZones(self, watchID) -> list:
         retryCounter = 0
-        dataOk = False
+        dataOk: List[Any] = []
         safeZones_raw = None
-        safe_zones = []
+        safe_zones: List[Any] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -326,7 +327,7 @@ class PyXploraApi(PyXplora):
                 safeZones_raw = self._gqlHandler.safeZones(watchID)
                 if "safeZones" in safeZones_raw:
                     if not safeZones_raw["safeZones"]:
-                        dataOk = True
+                        dataOk.append({})
                         return safe_zones
                     for safeZone in safeZones_raw["safeZones"]:
                         safe_zones.append(
@@ -360,9 +361,9 @@ class PyXploraApi(PyXplora):
     ##### Feature #####
     def schoolSilentMode(self, watchID) -> list:
         retryCounter = 0
-        dataOk = False
+        dataOk: List[Any] = []
         silentTimes_raw = None
-        school_silent_mode = []
+        school_silent_mode: List[Any] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -372,7 +373,7 @@ class PyXploraApi(PyXplora):
                 silentTimes_raw = self._gqlHandler.silentTimes(watchID)
                 if "silentTimes" in silentTimes_raw:
                     if not silentTimes_raw["silentTimes"]:
-                        dataOk = True
+                        dataOk.append({})
                         return school_silent_mode
                     for silentTime in silentTimes_raw["silentTimes"]:
                         school_silent_mode.append(
@@ -398,8 +399,8 @@ class PyXploraApi(PyXplora):
 
     def setEnableSilentTime(self, silentId, watchID) -> bool:
         retryCounter = 0
-        dataOk = False
-        _raw = None
+        dataOk = ""
+        _raw = ""
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -422,8 +423,8 @@ class PyXploraApi(PyXplora):
 
     def setDisableSilentTime(self, silentId, watchID) -> bool:
         retryCounter = 0
-        dataOk = False
-        _raw = None
+        dataOk = ""
+        _raw = ""
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -458,8 +459,8 @@ class PyXploraApi(PyXplora):
 
     def setEnableAlarmTime(self, alarmId, watchID) -> bool:
         retryCounter = 0
-        dataOk = False
-        _raw = None
+        dataOk = ""
+        _raw = ""
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
@@ -482,8 +483,8 @@ class PyXploraApi(PyXplora):
 
     def setDisableAlarmTime(self, alarmId, watchID) -> bool:
         retryCounter = 0
-        dataOk = False
-        _raw = None
+        dataOk = ""
+        _raw = ""
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
