@@ -77,19 +77,20 @@ reboot(watchID=id)
 ---
 # Country Support
 
-| Country Code | Country |
-|-------------:|---------|
-| 45 | Denmark |
-| 44 | United Kingdom |
-| 34 | Spain |
-| 49 | Germany |
-| 47 | Norway |
-| 46 | Sweden |
-| 358 | Finland |
-| 33 | France |
-| 39 | Italy |
-| 41 | Switzerland |
-| 43 | Austria |
+| country name | country code |
+|--------------|--------------|
+| Denmark | 45 |
+| Netherlands | 31 |
+| United Kingdom | 44 |
+| Spain | 34 |
+| Germany | 49 |
+| Norway | 47 |
+| Sweden | 46 |
+| Finland | 358 |
+| France | 33 |
+| Italy | 39 |
+| Switzerland | 41 |
+| Austria | 43 |
 
 # Functions
 ---
