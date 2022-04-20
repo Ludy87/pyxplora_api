@@ -6,7 +6,7 @@ from datetime import datetime
 from time import time, sleep
 from typing import Any, Dict, List
 
-from .const import VERSION
+from .const import VERSION, VERSION_APP
 from .exception_classes import LoginError
 from .gql_handler import GQLHandler
 from .pyxplora import PyXplora
@@ -77,7 +77,7 @@ class PyXploraApi(PyXplora):
         raise LoginError("Login to Xplora® API failed. Check your input!")
 
     def version(self) -> str:
-        return VERSION
+        return "{0}-{1}".format(VERSION, VERSION_APP)
 
     ##### Contact Info #####
     def getContacts(self, watchID) -> list:
