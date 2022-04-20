@@ -73,3 +73,17 @@ class ChatEmoticonType(Enum):
     M1023 = "M1023"
     M1024 = "M1024"
     UNKNOWN__ = "UNKNOWN__"
+
+
+class ClientType(Enum):
+    WEB = "WEB"
+    APP = "APP"
+    UNKNOWN__ = "UNKNOWN__"
+
+
+class EmailAndPhoneVerificationType(Enum):
+    REGIST = "REGIST"
+    RESET = "RESET"
+    RESEND = "RESEND"
+    SSO = "SSO"
+    UNKNOWN__ = "UNKNOWN__"
