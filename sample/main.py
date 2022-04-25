@@ -7,8 +7,17 @@ def main():
     password = "ACCOUNT_PASSWORT"
     local = "de-DE"
     timeZone = "Europe/Berlin"
+    childPhoneNumber = []
 
-    xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone)
+    xplora = PXA.PyXploraApi(
+        countrycode=countryCode,
+        phoneNumber=phoneNummer,
+        password=password,
+        userLang=local,
+        timeZone=timeZone,
+        childPhoneNumber=childPhoneNumber,
+    )
+    xplora.init()
     print(xplora.getUserName())
 
 
