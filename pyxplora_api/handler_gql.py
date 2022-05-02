@@ -4,6 +4,7 @@ import hashlib
 import math
 from time import time
 from datetime import datetime, timezone
+from typing import Any, Dict
 
 from .const import API_KEY, API_SECRET
 
@@ -16,7 +17,7 @@ class HandlerGQL:
         password: str,
         userLang: str,
         timeZone: str,
-    ):
+    ) -> None:
         # init vars
         self.sessionId = None
         self.accessToken = None
@@ -38,12 +39,12 @@ class HandlerGQL:
             "userLang": self.userLocale,
             "timeZone": self.timeZone,
         }
-        self.issueToken = None
+        self.issueToken: Dict[str, Any]
 
-    def c(self):
+    def c(self) -> HandlerGQL:
         return self
 
-    def getRequestHeaders(self, acceptedContentType: str):
+    def getRequestHeaders(self, acceptedContentType: str) -> Dict[str, Any]:
         if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")
         if self._API_KEY is None:
