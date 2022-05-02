@@ -87,3 +87,11 @@ class EmailAndPhoneVerificationType(Enum):
     RESEND = "RESEND"
     SSO = "SSO"
     UNKNOWN__ = "UNKNOWN__"
+
+
+class LocationType(Enum):
+    WIFI = "WIFI"
+    CELL = "CELL"
+    GPS = "GPS"
+    UNKNOWN = "UNKNOWN"
+    UNKNOWN__ = "UNKNOWN__"
