@@ -66,10 +66,10 @@ class PyXplora:
         return self.user.get("totalStep", -1)
 
     def getUserCreate(self) -> str:
-        return datetime.fromtimestamp(self.user.get("create", "0")).strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.fromtimestamp(self.user.get("create", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
     def getUserUpdate(self) -> str:
-        return datetime.fromtimestamp(self.user.get("update", "0")).strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
     ##### Watch Info #####
     def getWatchUserIDs(self, watchuserphonenumbers: List[str] = []) -> List[str]:
