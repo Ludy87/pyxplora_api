@@ -179,26 +179,46 @@ class PyXploraApi(PyXplora):
                     self.askWatchLocate(wuid)
                 sleep(self.retryDelay)
                 location_raw = self._gqlHandler.getWatchLastLocation(wuid)
-                _watchLastLocate = location_raw.get("watchLastLocate", {})
+                _watchLastLocate = location_raw.get(
+                    "watchLastLocate",
+                    {},
+                )
                 if not _watchLastLocate:
                     dataOk.append({})
                     return watch_location
+                _tm = 31532399 if _watchLastLocate.get("tm") is None else _watchLastLocate.get("tm")
+                _lat = "0.0" if _watchLastLocate.get("lat") is None else _watchLastLocate.get("lat")
+                _lng = "0.0" if _watchLastLocate.get("lng") is None else _watchLastLocate.get("lng")
+                _rad = -1 if _watchLastLocate.get("rad") is None else _watchLastLocate.get("rad")
+                _poi = "" if _watchLastLocate.get("poi") is None else _watchLastLocate.get("poi")
+                _city = "" if _watchLastLocate.get("city") is None else _watchLastLocate.get("city")
+                _province = "" if _watchLastLocate.get("province") is None else _watchLastLocate.get("province")
+                _country = "" if _watchLastLocate.get("country") is None else _watchLastLocate.get("country")
+                _locateType = (
+                    LocationType.UNKNOWN.value
+                    if _watchLastLocate.get("locateType") is None
+                    else _watchLastLocate.get("locateType")
+                )
+                _isInSafeZone = False if _watchLastLocate.get("isInSafeZone") is None else _watchLastLocate.get("isInSafeZone")
+                _safeZoneLabel = "" if _watchLastLocate.get("safeZoneLabel") is None else _watchLastLocate.get("safeZoneLabel")
+                _watch_battery = -1 if _watchLastLocate.get("battery") is None else _watchLastLocate.get("battery")
+                _watch_charging = False if _watchLastLocate.get("isCharging") is None else _watchLastLocate.get("isCharging")
                 watch_location.append(
                     {
-                        "tm": datetime.fromtimestamp(location_raw["watchLastLocate"]["tm"]).strftime("%Y-%m-%d %H:%M:%S"),
-                        "lat": location_raw["watchLastLocate"]["lat"],
-                        "lng": location_raw["watchLastLocate"]["lng"],
-                        "rad": location_raw["watchLastLocate"]["rad"],
-                        "poi": location_raw["watchLastLocate"]["poi"],
-                        "city": location_raw["watchLastLocate"]["city"],
-                        "province": location_raw["watchLastLocate"]["province"],
-                        "country": location_raw["watchLastLocate"]["country"],
-                        "locateType": location_raw["watchLastLocate"]["locateType"],
-                        "isInSafeZone": location_raw["watchLastLocate"]["isInSafeZone"],
-                        "safeZoneLabel": location_raw["watchLastLocate"]["safeZoneLabel"],
-                        "watch_battery": location_raw["watchLastLocate"]["battery"],
-                        "watch_charging": location_raw["watchLastLocate"]["isCharging"],
-                        "watch_last_location": location_raw["watchLastLocate"],
+                        "tm": datetime.fromtimestamp(_tm).strftime("%Y-%m-%d %H:%M:%S"),
+                        "lat": _lat,
+                        "lng": _lng,
+                        "rad": _rad,
+                        "poi": _poi,
+                        "city": _city,
+                        "province": _province,
+                        "country": _country,
+                        "locateType": _locateType,
+                        "isInSafeZone": _isInSafeZone,
+                        "safeZoneLabel": _safeZoneLabel,
+                        "watch_battery": _watch_battery,
+                        "watch_charging": _watch_charging,
+                        "watch_last_location": _watchLastLocate,
                     }
                 )
             except Exception as error:
