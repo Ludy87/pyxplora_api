@@ -234,11 +234,16 @@ class PyXploraApi(PyXplora):
             raise FunctionError(sys._getframe().f_code.co_name)
 
     async def getWatchBattery(self, wuid: str) -> int:
-        return int((await self.loadWatchLocation(wuid=wuid))[0].get("watch_battery", -1))
+        watch_b: List[Dict[str, Any]] = await self.loadWatchLocation(wuid=wuid)
+        for watch in watch_b:
+            return int(watch.get("watch_battery", -1))
+        return -1
 
     async def getWatchIsCharging(self, wuid: str) -> bool:
-        if (await self.loadWatchLocation(wuid=wuid))[0].get("watch_charging", False):
-            return True
+        watch_c: List[Dict[str, Any]] = await self.loadWatchLocation(wuid=wuid)
+        for watch in watch_c:
+            if watch.get("watch_charging", False):
+                return True
         return False
 
     async def getWatchOnlineStatus(self, wuid: str) -> str:
@@ -600,7 +605,7 @@ class PyXploraApi(PyXplora):
         watches: List[Dict[str, Any]] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
-            self.init()
+            await self.init()
             try:
                 watches_raw = await self._gqlHandler.getWatches_a(wuid)
                 _watches = watches_raw.get("watches", {})
@@ -631,9 +636,10 @@ class PyXploraApi(PyXplora):
         return await self._gqlHandler.getSWInfo_a(qrCode.split("=")[1])
 
     async def getWatchState(self, wuid: str) -> Dict[str, Any]:
-        w: List[Dict[str, Any]] = await self.getWatches(wuid=wuid)
-        qrCode: str = w[0]["qrCode"]
-        return await self._gqlHandler.getWatchState_a(qrCode.split("=")[1])
+        wqr: List[Dict[str, Any]] = await self.getWatches(wuid=wuid)
+        for w in wqr:
+            qrCode: str = w.get("qrCode", "=")
+            return await self._gqlHandler.getWatchState_a(qrCode.split("=")[1])
 
     async def conv360IDToO2OID(self, qid: str, deviceId: str) -> Dict[str, Any]:
         return await self._gqlHandler.conv360IDToO2OID_a(qid, deviceId)
