@@ -303,4 +303,9 @@ class GQLHandler(HandlerGQL):
             "data", {}
         )
 
+    def submitIncorrectLocationData(self, wuid: str, lat: str, lng: str, timestamp: str) -> Dict[str, Any]:
+        return self.runAuthorizedGqlQuery(
+            gm.WATCH_M.get("submitIncorrectLocationDataM", ""), {"uid": wuid, "lat": lat, "lng": lng, "timestamp": timestamp}
+        ).get("data", {})
+
     ########## SECTION MUTATION end ##########

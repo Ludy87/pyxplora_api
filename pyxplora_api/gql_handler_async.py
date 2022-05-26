@@ -342,4 +342,12 @@ class GQLHandler(HandlerGQL):
             await self.runAuthorizedGqlQuery_a(gm.WATCH_M.get("setReadChatMsgM", ""), {"uid": wuid, "msgId": msgId, "id": id})
         ).get("data", {})
 
+    async def submitIncorrectLocationData(self, wuid: str, lat: str, lng: str, timestamp: str) -> Dict[str, Any]:
+        return (
+            await self.runAuthorizedGqlQuery_a(
+                gm.WATCH_M.get("submitIncorrectLocationDataM", ""),
+                {"uid": wuid, "lat": lat, "lng": lng, "timestamp": timestamp},
+            )
+        ).get("data", {})
+
     ########## SECTION MUTATION end ##########

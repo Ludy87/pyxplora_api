@@ -670,3 +670,7 @@ class PyXploraApi(PyXplora):
     def addStep(self, step: int) -> bool:
         s: Dict[str, bool] = self._gqlHandler.addStep(step)
         return s.get("addStep", False)
+
+    def submitIncorrectLocationData(self, wuid: str, lat: str, lng: str, timestamp: str) -> bool:
+        data: Dict[str, bool] = self._gqlHandler.submitIncorrectLocationData(wuid, lat, lng, timestamp)
+        return data.get("submitIncorrectLocationData", False)

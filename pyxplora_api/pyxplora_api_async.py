@@ -678,3 +678,7 @@ class PyXploraApi(PyXplora):
     async def addStep(self, step: int) -> bool:
         s: Dict[str, bool] = await self._gqlHandler.addStep_a(step)
         return s.get("addStep", False)
+
+    async def submitIncorrectLocationData(self, wuid: str, lat: str, lng: str, timestamp: str) -> bool:
+        data: Dict[str, bool] = await self._gqlHandler.submitIncorrectLocationData(wuid, lat, lng, timestamp)
+        return data.get("submitIncorrectLocationData", False)
