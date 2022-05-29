@@ -594,24 +594,25 @@ class PyXploraApi(PyXplora):
 
     def getWatches(self, wuid: str) -> List[Dict[str, Any]]:
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
+        dataOk: Dict[str, Any] = {}
         watches_raw: Dict[str, Any] = {}
-        watches: List[Dict[str, Any]] = []
+        watches: Dict[str, Any] = {}
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             self.init()
             try:
                 watches_raw = self._gqlHandler.getWatches(wuid)
-                _watches = watches_raw.get("watches", {})
+                _watches: List[Dict[str, Any]] = watches_raw.get("watches", [])
                 if not _watches:
-                    dataOk.append({})
+                    dataOk = {}
                     return watches
                 for watch in _watches:
-                    watches.append(
+                    watches.update(
                         {
                             "imei": watch["swKey"],
                             "osVersion": watch["osVersion"],
                             "qrCode": watch["qrCode"],
+                            "model": watch["groupName"],
                         }
                     )
             except Exception as error:
