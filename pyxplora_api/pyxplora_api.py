@@ -592,7 +592,7 @@ class PyXploraApi(PyXplora):
         c: Dict[str, Any] = self._gqlHandler.getFollowRequestWatchCount()
         return c.get("followRequestWatchCount", 0)
 
-    def getWatches(self, wuid: str) -> List[Dict[str, Any]]:
+    def getWatches(self, wuid: str) -> Dict[str, Any]:
         retryCounter = 0
         dataOk: Dict[str, Any] = {}
         watches_raw: Dict[str, Any] = {}
