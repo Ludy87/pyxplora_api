@@ -13,7 +13,7 @@ with open("./pyxplora_api/const.py") as f:
     version = config["dummy_section"]["VERSION"].strip('"')
 
 setuptools.setup(
-    name="pyxplora_api-Ludy87",
+    name="pyxplora_api",
     version=version,
     author="Ludy87",
     author_email="android@astra-g.org",
@@ -25,7 +25,8 @@ setuptools.setup(
     project_urls={
         "Bug Tracker": "https://github.com/Ludy87/pyxplora_api/issues",
     },
-    packages=setuptools.find_packages(),
+    package_dir={"": "src"},
+    packages=setuptools.find_packages(where="src"),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python",
