@@ -13,7 +13,7 @@ with open("./src/pyxplora_api/const.py") as f:
     version = config["dummy_section"]["VERSION"].strip('"')
 
 setuptools.setup(
-    name="pyxplora_api",
+    name="pyxplora_api-Ludy87",
     version=version,
     author="Ludy87",
     author_email="android@astra-g.org",
