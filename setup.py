@@ -13,7 +13,7 @@ with open("./pyxplora_api/const.py") as f:
     version = config["dummy_section"]["VERSION"].strip('"')
 
 setuptools.setup(
-    name="pyxplora_api",
+    name="pyxplora_api-Ludy87",
     version=version,
     author="Ludy87",
     author_email="android@astra-g.org",
@@ -22,6 +22,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Ludy87/pyxplora_api",
+    project_urls={
+        "Bug Tracker": "https://github.com/Ludy87/pyxplora_api/issues",
+    },
     packages=setuptools.find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -37,4 +40,5 @@ setuptools.setup(
     ],
     keywords="api xplora watch",
     install_requires=["python-graphql-client==0.4.3"],
+    python_requires=">=3.6",
 )
