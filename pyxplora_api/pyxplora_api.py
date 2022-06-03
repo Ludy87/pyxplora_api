@@ -4,7 +4,7 @@ import logging
 
 from datetime import datetime
 import sys
-from time import time, sleep
+from time import time
 from typing import Any, Dict, List
 
 from .const import VERSION, VERSION_APP
@@ -54,7 +54,7 @@ class PyXploraApi(PyXplora):
 
                         # Wait for next try
                         if not self._issueToken:
-                            sleep(self.retryDelay)
+                            self.delay(self.retryDelay)
                     if self._issueToken:
                         self.dtIssueToken = int(time())
                 else:
@@ -124,7 +124,7 @@ class PyXploraApi(PyXplora):
             dataOk = contacts
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return contacts
         else:
@@ -160,7 +160,7 @@ class PyXploraApi(PyXplora):
             dataOk = alarms
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return alarms
         else:
@@ -177,7 +177,7 @@ class PyXploraApi(PyXplora):
             try:
                 if withAsk:
                     self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 location_raw = self._gqlHandler.getWatchLastLocation(wuid)
                 _watchLastLocate = location_raw.get(
                     "watchLastLocate",
@@ -226,7 +226,7 @@ class PyXploraApi(PyXplora):
             dataOk = watch_location
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return watch_location
         else:
@@ -249,7 +249,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 ask_raw = self.askWatchLocate(wuid)
                 track_raw = self.getTrackWatchInterval(wuid)
                 if ask_raw or (track_raw != -1):
@@ -261,7 +261,7 @@ class PyXploraApi(PyXplora):
             dataOk = asktrack_raw
             if dataOk is WatchOnlineStatus.UNKNOWN:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return asktrack_raw.value
         else:
@@ -285,7 +285,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 chats_raw = self._gqlHandler.chats(wuid, offset, limit, msgId)
                 _chatsNew = chats_raw.get("chatsNew", {})
                 if not _chatsNew:
@@ -317,7 +317,7 @@ class PyXploraApi(PyXplora):
             dataOk = chats
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return chats
         else:
@@ -359,7 +359,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 safeZones_raw = self._gqlHandler.safeZones(wuid)
                 _safeZones = safeZones_raw.get("safeZones", [])
                 if not _safeZones:
@@ -382,7 +382,7 @@ class PyXploraApi(PyXplora):
             dataOk = safe_zones
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return safe_zones
         else:
@@ -405,7 +405,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 silentTimes_raw = self._gqlHandler.silentTimes(wuid)
                 _silentTimes = silentTimes_raw.get("silentTimes", [])
                 if not _silentTimes:
@@ -427,7 +427,7 @@ class PyXploraApi(PyXplora):
             dataOk = school_silent_mode
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return school_silent_mode
         else:
@@ -442,7 +442,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 enable_raw = self._gqlHandler.setEnableSlientTime(silentId)
                 _setEnableSilentTime = enable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
@@ -454,7 +454,7 @@ class PyXploraApi(PyXplora):
             dataOk = _raw
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return bool(_raw)
         else:
@@ -469,7 +469,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 disable_raw = self._gqlHandler.setEnableSlientTime(silentId, NormalStatus.DISABLE.value)
                 _setEnableSilentTime = disable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
@@ -481,7 +481,7 @@ class PyXploraApi(PyXplora):
             dataOk = _raw
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return bool(_raw)
         else:
@@ -508,7 +508,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 enable_raw = self._gqlHandler.setEnableAlarmTime(alarmId)
                 _modifyAlarm = enable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
@@ -520,7 +520,7 @@ class PyXploraApi(PyXplora):
             dataOk = _raw
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return bool(_raw)
         else:
@@ -535,7 +535,7 @@ class PyXploraApi(PyXplora):
             self.init()
             try:
                 self.askWatchLocate(wuid)
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
                 disable_raw = self._gqlHandler.setEnableAlarmTime(alarmId, NormalStatus.DISABLE.value)
                 _modifyAlarm = disable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
@@ -547,7 +547,7 @@ class PyXploraApi(PyXplora):
             dataOk = _raw
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return bool(_raw)
         else:
@@ -620,7 +620,7 @@ class PyXploraApi(PyXplora):
             dataOk = watches
             if not dataOk:
                 self._logoff()
-                sleep(self.retryDelay)
+                self.delay(self.retryDelay)
         if dataOk:
             return watches
         else:

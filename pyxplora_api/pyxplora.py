@@ -45,6 +45,12 @@ class PyXplora:
     def _hasTokenExpired(self) -> bool:
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
 
+    def delay(self, duration_in_seconds):
+        current_time = datetime.datetime.now()
+        end_time = current_time + datetime.timedelta(0, duration_in_seconds)
+        while current_time < end_time:
+            current_time = datetime.datetime.now()
+
     ##### User Info #####
     def getUserID(self) -> str:
         return self.user.get("id", "")
