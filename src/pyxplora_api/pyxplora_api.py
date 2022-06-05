@@ -589,11 +589,11 @@ class PyXploraApi(PyXplora):
         c: Dict[str, Any] = self._gqlHandler.getFollowRequestWatchCount()
         return c.get("followRequestWatchCount", 0)
 
-    def getWatches(self, wuid: str) -> List[Dict[str, Any]]:
+    def getWatches(self, wuid: str) -> Dict[str, Any]:
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
+        dataOk: Dict[str, Any] = {}
         watches_raw: Dict[str, Any] = {}
-        watches: List[Dict[str, Any]] = []
+        watches: Dict[str, Any] = {}
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
@@ -603,14 +603,12 @@ class PyXploraApi(PyXplora):
                     dataOk = {}
                     return watches
                 for watch in _watches:
-                    watches.append(
-                        {
-                            "imei": watch["swKey"],
-                            "osVersion": watch["osVersion"],
-                            "qrCode": watch["qrCode"],
-                            "model": watch["groupName"],
-                        }
-                    )
+                    watches = {
+                        "imei": watch["swKey"],
+                        "osVersion": watch["osVersion"],
+                        "qrCode": watch["qrCode"],
+                        "model": watch["groupName"],
+                    }
             except Exception as error:
                 _LOGGER.debug(error)
             dataOk = watches
