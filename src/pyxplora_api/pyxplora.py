@@ -51,6 +51,12 @@ class PyXplora:
         while current_time < end_time:
             current_time = datetime.datetime.now()
 
+    def getDevice(self, wuid: str):
+        try:
+            return self.device[wuid]
+        except KeyError:
+            return {}
+
     ##### User Info #####
     def getUserID(self) -> str:
         return self.user.get("id", "")
