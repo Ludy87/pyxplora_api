@@ -82,7 +82,8 @@ class PyXploraApi(PyXplora):
         return "{0}-{1}".format(VERSION, VERSION_APP)
 
     def setDevices(self) -> PyXplora:
-        for wuid in self.getWatchUserIDs():
+        wuids: List[str] = self.getWatchUserIDs()
+        for wuid in wuids:
             self.device[wuid] = {}
             self.device[wuid]["getWatchAlarm"] = self.getWatchAlarm(wuid=wuid)
             self.device[wuid]["loadWatchLocation"] = self.loadWatchLocation(wuid=wuid)
@@ -104,7 +105,7 @@ class PyXploraApi(PyXplora):
             self.device[wuid]["getWatchOnlineStatus"] = self.getWatchOnlineStatus(wuid=wuid)
             self.device[wuid]["getWatchUserIcons"] = self.getWatchUserIcons(wuid=wuid)
             self.device[wuid]["getWatchUserXcoins"] = self.getWatchUserXcoins(wuid=wuid)
-        return self.device
+        return wuids
 
     ##### Contact Info #####
     def getWatchUserContacts(self, wuid: str) -> List[Dict[str, Any]]:
