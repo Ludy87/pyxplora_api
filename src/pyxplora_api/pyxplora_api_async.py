@@ -82,6 +82,28 @@ class PyXploraApi(PyXplora):
     def version(self) -> str:
         return "{0}-{1}".format(VERSION, VERSION_APP)
 
+    async def setDevices(self) -> List[Dict[str, Any]]:
+        for wuid in self.getWatchUserIDs():
+            self.device[wuid] = {}
+            self.device[wuid]["getWatchAlarm"] = await self.getWatchAlarm(wuid=wuid)
+            self.device[wuid]["loadWatchLocation"] = await self.loadWatchLocation(wuid=wuid)
+            self.device[wuid]["watch_battery"] = int(self.device[wuid]["loadWatchLocation"].get("watch_battery", -1))
+            self.device[wuid]["watch_charging"] = self.device[wuid]["loadWatchLocation"].get("watch_charging", False)
+            self.device[wuid]["locateType"] = self.device[wuid]["loadWatchLocation"].get(
+                "locateType", LocationType.UNKNOWN.value
+            )
+            self.device[wuid]["isInSafeZone"] = self.device[wuid]["loadWatchLocation"].get("isInSafeZone", False)
+            self.device[wuid]["safeZoneLabel"] = self.device[wuid]["loadWatchLocation"].get("safeZoneLabel", "")
+            self.device[wuid]["getWatchSafeZones"] = await self.getWatchSafeZones(wuid=wuid)
+            self.device[wuid]["getSilentTime"] = await self.getSilentTime(wuid=wuid)
+            self.device[wuid]["getWatches"] = await self.getWatches(wuid=wuid)
+            self.device[wuid]["getSWInfo"] = await self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"])
+            self.device[wuid]["getWatchState"] = await self.getWatchState(wuid=wuid, watches=self.device[wuid]["getWatches"])
+            d = datetime.now()
+            dt = datetime(year=d.year, month=d.month, day=d.day)
+            self.device[wuid]["getWatchUserSteps"] = await self.getWatchUserSteps(wuid=wuid, date=dt.timestamp())
+        return self.device
+
     ##### Contact Info #####
     async def getWatchUserContacts(self, wuid: str) -> List[Dict[str, Any]]:
         retryCounter = 0

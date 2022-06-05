@@ -31,6 +31,8 @@ class PyXplora:
 
         self.dtIssueToken = int(time()) - (self.tokenExpiresAfter * 1000)
 
+        self.device: List[Dict[str, Any]] = []
+
         self.watchs: List[Any] = []
         self._logoff()
 
