@@ -101,6 +101,9 @@ class PyXploraApi(PyXplora):
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
             self.device[wuid]["getWatchUserSteps"] = self.getWatchUserSteps(wuid=wuid, date=dt.timestamp())
+            self.device[wuid]["getWatchOnlineStatus"] = self.getWatchOnlineStatus(wuid=wuid)
+            self.device[wuid]["getWatchUserIcons"] = self.getWatchUserIcons(wuid=wuid)
+            self.device[wuid]["getWatchUserXcoins"] = self.getWatchUserXcoins(wuid=wuid)
         return self.device
 
     ##### Contact Info #####
