@@ -290,8 +290,6 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             await self.init()
             try:
-                await self.askWatchLocate(wuid)
-                await sleep(self.retryDelay)
                 chats_raw = await self._gqlHandler.chats_a(wuid, offset, limit, msgId)
                 _chatsNew = chats_raw.get("chatsNew", {})
                 if not _chatsNew:
@@ -364,8 +362,6 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             await self.init()
             try:
-                await self.askWatchLocate(wuid)
-                await sleep(self.retryDelay)
                 safeZones_raw = await self._gqlHandler.safeZones_a(wuid)
                 _safeZones = safeZones_raw.get("safeZones", [])
                 if not _safeZones:
@@ -410,8 +406,6 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             await self.init()
             try:
-                await self.askWatchLocate(wuid)
-                await sleep(self.retryDelay)
                 silentTimes_raw = await self._gqlHandler.silentTimes_a(wuid)
                 _silentTimes = silentTimes_raw.get("silentTimes", [])
                 if not _silentTimes:
@@ -447,8 +441,6 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             await self.init()
             try:
-                await self.askWatchLocate(wuid)
-                await sleep(self.retryDelay)
                 enable_raw = await self._gqlHandler.setEnableSlientTime_a(silentId)
                 _setEnableSilentTime = enable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
@@ -474,8 +466,6 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             await self.init()
             try:
-                await self.askWatchLocate(wuid)
-                await sleep(self.retryDelay)
                 disable_raw = await self._gqlHandler.setEnableSlientTime_a(silentId, NormalStatus.DISABLE.value)
                 _setEnableSilentTime = disable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
@@ -513,8 +503,6 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             await self.init()
             try:
-                await self.askWatchLocate(wuid)
-                await sleep(self.retryDelay)
                 enable_raw = await self._gqlHandler.setEnableAlarmTime_a(alarmId)
                 _modifyAlarm = enable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
@@ -540,8 +528,6 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             await self.init()
             try:
-                await self.askWatchLocate(wuid)
-                await sleep(self.retryDelay)
                 disable_raw = await self._gqlHandler.setEnableAlarmTime_a(alarmId, NormalStatus.DISABLE.value)
                 _modifyAlarm = disable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
