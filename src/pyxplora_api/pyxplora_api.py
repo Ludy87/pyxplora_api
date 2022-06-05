@@ -620,17 +620,15 @@ class PyXploraApi(PyXplora):
         else:
             raise FunctionError(sys._getframe().f_code.co_name)
 
-    def getSWInfo(self, wuid: str, watches: List[Dict[str, Any]] = []) -> Dict[str, Any]:
-        wqr: List[Dict[str, Any]] = watches if watches is not None else self.getWatches(wuid=wuid)
-        for w in wqr:
-            qrCode: str = w.get("qrCode", "=")
-            return self._gqlHandler.getSWInfo(qrCode.split("=")[1])
+    def getSWInfo(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
+        wqr: Dict[str, Any] = watches if watches is not None else self.getWatches(wuid=wuid)
+        qrCode: str = wqr.get("qrCode", "=")
+        return self._gqlHandler.getSWInfo(qrCode.split("=")[1])
 
-    def getWatchState(self, wuid: str, watches: List[Dict[str, Any]] = []) -> Dict[str, Any]:
+    def getWatchState(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
         wqr: List[Dict[str, Any]] = watches if watches is not None else self.getWatches(wuid=wuid)
-        for w in wqr:
-            qrCode: str = w.get("qrCode", "=")
-            return self._gqlHandler.getWatchState(qrCode.split("=")[1])
+        qrCode: str = wqr.get("qrCode", "=")
+        return self._gqlHandler.getWatchState(qrCode.split("=")[1])
 
     def conv360IDToO2OID(self, qid: str, deviceId: str) -> Dict[str, Any]:
         return self._gqlHandler.conv360IDToO2OID(qid, deviceId)

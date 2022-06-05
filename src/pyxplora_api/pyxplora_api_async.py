@@ -621,17 +621,15 @@ class PyXploraApi(PyXplora):
         else:
             raise FunctionError(sys._getframe().f_code.co_name)
 
-    async def getSWInfo(self, wuid: str, watches: List[Dict[str, Any]] = []) -> Dict[str, Any]:
-        wqr: List[Dict[str, Any]] = watches if watches is not None else await self.getWatches(wuid=wuid)
-        for w in wqr:
-            qrCode: str = w.get("qrCode", "=")
-            return await self._gqlHandler.getSWInfo_a(qrCode.split("=")[1])
+    async def getSWInfo(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
+        wqr: Dict[str, Any] = watches if watches else await self.getWatches(wuid=wuid)
+        qrCode: str = wqr.get("qrCode", "=")
+        return await self._gqlHandler.getSWInfo_a(qrCode.split("=")[1])
 
-    async def getWatchState(self, wuid: str, watches: List[Dict[str, Any]] = []) -> Dict[str, Any]:
-        wqr: List[Dict[str, Any]] = watches if watches is not None else await self.getWatches(wuid=wuid)
-        for w in wqr:
-            qrCode: str = w.get("qrCode", "=")
-            return await self._gqlHandler.getWatchState_a(qrCode.split("=")[1])
+    async def getWatchState(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
+        wqr: List[Dict[str, Any]] = watches if watches else await self.getWatches(wuid=wuid)
+        qrCode: str = wqr.get("qrCode", "=")
+        return await self._gqlHandler.getWatchState_a(qrCode.split("=")[1])
 
     async def conv360IDToO2OID(self, qid: str, deviceId: str) -> Dict[str, Any]:
         return await self._gqlHandler.conv360IDToO2OID_a(qid, deviceId)
