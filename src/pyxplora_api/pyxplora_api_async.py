@@ -4,6 +4,7 @@ import logging
 
 from asyncio import sleep
 from datetime import datetime
+import asyncio
 from time import time
 from typing import Any, Dict, List
 
@@ -82,11 +83,14 @@ class PyXploraApi(PyXplora):
         return "{0}-{1}".format(VERSION, VERSION_APP)
 
     async def setDevices(self) -> List[Dict[str, Any]]:
+        return await self._setDevices()
+
+    async def _setDevices(self) -> List[Dict[str, Any]]:
         wuids: List[str] = self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
-            self.device[wuid]["getWatchAlarm"] = await self.getWatchAlarm(wuid=wuid)
-            self.device[wuid]["loadWatchLocation"] = await self.loadWatchLocation(wuid=wuid)
+            self.device[wuid]["getWatchAlarm"] = asyncio.create_task(self.getWatchAlarm(wuid=wuid))
+            self.device[wuid]["loadWatchLocation"] = await asyncio.create_task(self.loadWatchLocation(wuid=wuid))
             self.device[wuid]["watch_battery"] = int(self.device[wuid]["loadWatchLocation"].get("watch_battery", -1))
             self.device[wuid]["watch_charging"] = self.device[wuid]["loadWatchLocation"].get("watch_charging", False)
             self.device[wuid]["locateType"] = self.device[wuid]["loadWatchLocation"].get(
@@ -94,15 +98,21 @@ class PyXploraApi(PyXplora):
             )
             self.device[wuid]["isInSafeZone"] = self.device[wuid]["loadWatchLocation"].get("isInSafeZone", False)
             self.device[wuid]["safeZoneLabel"] = self.device[wuid]["loadWatchLocation"].get("safeZoneLabel", "")
-            self.device[wuid]["getWatchSafeZones"] = await self.getWatchSafeZones(wuid=wuid)
-            self.device[wuid]["getSilentTime"] = await self.getSilentTime(wuid=wuid)
-            self.device[wuid]["getWatches"] = await self.getWatches(wuid=wuid)
-            self.device[wuid]["getSWInfo"] = await self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"])
-            self.device[wuid]["getWatchState"] = await self.getWatchState(wuid=wuid, watches=self.device[wuid]["getWatches"])
+            self.device[wuid]["getWatchSafeZones"] = asyncio.create_task(self.getWatchSafeZones(wuid=wuid))
+            self.device[wuid]["getSilentTime"] = asyncio.create_task(self.getSilentTime(wuid=wuid))
+            self.device[wuid]["getWatches"] = await asyncio.create_task(self.getWatches(wuid=wuid))
+            self.device[wuid]["getSWInfo"] = asyncio.create_task(
+                self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"])
+            )
+            self.device[wuid]["getWatchState"] = asyncio.create_task(
+                self.getWatchState(wuid=wuid, watches=self.device[wuid]["getWatches"])
+            )
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
-            self.device[wuid]["getWatchUserSteps"] = await self.getWatchUserSteps(wuid=wuid, date=dt.timestamp())
-            self.device[wuid]["getWatchOnlineStatus"] = await self.getWatchOnlineStatus(wuid=wuid)
+            self.device[wuid]["getWatchUserSteps"] = asyncio.create_task(
+                self.getWatchUserSteps(wuid=wuid, date=dt.timestamp())
+            )
+            self.device[wuid]["getWatchOnlineStatus"] = asyncio.create_task(self.getWatchOnlineStatus(wuid=wuid))
             self.device[wuid]["getWatchUserIcons"] = self.getWatchUserIcons(wuid=wuid)
             self.device[wuid]["getWatchUserXcoins"] = self.getWatchUserXcoins(wuid=wuid)
         return wuids
