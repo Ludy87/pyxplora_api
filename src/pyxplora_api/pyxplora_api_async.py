@@ -109,7 +109,7 @@ class PyXploraApi(PyXplora):
             )
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
-            self.device[wuid]["getWatchUserSteps"] = asyncio.create_task(
+            self.device[wuid]["getWatchUserSteps"] = await asyncio.create_task(
                 self.getWatchUserSteps(wuid=wuid, date=dt.timestamp())
             )
             self.device[wuid]["getWatchOnlineStatus"] = asyncio.create_task(self.getWatchOnlineStatus(wuid=wuid))
