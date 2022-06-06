@@ -22,6 +22,7 @@ class ChildNoError(Error):
 
 
 class FunctionError(Error):
+    # FunctionError(sys._getframe().f_code.co_name)
     def __init__(self, fnc: str) -> None:
         self.fnc = fnc
         super().__init__(self.fnc)

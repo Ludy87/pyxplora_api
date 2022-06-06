@@ -4,12 +4,11 @@ import logging
 
 from asyncio import sleep
 from datetime import datetime
-import sys
 from time import time
 from typing import Any, Dict, List
 
 from .const import VERSION, VERSION_APP
-from .exception_classes import FunctionError, LoginError, NoAdminError
+from .exception_classes import LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
 from .pyxplora import PyXplora
 from .status import LocationType, NormalStatus, WatchOnlineStatus
@@ -151,10 +150,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return contacts
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return contacts
 
     async def getWatchAlarm(self, wuid: str) -> List[Dict[str, Any]]:
         retryCounter = 0
@@ -186,10 +182,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return alarms
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return alarms
 
     async def loadWatchLocation(self, wuid: str = "", withAsk: bool = True) -> Dict[str, Any]:
         retryCounter = 0
@@ -248,10 +241,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return watch_location
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return watch_location
 
     async def getWatchBattery(self, wuid: str) -> int:
         watch_b: List[Dict[str, Any]] = await self.loadWatchLocation(wuid=wuid)
@@ -285,10 +275,7 @@ class PyXploraApi(PyXplora):
             if dataOk is WatchOnlineStatus.UNKNOWN:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return asktrack_raw.value
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return asktrack_raw.value
 
     """async def __setReadChatMsg_a(self, msgId, id):
         return (await self._gqlHandler.setReadChatMsg(self.getWatchUserIDs(), msgId, id))["setReadChatMsg"]"""
@@ -338,10 +325,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return chats
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return chats
 
     ##### Watch Location Info #####
     async def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> Dict[str, Any]:
@@ -400,10 +384,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return safe_zones
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return safe_zones
 
     async def getTrackWatchInterval(self, wuid: str) -> int:
         return (await self._gqlHandler.trackWatch_a(wuid)).get("trackWatch", -1)
@@ -442,10 +423,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return school_silent_mode
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return school_silent_mode
 
     async def setEnableSilentTime(self, silentId: str, wuid: str) -> bool:
         retryCounter = 0
@@ -466,10 +444,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return bool(_raw)
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return bool(_raw)
 
     async def setDisableSilentTime(self, silentId: str, wuid: str) -> bool:
         retryCounter = 0
@@ -490,10 +465,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return bool(_raw)
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return bool(_raw)
 
     async def setAllEnableSilentTime(self, wuid: str) -> List[bool]:
         res: List[bool] = []
@@ -526,10 +498,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return bool(_raw)
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return bool(_raw)
 
     async def setDisableAlarmTime(self, alarmId: str, wuid: str) -> bool:
         retryCounter = 0
@@ -550,10 +519,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return bool(_raw)
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return bool(_raw)
 
     async def setAllEnableAlarmTime(self, wuid: str) -> List[bool]:
         res: List[bool] = []
@@ -620,10 +586,7 @@ class PyXploraApi(PyXplora):
             if not dataOk:
                 self._logoff()
                 await sleep(self.retryDelay)
-        if dataOk:
-            return watches
-        else:
-            raise FunctionError(sys._getframe().f_code.co_name)
+        return watches
 
     async def getSWInfo(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
         wqr: Dict[str, Any] = watches if watches else await self.getWatches(wuid=wuid)
