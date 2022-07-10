@@ -7,6 +7,10 @@
 [![GitHub stars](https://img.shields.io/github/stars/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api)
 [![GitHub license](https://img.shields.io/github/license/Ludy87/pyxplora_api?style=for-the-badge&logo=appveyor)](https://github.com/Ludy87/pyxplora_api/blob/main/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge&logo=appveyor)](https://github.com/psf/black)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/Ludy87/pyxplora_api.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/Ludy87/pyxplora_api/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Ludy87/pyxplora_api.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/Ludy87/pyxplora_api/context:python)
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/ludy87)
 
 Unofficial python library for the Xplora® API
 
