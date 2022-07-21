@@ -42,7 +42,7 @@ class GQLHandler(HandlerGQL):
         return self.runGqlQuery(query, variables)
 
     def login(self) -> Dict[str, Any]:
-        data = self.runGqlQuery(gm.SIGN_M.get("issueTokenM", ""), self.variables).get("data", {})
+        data: Dict[str, Any] = self.runGqlQuery(gm.SIGN_M.get("issueTokenM", ""), self.variables).get("data", {})
         if data["issueToken"] is None:
             # Login failed.
             raise LoginError("Login to Xplora® API failed. Check your input!")
@@ -95,9 +95,14 @@ class GQLHandler(HandlerGQL):
         return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("checkByQrCodeQ", ""), {"qrCode": qrCode}).get("data", {})
 
     def getWatchState(self, qrCode: str, qrt: str = "", qrc: str = "") -> Dict[str, Any]:
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("stateQ", ""), {"qrCode": qrCode, "qrt": qrt, "qrc": qrc}).get(
-            "data", {}
-        )
+        vari = {}
+        if qrCode != "":
+            vari["qrCode"] = qrCode
+        if qrt != "":
+            vari["qrt"] = qrt
+        if qrc != "":
+            vari["qrc"] = qrc
+        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("stateQ", ""), vari).get("data", {})
 
     def getWatchLastLocation(self, wuid: str) -> Dict[str, Any]:
         return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("locateQ", ""), {"uid": wuid}).get("data", {})
