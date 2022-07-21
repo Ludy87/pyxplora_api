@@ -39,7 +39,7 @@ class PyXploraApi(PyXplora):
                     self._password,
                     self._userLang,
                     self._timeZone,
-                ).c()
+                )
                 if self._gqlHandler:
                     retryCounter = 0
                     while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -80,7 +80,10 @@ class PyXploraApi(PyXplora):
     def version(self) -> str:
         return "{0}-{1}".format(VERSION, VERSION_APP)
 
-    def setDevices(self) -> PyXplora:
+    def setDevices(self) -> List[Dict[str, Any]]:
+        return self._setDevices()
+
+    def _setDevices(self) -> List[str]:
         wuids: List[str] = self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
@@ -243,16 +246,13 @@ class PyXploraApi(PyXplora):
         return watch_location
 
     def getWatchBattery(self, wuid: str) -> int:
-        watch_b: List[Dict[str, Any]] = self.loadWatchLocation(wuid=wuid)
-        for watch in watch_b:
-            return int(watch.get("watch_battery", -1))
-        return -1
+        watch_b: Dict[str, Any] = self.loadWatchLocation(wuid=wuid)
+        return int(watch_b.get("watch_battery", -1))
 
     def getWatchIsCharging(self, wuid: str) -> bool:
-        watch_c: List[Dict[str, Any]] = self.loadWatchLocation(wuid=wuid)
-        for watch in watch_c:
-            if watch.get("watch_charging", False):
-                return True
+        watch_c: Dict[str, Any] = self.loadWatchLocation(wuid=wuid)
+        if watch_c.get("watch_charging", False):
+            return True
         return False
 
     def getWatchOnlineStatus(self, wuid: str) -> str:
@@ -337,6 +337,8 @@ class PyXploraApi(PyXplora):
 
     def getWatchLocate(self, wuid: str) -> Dict[str, Any]:
         _loadWatchLocation = self.loadWatchLocation(wuid=wuid)
+        if isinstance(_loadWatchLocation, dict):
+            return _loadWatchLocation
         if not _loadWatchLocation:
             return {}
         for loadWatchLocation in _loadWatchLocation:
@@ -588,14 +590,17 @@ class PyXploraApi(PyXplora):
         return watches
 
     def getSWInfo(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
-        wqr: Dict[str, Any] = watches if watches is not None else self.getWatches(wuid=wuid)
+        wqr: Dict[str, Any] = watches if watches else self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return self._gqlHandler.getSWInfo(qrCode.split("=")[1])
 
     def getWatchState(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
-        wqr: List[Dict[str, Any]] = watches if watches is not None else self.getWatches(wuid=wuid)
+        wqr: Dict[str, Any] = watches if watches else self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
-        return self._gqlHandler.getWatchState(qrCode.split("=")[1])
+        try:
+            return self._gqlHandler.getWatchState(qrCode=qrCode.split("=")[1])
+        except Exception as err:
+            print(err)
 
     def conv360IDToO2OID(self, qid: str, deviceId: str) -> Dict[str, Any]:
         return self._gqlHandler.conv360IDToO2OID(qid, deviceId)
