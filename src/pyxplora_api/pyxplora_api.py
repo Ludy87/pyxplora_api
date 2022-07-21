@@ -329,6 +329,8 @@ class PyXploraApi(PyXplora):
     ##### Watch Location Info #####
     def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> Dict[str, Any]:
         _loadWatchLocation = self.loadWatchLocation(wuid=wuid, withAsk=withAsk)
+        if isinstance(_loadWatchLocation, dict):
+            return _loadWatchLocation.get("watch_last_location", {}) 
         if not _loadWatchLocation:
             return {}
         for loadWatchLocation in _loadWatchLocation:
