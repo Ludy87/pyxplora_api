@@ -97,9 +97,14 @@ class GQLHandler(HandlerGQL):
         return (await self.runAuthorizedGqlQuery_a(gq.WATCH_Q.get("checkByQrCodeQ", ""), {"qrCode": qrCode})).get("data", {})
 
     async def getWatchState_a(self, qrCode: str, qrt: str = "", qrc: str = "") -> Dict[str, Any]:
-        return (
-            await self.runAuthorizedGqlQuery_a(gq.WATCH_Q.get("stateQ", ""), {"qrCode": qrCode, "qrt": qrt, "qrc": qrc})
-        ).get("data", {})
+        vari = {}
+        if qrCode != "":
+            vari["qrCode"] = qrCode
+        if qrt != "":
+            vari["qrt"] = qrt
+        if qrc != "":
+            vari["qrc"] = qrc
+        return (await self.runAuthorizedGqlQuery_a(gq.WATCH_Q.get("stateQ", ""), vari)).get("data", {})
 
     async def getWatchLastLocation_a(self, wuid: str) -> Dict[str, Any]:
         return (await self.runAuthorizedGqlQuery_a(gq.WATCH_Q.get("locateQ", ""), {"uid": wuid})).get("data", {})

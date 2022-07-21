@@ -41,7 +41,7 @@ class PyXploraApi(PyXplora):
                     self._password,
                     self._userLang,
                     self._timeZone,
-                ).c()
+                )
                 if self._gqlHandler:
                     retryCounter = 0
                     while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -85,7 +85,7 @@ class PyXploraApi(PyXplora):
     async def setDevices(self) -> List[Dict[str, Any]]:
         return await self._setDevices()
 
-    async def _setDevices(self) -> List[Dict[str, Any]]:
+    async def _setDevices(self) -> List[str]:
         wuids: List[str] = self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
@@ -104,15 +104,12 @@ class PyXploraApi(PyXplora):
             self.device[wuid]["getSWInfo"] = asyncio.create_task(
                 self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"])
             )
-            self.device[wuid]["getWatchState"] = asyncio.create_task(
-                self.getWatchState(wuid=wuid, watches=self.device[wuid]["getWatches"])
-            )
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
             self.device[wuid]["getWatchUserSteps"] = await asyncio.create_task(
                 self.getWatchUserSteps(wuid=wuid, date=dt.timestamp())
             )
-            self.device[wuid]["getWatchOnlineStatus"] = asyncio.create_task(self.getWatchOnlineStatus(wuid=wuid))
+            self.device[wuid]["getWatchOnlineStatus"] = await asyncio.create_task(self.getWatchOnlineStatus(wuid=wuid))
             self.device[wuid]["getWatchUserIcons"] = self.getWatchUserIcons(wuid=wuid)
             self.device[wuid]["getWatchUserXcoins"] = self.getWatchUserXcoins(wuid=wuid)
         return wuids
@@ -254,16 +251,13 @@ class PyXploraApi(PyXplora):
         return watch_location
 
     async def getWatchBattery(self, wuid: str) -> int:
-        watch_b: List[Dict[str, Any]] = await self.loadWatchLocation(wuid=wuid)
-        for watch in watch_b:
-            return int(watch.get("watch_battery", -1))
-        return -1
+        watch_b: Dict[str, Any] = await self.loadWatchLocation(wuid=wuid)
+        return int(watch_b.get("watch_battery", -1))
 
     async def getWatchIsCharging(self, wuid: str) -> bool:
-        watch_c: List[Dict[str, Any]] = await self.loadWatchLocation(wuid=wuid)
-        for watch in watch_c:
-            if watch.get("watch_charging", False):
-                return True
+        watch_c: Dict[str, Any] = await self.loadWatchLocation(wuid=wuid)
+        if watch_c.get("watch_charging", False):
+            return True
         return False
 
     async def getWatchOnlineStatus(self, wuid: str) -> str:
@@ -348,6 +342,8 @@ class PyXploraApi(PyXplora):
 
     async def getWatchLocate(self, wuid: str) -> Dict[str, Any]:
         _loadWatchLocation = await self.loadWatchLocation(wuid=wuid)
+        if isinstance(_loadWatchLocation, dict):
+            return _loadWatchLocation
         if not _loadWatchLocation:
             return {}
         for loadWatchLocation in _loadWatchLocation:
@@ -604,9 +600,9 @@ class PyXploraApi(PyXplora):
         return await self._gqlHandler.getSWInfo_a(qrCode.split("=")[1])
 
     async def getWatchState(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
-        wqr: List[Dict[str, Any]] = watches if watches else await self.getWatches(wuid=wuid)
+        wqr: Dict[str, Any] = watches if watches else await self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
-        return await self._gqlHandler.getWatchState_a(qrCode.split("=")[1])
+        return await self._gqlHandler.getWatchState_a(qrCode=qrCode.split("=")[1])
 
     async def conv360IDToO2OID(self, qid: str, deviceId: str) -> Dict[str, Any]:
         return await self._gqlHandler.conv360IDToO2OID_a(qid, deviceId)

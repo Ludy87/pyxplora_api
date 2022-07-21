@@ -41,6 +41,7 @@ UTILS_M: Dict[str, str] = {
     "issueEmailCodeM": "mutation IssueEmailCode($purpose: EmailAndPhoneVerificationType!, $email: String, $previousToken: String) {\n  issueEmailCode(purpose: $purpose, email: $email, previousToken: $previousToken) {\n    __typename\n    token\n  }\n}",
     "resetPasswordWithEmailM": "mutation ResetPasswordWithEmail($emailAddress: String!, $verifyCode: String!, $password: String!) {\n  resetPasswordWithEmail(emailAddress: $emailAddress, verifyCode: $verifyCode, password: $password) {\n    __typename\n    alreadyRegistered\n    resetSuccess\n  }\n}",
     "resetPasswordWithEmailOrPhoneM": "mutation resetPasswordWithEmailOrPhone($countryPhoneNumber: String, $phoneNumber: String, $verifyCode: String!, $password: String!, $verificationToken: String!, $emailAddress: String) {\n  resetPasswordWithEmailOrPhone(countryPhoneNumber: $countryPhoneNumber, phoneNumber: $phoneNumber, verifyCode: $verifyCode, password: $password, verificationToken: $verificationToken, emailAddress: $emailAddress) {\n    __typename\n    alreadyRegistered\n    resetSuccess\n  }\n}",
+    "userUnitSettingsM": "mutation UserUnitSettings($uid: String!, $unit_setting: Int!) {\n  userUnitSettings(uid: $uid, unit_setting: $unit_setting)\n}",
 }
 WATCH_M: Dict[str, str] = {
     "confirmM": "mutation ConfirmWatch($deviceId : String!, $qid : String!) {\n  confirmWatch(deviceId: $deviceId, qid: $qid)\n}",
