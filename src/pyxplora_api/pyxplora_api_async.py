@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from asyncio import sleep
+from asyncio import create_task, sleep
 from datetime import datetime
-import asyncio
 from time import time
 from typing import Any, Dict, List
 
@@ -89,8 +88,8 @@ class PyXploraApi(PyXplora):
         wuids: List[str] = self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
-            self.device[wuid]["getWatchAlarm"] = asyncio.create_task(self.getWatchAlarm(wuid=wuid))
-            self.device[wuid]["loadWatchLocation"] = await asyncio.create_task(self.loadWatchLocation(wuid=wuid))
+            self.device[wuid]["getWatchAlarm"] = create_task(self.getWatchAlarm(wuid=wuid))
+            self.device[wuid]["loadWatchLocation"] = await create_task(self.loadWatchLocation(wuid=wuid))
             self.device[wuid]["watch_battery"] = int(self.device[wuid]["loadWatchLocation"].get("watch_battery", -1))
             self.device[wuid]["watch_charging"] = self.device[wuid]["loadWatchLocation"].get("watch_charging", False)
             self.device[wuid]["locateType"] = self.device[wuid]["loadWatchLocation"].get(
@@ -98,18 +97,14 @@ class PyXploraApi(PyXplora):
             )
             self.device[wuid]["isInSafeZone"] = self.device[wuid]["loadWatchLocation"].get("isInSafeZone", False)
             self.device[wuid]["safeZoneLabel"] = self.device[wuid]["loadWatchLocation"].get("safeZoneLabel", "")
-            self.device[wuid]["getWatchSafeZones"] = asyncio.create_task(self.getWatchSafeZones(wuid=wuid))
-            self.device[wuid]["getSilentTime"] = asyncio.create_task(self.getSilentTime(wuid=wuid))
-            self.device[wuid]["getWatches"] = await asyncio.create_task(self.getWatches(wuid=wuid))
-            self.device[wuid]["getSWInfo"] = asyncio.create_task(
-                self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"])
-            )
+            self.device[wuid]["getWatchSafeZones"] = create_task(self.getWatchSafeZones(wuid=wuid))
+            self.device[wuid]["getSilentTime"] = create_task(self.getSilentTime(wuid=wuid))
+            self.device[wuid]["getWatches"] = await create_task(self.getWatches(wuid=wuid))
+            self.device[wuid]["getSWInfo"] = create_task(self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"]))
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
-            self.device[wuid]["getWatchUserSteps"] = await asyncio.create_task(
-                self.getWatchUserSteps(wuid=wuid, date=dt.timestamp())
-            )
-            self.device[wuid]["getWatchOnlineStatus"] = await asyncio.create_task(self.getWatchOnlineStatus(wuid=wuid))
+            self.device[wuid]["getWatchUserSteps"] = await create_task(self.getWatchUserSteps(wuid=wuid, date=dt.timestamp()))
+            self.device[wuid]["getWatchOnlineStatus"] = await create_task(self.getWatchOnlineStatus(wuid=wuid))
             self.device[wuid]["getWatchUserIcons"] = self.getWatchUserIcons(wuid=wuid)
             self.device[wuid]["getWatchUserXcoins"] = self.getWatchUserXcoins(wuid=wuid)
         return wuids
@@ -207,7 +202,6 @@ class PyXploraApi(PyXplora):
                     {},
                 )
                 if not _watchLastLocate:
-                    dataOk = {}
                     return watch_location
                 _tm = 31532399 if _watchLastLocate.get("tm") is None else _watchLastLocate.get("tm")
                 _lat = "0.0" if _watchLastLocate.get("lat") is None else _watchLastLocate.get("lat")
@@ -335,7 +329,7 @@ class PyXploraApi(PyXplora):
     async def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> Dict[str, Any]:
         _loadWatchLocation = await self.loadWatchLocation(wuid=wuid, withAsk=withAsk)
         if isinstance(_loadWatchLocation, dict):
-            return _loadWatchLocation.get("watch_last_location", {}) 
+            return _loadWatchLocation.get("watch_last_location", {})
         if not _loadWatchLocation:
             return {}
         for loadWatchLocation in _loadWatchLocation:
@@ -443,7 +437,6 @@ class PyXploraApi(PyXplora):
                 enable_raw = await self._gqlHandler.setEnableSlientTime_a(silentId)
                 _setEnableSilentTime = enable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _setEnableSilentTime
             except Exception as error:
@@ -464,7 +457,6 @@ class PyXploraApi(PyXplora):
                 disable_raw = await self._gqlHandler.setEnableSlientTime_a(silentId, NormalStatus.DISABLE.value)
                 _setEnableSilentTime = disable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _setEnableSilentTime
             except Exception as error:
@@ -497,7 +489,6 @@ class PyXploraApi(PyXplora):
                 enable_raw = await self._gqlHandler.setEnableAlarmTime_a(alarmId)
                 _modifyAlarm = enable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _modifyAlarm
             except Exception as error:
@@ -518,7 +509,6 @@ class PyXploraApi(PyXplora):
                 disable_raw = await self._gqlHandler.setEnableAlarmTime_a(alarmId, NormalStatus.DISABLE.value)
                 _modifyAlarm = disable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _modifyAlarm
             except Exception as error:
@@ -579,7 +569,6 @@ class PyXploraApi(PyXplora):
                 watches_raw = await self._gqlHandler.getWatches_a(wuid)
                 _watches: List[Dict[str, Any]] = watches_raw.get("watches", [])
                 if not _watches:
-                    dataOk = {}
                     return watches
                 for watch in _watches:
                     watches = {

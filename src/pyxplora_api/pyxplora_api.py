@@ -202,7 +202,6 @@ class PyXploraApi(PyXplora):
                     {},
                 )
                 if not _watchLastLocate:
-                    dataOk = {}
                     return watch_location
                 _tm = 31532399 if _watchLastLocate.get("tm") is None else _watchLastLocate.get("tm")
                 _lat = "0.0" if _watchLastLocate.get("lat") is None else _watchLastLocate.get("lat")
@@ -330,7 +329,7 @@ class PyXploraApi(PyXplora):
     def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> Dict[str, Any]:
         _loadWatchLocation = self.loadWatchLocation(wuid=wuid, withAsk=withAsk)
         if isinstance(_loadWatchLocation, dict):
-            return _loadWatchLocation.get("watch_last_location", {}) 
+            return _loadWatchLocation.get("watch_last_location", {})
         if not _loadWatchLocation:
             return {}
         for loadWatchLocation in _loadWatchLocation:
@@ -438,7 +437,6 @@ class PyXploraApi(PyXplora):
                 enable_raw = self._gqlHandler.setEnableSlientTime(silentId)
                 _setEnableSilentTime = enable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _setEnableSilentTime
             except Exception as error:
@@ -459,7 +457,6 @@ class PyXploraApi(PyXplora):
                 disable_raw = self._gqlHandler.setEnableSlientTime(silentId, NormalStatus.DISABLE.value)
                 _setEnableSilentTime = disable_raw.get("setEnableSilentTime", -1)
                 if not _setEnableSilentTime:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _setEnableSilentTime
             except Exception as error:
@@ -492,7 +489,6 @@ class PyXploraApi(PyXplora):
                 enable_raw = self._gqlHandler.setEnableAlarmTime(alarmId)
                 _modifyAlarm = enable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _modifyAlarm
             except Exception as error:
@@ -513,7 +509,6 @@ class PyXploraApi(PyXplora):
                 disable_raw = self._gqlHandler.setEnableAlarmTime(alarmId, NormalStatus.DISABLE.value)
                 _modifyAlarm = disable_raw.get("modifyAlarm", -1)
                 if not _modifyAlarm:
-                    dataOk = "0"
                     return bool(_raw)
                 _raw = _modifyAlarm
             except Exception as error:
@@ -574,7 +569,6 @@ class PyXploraApi(PyXplora):
                 watches_raw = self._gqlHandler.getWatches(wuid)
                 _watches: List[Dict[str, Any]] = watches_raw.get("watches", [])
                 if not _watches:
-                    dataOk = {}
                     return watches
                 for watch in _watches:
                     watches = {
