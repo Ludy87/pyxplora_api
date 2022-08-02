@@ -32,7 +32,7 @@ class FunctionError(Error):
 
 
 class LoginError(Error):
-    def __init__(self, message: str, res: int = 1) -> None:
+    def __init__(self, message: str, res: str = "") -> None:
         self.message = message
         self.res = res
         super().__init__(self.message, self.res)

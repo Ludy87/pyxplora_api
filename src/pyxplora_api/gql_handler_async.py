@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from python_graphql_client import GraphqlClient
 
@@ -42,10 +42,12 @@ class GQLHandler(HandlerGQL):
         return await self.runGqlQuery_a(query, variables)
 
     async def login_a(self) -> Dict[str, Any]:
-        data: Dict[str, Any] = (await self.runGqlQuery_a(gm.SIGN_M.get("issueTokenM", ""), self.variables)).get("data", {})
+        dataAll: Dict[str, Any] = await self.runGqlQuery_a(gm.SIGN_M.get("issueTokenM", ""), self.variables)
+        data = dataAll.get("data", {})
         if data["issueToken"] is None:
+            error_message: List[Dict[str, str]] = dataAll.get("errors", [{"message": ""}])
             # Login failed.
-            raise LoginError("Login to Xplora® API failed. Check your input!")
+            raise LoginError("Login to Xplora® API failed. Check your input!\n{}".format(error_message[0].get("message", "")))
         self.issueToken = data["issueToken"]
 
         # Login succeeded

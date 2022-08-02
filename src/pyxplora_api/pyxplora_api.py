@@ -48,6 +48,8 @@ class PyXploraApi(PyXplora):
                         # Try to login
                         try:
                             self._issueToken = self._gqlHandler.login()
+                        except LoginError as err:
+                            self.error_message = err.message
                         except Exception:
                             pass
 
@@ -75,7 +77,7 @@ class PyXploraApi(PyXplora):
                             self.watchs.append(watch)
                 self.user = token.get("user", {})
                 return
-        raise LoginError("Login to Xplora® API failed. Check your input!")
+        raise LoginError(self.error_message)
 
     def version(self) -> str:
         return "{0}-{1}".format(VERSION, VERSION_APP)
