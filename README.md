@@ -12,6 +12,9 @@
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/ludy87)
 
+[✨ Wishlist from Amazon ✨](https://smile.amazon.de/registry/wishlist/2MX8QK8VE9MV1)
+
+---
 Unofficial python library for the Xplora® API
 
 Diese Projekt ist eine Übersetzung von TypeScript zu Python, mit Erweiterungen.
