@@ -30,7 +30,7 @@ class PyXploraApi(PyXplora):
     ) -> None:
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber)
 
-    async def __login(self, forceLogin: bool = False) -> Dict[Any, Any]:
+    async def _login(self, forceLogin: bool = False) -> Dict[Any, Any]:
         if not self._isConnected() or self._hasTokenExpired() or forceLogin:
             try:
                 self._logoff()
@@ -67,7 +67,7 @@ class PyXploraApi(PyXplora):
         return self._issueToken
 
     async def init(self, forceLogin: bool = False) -> None:
-        token = await self.__login(forceLogin)
+        token = await self._login(forceLogin)
         if token:
             if token.get("user", {}):
                 if not self._childPhoneNumber:
@@ -630,6 +630,10 @@ class PyXploraApi(PyXplora):
         if not userSteps:
             return {}
         return userSteps
+
+    async def getStartTrackingWatch(self, wuid: str):
+        data: Dict[str, Any] = await self._gqlHandler.getStartTrackingWatch_a(wuid)
+        return data.get("startTrackingWatch", "")
 
     async def addStep(self, step: int) -> bool:
         s: Dict[str, bool] = await self._gqlHandler.addStep_a(step)

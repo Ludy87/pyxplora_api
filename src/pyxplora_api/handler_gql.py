@@ -4,7 +4,7 @@ import hashlib
 import math
 from time import time
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from .const import API_KEY, API_SECRET
 
@@ -40,6 +40,8 @@ class HandlerGQL:
             "timeZone": self.timeZone,
         }
         self.issueToken: Dict[str, Any]
+
+        self.errors: List[Any] = []
 
     def c(self) -> HandlerGQL:
         return self
