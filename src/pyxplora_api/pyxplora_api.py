@@ -26,8 +26,9 @@ class PyXploraApi(PyXplora):
         userLang: str,
         timeZone: str,
         childPhoneNumber: List[str] = [],
+        wuid: Any = None,
     ) -> None:
-        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber)
+        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid)
 
     def _login(self, forceLogin: bool = False) -> Dict[Any, Any]:
         if not self._isConnected() or self._hasTokenExpired() or forceLogin:

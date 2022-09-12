@@ -27,8 +27,9 @@ class PyXploraApi(PyXplora):
         userLang: str,
         timeZone: str,
         childPhoneNumber: List[str] = [],
+        wuid: Any = None,
     ) -> None:
-        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber)
+        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid)
 
     async def _login(self, forceLogin: bool = False) -> Dict[Any, Any]:
         if not self._isConnected() or self._hasTokenExpired() or forceLogin:
@@ -90,7 +91,7 @@ class PyXploraApi(PyXplora):
         wuids: List[str] = self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
-            self.device[wuid]["getWatchAlarm"] = create_task(self.getWatchAlarm(wuid=wuid))
+            self.device[wuid]["getWatchAlarm"] = await create_task(self.getWatchAlarm(wuid=wuid))
             self.device[wuid]["loadWatchLocation"] = await create_task(self.loadWatchLocation(wuid=wuid))
             self.device[wuid]["watch_battery"] = int(self.device[wuid]["loadWatchLocation"].get("watch_battery", -1))
             self.device[wuid]["watch_charging"] = self.device[wuid]["loadWatchLocation"].get("watch_charging", False)
@@ -99,10 +100,10 @@ class PyXploraApi(PyXplora):
             )
             self.device[wuid]["isInSafeZone"] = self.device[wuid]["loadWatchLocation"].get("isInSafeZone", False)
             self.device[wuid]["safeZoneLabel"] = self.device[wuid]["loadWatchLocation"].get("safeZoneLabel", "")
-            self.device[wuid]["getWatchSafeZones"] = create_task(self.getWatchSafeZones(wuid=wuid))
-            self.device[wuid]["getSilentTime"] = create_task(self.getSilentTime(wuid=wuid))
+            self.device[wuid]["getWatchSafeZones"] = await create_task(self.getWatchSafeZones(wuid=wuid))
+            self.device[wuid]["getSilentTime"] = await create_task(self.getSilentTime(wuid=wuid))
             self.device[wuid]["getWatches"] = await create_task(self.getWatches(wuid=wuid))
-            self.device[wuid]["getSWInfo"] = create_task(self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"]))
+            self.device[wuid]["getSWInfo"] = await create_task(self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"]))
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
             self.device[wuid]["getWatchUserSteps"] = await create_task(self.getWatchUserSteps(wuid=wuid, date=dt.timestamp()))

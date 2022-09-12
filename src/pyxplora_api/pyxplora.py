@@ -16,6 +16,7 @@ class PyXplora:
         userLang: str,
         timeZone: str,
         childPhoneNumber: List[str] = [],
+        wuid: Any = None,
     ) -> None:
         self._countrycode = countrycode
         self._phoneNumber = phoneNumber
@@ -24,6 +25,8 @@ class PyXplora:
         self._timeZone = timeZone
 
         self._childPhoneNumber = childPhoneNumber
+
+        self._wuid = wuid
 
         self.tokenExpiresAfter = 240
         self.maxRetries = 3
@@ -87,6 +90,12 @@ class PyXplora:
 
     ##### Watch Info #####
     def getWatchUserIDs(self, watchuserphonenumbers: List[str] = []) -> List[str]:
+        if isinstance(self._wuid, list):
+            if self._wuid:
+                return self._wuid
+        if isinstance(self._wuid, str):
+            if self._wuid != "":
+                return [self._wuid]
         watch_IDs: List[str] = []
         for watch in self.watchs:
             if watchuserphonenumbers:
