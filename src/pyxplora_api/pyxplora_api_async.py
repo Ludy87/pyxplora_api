@@ -98,12 +98,17 @@ class PyXploraApi(PyXplora):
             self.device[wuid]["locateType"] = self.device[wuid]["loadWatchLocation"].get(
                 "locateType", LocationType.UNKNOWN.value
             )
+            self.device[wuid]["lastTrackTime"] = self.device[wuid]["loadWatchLocation"].get(
+                "tm", datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            )
             self.device[wuid]["isInSafeZone"] = self.device[wuid]["loadWatchLocation"].get("isInSafeZone", False)
             self.device[wuid]["safeZoneLabel"] = self.device[wuid]["loadWatchLocation"].get("safeZoneLabel", "")
             self.device[wuid]["getWatchSafeZones"] = await create_task(self.getWatchSafeZones(wuid=wuid))
             self.device[wuid]["getSilentTime"] = await create_task(self.getSilentTime(wuid=wuid))
             self.device[wuid]["getWatches"] = await create_task(self.getWatches(wuid=wuid))
-            self.device[wuid]["getSWInfo"] = await create_task(self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"]))
+            self.device[wuid]["getSWInfo"] = await create_task(
+                self.getSWInfo(wuid=wuid, watches=self.device[wuid]["getWatches"])
+            )
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
             self.device[wuid]["getWatchUserSteps"] = await create_task(self.getWatchUserSteps(wuid=wuid, date=dt.timestamp()))

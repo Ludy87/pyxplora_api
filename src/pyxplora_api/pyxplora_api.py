@@ -97,6 +97,9 @@ class PyXploraApi(PyXplora):
             self.device[wuid]["locateType"] = self.device[wuid]["loadWatchLocation"].get(
                 "locateType", LocationType.UNKNOWN.value
             )
+            self.device[wuid]["lastTrackTime"] = self.device[wuid]["loadWatchLocation"].get(
+                "tm", datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            )
             self.device[wuid]["isInSafeZone"] = self.device[wuid]["loadWatchLocation"].get("isInSafeZone", False)
             self.device[wuid]["safeZoneLabel"] = self.device[wuid]["loadWatchLocation"].get("safeZoneLabel", "")
             self.device[wuid]["getWatchSafeZones"] = self.getWatchSafeZones(wuid=wuid)

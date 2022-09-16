@@ -24,6 +24,8 @@ class PyXplora:
         self._userLang = userLang
         self._timeZone = timeZone
 
+        self.error_message = ""
+
         self._childPhoneNumber = childPhoneNumber
 
         self._wuid = wuid
