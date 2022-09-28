@@ -16,9 +16,9 @@ jobs:
           ref: main
       - name: Set up Python
         uses: actions/setup-python@v4.2.0
-        check-latest: true
         with:
           python-version: '3.x'
+          check-latest: true
       - name: Get Version
         id: version
         shell: bash
@@ -54,9 +54,9 @@ jobs:
       - name: Set up Python
         if: steps.check-tag.outputs.match == 'true'
         uses: actions/setup-python@v4.2.0
-        check-latest: true
         with:
           python-version: "3.9"
+          check-latest: true
       - name: Install dependencies
         if: steps.check-tag.outputs.match == 'true'
         run: |
