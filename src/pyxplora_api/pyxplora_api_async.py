@@ -88,7 +88,10 @@ class PyXploraApi(PyXplora):
         return await self._setDevices(ids)
 
     async def _setDevices(self, ids: list = []) -> List[str]:
-        wuids: List[str] = self.getWatchUserIDs(ids)
+        if ids:
+            wuids = ids
+        else:
+            wuids: List[str] = self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
             self.device[wuid]["getWatchAlarm"] = await create_task(self.getWatchAlarm(wuid=wuid))
