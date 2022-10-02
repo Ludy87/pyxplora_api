@@ -12,7 +12,7 @@
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/ludy87)
 
-[✨ Wishlist from Amazon ✨](https://smile.amazon.de/registry/wishlist/2MX8QK8VE9MV1)
+[![✨ Wishlist from Amazon ✨](https://www.astra-g.org/wp-content/uploads/2022/09/amazon_wish.png)](https://smile.amazon.de/registry/wishlist/2MX8QK8VE9MV1)
 
 ---
 Unofficial python library for the Xplora® API

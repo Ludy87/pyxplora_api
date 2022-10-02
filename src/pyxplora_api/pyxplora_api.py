@@ -83,11 +83,11 @@ class PyXploraApi(PyXplora):
     def version(self) -> str:
         return "{0}-{1}".format(VERSION, VERSION_APP)
 
-    def setDevices(self) -> List[Dict[str, Any]]:
-        return self._setDevices()
+    def setDevices(self, ids: list = []) -> List[Dict[str, Any]]:
+        return self._setDevices(ids)
 
-    def _setDevices(self) -> List[str]:
-        wuids: List[str] = self.getWatchUserIDs()
+    def _setDevices(self, ids: list = []) -> List[str]:
+        wuids: List[str] = self.getWatchUserIDs(ids)
         for wuid in wuids:
             self.device[wuid] = {}
             self.device[wuid]["getWatchAlarm"] = self.getWatchAlarm(wuid=wuid)
