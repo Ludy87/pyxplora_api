@@ -52,7 +52,10 @@ class PyXploraApi(PyXplora):
                         except LoginError as err:
                             self.error_message = err.message
                         except Exception:
-                            pass
+                            if retryCounter == self.maxRetries + 2:
+                                self.error_message = "Cannot connect to the server."
+                            else:
+                                pass
 
                         # Wait for next try
                         if not self._issueToken:
