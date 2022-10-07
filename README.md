@@ -49,44 +49,44 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 | Function                                                             | Result Type           |
 | -------------------------------------------------------------------- | --------------------- |
-| getWatchUserIDs(child_no: List[str] = [])                            | List[str]:            |
+| getWatchUserIDs(child_no: list[str] = [])                            | list[str]:            |
 | getWatchUserPhoneNumbers(wuid: str, ignoreError: bool = False)       | str:                  |
-| getWatchUserPhoneNumbers(wuid: List[str], ignoreError: bool = False) | List[str]:            |
+| getWatchUserPhoneNumbers(wuid: list[str], ignoreError: bool = False) | list[str]:            |
 | getWatchUserNames(wuid: str)                                         | str:                  |
-| getWatchUserNames(wuid: List[str])                                   | List[str]:            |
+| getWatchUserNames(wuid: list[str])                                   | list[str]:            |
 | getWatchUserIcons(wuid: str)                                         | str:                  |
-| getWatchUserIcons(wuid: List[str])                                   | List[str]:            |
+| getWatchUserIcons(wuid: list[str])                                   | list[str]:            |
 | getWatchUserXcoins(wuid: str)                                        | int:                  |
-| getWatchUserXcoins(wuid: List[str])                                  | List[int]:            |
+| getWatchUserXcoins(wuid: list[str])                                  | list[int]:            |
 | getWatchUserCurrentStep(wuid: str)                                   | int:                  |
-| getWatchUserCurrentStep(wuid: List[str])                             | List[int]:            |
+| getWatchUserCurrentStep(wuid: list[str])                             | list[int]:            |
 | getWatchUserTotalStep(wuid: str)                                     | int:                  |
-| getWatchUserTotalStep(wuid: List[str])                               | List[int]:            |
-| getWatchUserSteps(wuid: str, date: int)                              | Dict[str, Any]:       |
-| getWatchUserContacts(wuid: str)                                      | List[Dict[str, Any]]: |
+| getWatchUserTotalStep(wuid: list[str])                               | list[int]:            |
+| getWatchUserSteps(wuid: str, date: int)                              | dict[str, any]:       |
+| getWatchUserContacts(wuid: str)                                      | list[dict[str, any]]: |
 
 ## Watch Info
 
 | Function                              | Result Type           |
 | ------------------------------------- | --------------------- |
-| getWatchAlarm(wuid: str)              | List[Dict[str, Any]]: |
+| getWatchAlarm(wuid: str)              | list[dict[str, any]]: |
 | getWatchBattery(wuid: str)            | int:                  |
 | getWatchIsCharging(wuid: str)         | bool:                 |
 | getWatchOnlineStatus(wuid: str)       | str:                  |
 | getWatchUnReadChatMsgCount(wuid: str) | int:                  |
-| getWatchChats(wuid: str)              | List[Dict[str, Any]]: |
+| getWatchChats(wuid: str)              | list[dict[str, any]]: |
 
 ## Watch Location Info
 
 | Function                                                      | Result Type           | Retrun        |
 | ------------------------------------------------------------- | --------------------- | ------------- |
-| getWatchLastLocation(wuid: str, withAsk: bool = False)        | Dict[str, Any]:       |
-| getWatchLocate(wuid: str)                                     | Dict[str, Any]:       |
+| getWatchLastLocation(wuid: str, withAsk: bool = False)        | dict[str, any]:       |
+| getWatchLocate(wuid: str)                                     | dict[str, any]:       |
 | getWatchLocateType(wuid: str)                                 | str:                  | GPS/WIFI/CELL |
-| getWatchSafeZones(wuid: str)                                  | List[Dict[str, Any]]: |
+| getWatchSafeZones(wuid: str)                                  | list[dict[str, any]]: |
 | getWatchIsInSafeZone(wuid: str)                               | bool:                 |
 | getWatchSafeZoneLabel(wuid: str)                              | str:                  |
-| getWatchLocHistory(wuid: str, date: int, tz: str, limit: int) | Dict[str, Any]:       |
+| getWatchLocHistory(wuid: str, date: int, tz: str, limit: int) | dict[str, any]:       |
 | getTrackWatchInterval(wuid: str)                              | int:                  |
 | askWatchLocate(wuid: str)                                     | bool:                 |
 | getStartTrackingWatch(wuid: str)                              | int:                  | 1800          |
@@ -96,21 +96,32 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 | Function                                       | Result Type           |
 | ---------------------------------------------- | --------------------- |
-| getSilentTime(wuid: str)                       | List[Dict[str, Any]]: |
+| getSilentTime(wuid: str)                       | list[dict[str, any]]: |
 | setEnableSilentTime(silentId: str, wuid: str)  | bool:                 |
 | setDisableSilentTime(silentId: str, wuid: str) | bool:                 |
-| setAllEnableSilentTime(wuid: str)              | List[bool]:           |
-| setAllDisableSilentTime(wuid: str)             | List[bool]:           |
+| setAllEnableSilentTime(wuid: str)              | list[bool]:           |
+| setAllDisableSilentTime(wuid: str)             | list[bool]:           |
 
 ## Watch Alarm
 
 | Function                                     | Result Type     |
 | -------------------------------------------- | --------------- |
-| getAlarmTime(wuid: str)                      | Dict[str, Any]: |
+| getAlarmTime(wuid: str)                      | dict[str, any]: |
 | setEnableAlarmTime(alarmId: str, wuid: str)  | bool:           |
 | setDisableAlarmTime(alarmId: str, wuid: str) | bool:           |
-| setAllEnableAlarmTime(wuid: str)             | List[bool]:     |
-| setAllDisableAlarmTime(wuid: str)            | List[bool]:     |
+| setAllEnableAlarmTime(wuid: str)             | list[bool]:     |
+| setAllDisableAlarmTime(wuid: str)            | list[bool]:     |
+
+## Chat Fetch
+
+| Function                                              | Result Type     |
+| ----------------------------------------------------- | --------------- |
+| chats(wuid: str, offset: int, limit: int, msgId: str) | dict[str, any]: |
+| fetchChatImage(wuid: str, msgId: str)                 | dict[str, any]: |
+| fetchChatMp3(wuid: str, msgId: str)                   | dict[str, any]: |
+| fetchChatShortVideo(wuid: str, msgId: str)            | dict[str, any]: |
+| fetchChatShortVideoCover(wuid: str, msgId: str)       | dict[str, any]: |
+| fetchChatVoice(wuid: str, msgId: str)                 | dict[str, any]: |
 
 ## Feature
 
@@ -120,20 +131,23 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | isAdmin(wuid: str)             | bool:       |
 | shutdown(wuid: str)            | bool:       |
 | reboot(wuid: str)              | bool:       |
+| addStep(step: int)             | bool:       |
 
-| Function                                                | Result Type           |
-| ------------------------------------------------------- | --------------------- |
-| getFollowRequestWatchCount()                            | int:                  |
-| getWatches(wuid: str)                                   | List[Dict[str, Any]]: |
-| getSWInfo(wuid: str)                                    | Dict[str, Any]:       |
-| getWatchState(wuid: str)                                | Dict[str, Any]:       |
-| conv360IDToO2OID(qid: str, deviceId: str)               | Dict[str, Any]:       |
-| campaigns(id: str, categoryId: str)                     | Dict[str, Any]:       |
-| getCountries()                                          | List[Dict[str, str]]: |
-| watchesDynamic()                                        | Dict[str, Any]:       |
-| watchGroups(id: str = "")                               | Dict[str, Any]:       |
-| familyInfo(wuid: str, watchId: str, tz: str, date: int) | Dict[str, Any]:       |
-| avatars(id: str)                                        | Dict[str, Any]:       |
+| Function                                                                   | Result Type           |
+| -------------------------------------------------------------------------- | --------------------- |
+| getFollowRequestWatchCount()                                               | int:                  |
+| getWatches(wuid: str)                                                      | list[dict[str, any]]: |
+| getSWInfo(wuid: str)                                                       | dict[str, any]:       |
+| getWatchState(wuid: str)                                                   | dict[str, any]:       |
+| conv360IDToO2OID(qid: str, deviceId: str)                                  | dict[str, any]:       |
+| campaigns(id: str, categoryId: str)                                        | dict[str, any]:       |
+| getCountries()                                                             | list[dict[str, str]]: |
+| watchesDynamic()                                                           | dict[str, any]:       |
+| watchGroups(id: str = "")                                                  | dict[str, any]:       |
+| familyInfo(wuid: str, watchId: str, tz: str, date: int)                    | dict[str, any]:       |
+| avatars(id: str)                                                           | dict[str, any]:       |
+| submitIncorrectLocationData(wuid: str, lat: str, lng: str, timestamp: str) | bool                  |
+| getAppVersion()                                                            | dict[str, any]:       |
 
 ---
 
@@ -420,7 +434,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | Xcoin            | read       | int  |
 | current Step     | read       | int  |
 | total Step       | read       | int  |
-| Alarms           | read       | list |
+| Alarms           | read       | list | get all/enable/disable - enable all/disable all |
 | Battery          | read       | int  |
 | Charging         | read       | bool |
 | Online Status    | read       | str  |

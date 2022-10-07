@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from time import time
-from typing import Any, Dict, List
 
 from .exception_classes import ChildNoError
 
@@ -15,8 +14,8 @@ class PyXplora:
         password: str,
         userLang: str,
         timeZone: str,
-        childPhoneNumber: List[str] = [],
-        wuid: Any = None,
+        childPhoneNumber: list[str] = [],
+        wuid: any = None,
     ) -> None:
         self._countrycode = countrycode
         self._phoneNumber = phoneNumber
@@ -36,18 +35,18 @@ class PyXplora:
 
         self.dtIssueToken = int(time()) - (self.tokenExpiresAfter * 1000)
 
-        self.device: Dict[str, Any] = {}
+        self.device: dict[str, any] = {}
 
-        self.watchs: List[Any] = []
+        self.watchs: list[any] = []
         self._logoff()
 
     def _isConnected(self) -> bool:
         return bool(self._gqlHandler and self._issueToken)
 
     def _logoff(self) -> None:
-        self.user: Dict[Any, Any] = {}
+        self.user: dict[any, any] = {}
         self._gqlHandler = None
-        self._issueToken: Dict[Any, Any] = {}
+        self._issueToken: dict[any, any] = {}
 
     def _hasTokenExpired(self) -> bool:
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
@@ -72,7 +71,7 @@ class PyXplora:
         return self.user.get("name", "")
 
     def getUserIcon(self) -> str:
-        extra: Dict[str, str] = self.user.get("extra", {})
+        extra: dict[str, str] = self.user.get("extra", {})
         return extra.get("profileIcon", "https://s3.eu-central-1.amazonaws.com/kids360uc/default_icon.png")
 
     def getUserXcoin(self) -> int:
@@ -91,14 +90,14 @@ class PyXplora:
         return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
     ##### Watch Info #####
-    def getWatchUserIDs(self, watchuserphonenumbers: List[str] = []) -> List[str]:
+    def getWatchUserIDs(self, watchuserphonenumbers: list[str] = []) -> list[str]:
         if isinstance(self._wuid, list):
             if self._wuid:
                 return self._wuid
         if isinstance(self._wuid, str):
             if self._wuid != "":
                 return [self._wuid]
-        watch_IDs: List[str] = []
+        watch_IDs: list[str] = []
         for watch in self.watchs:
             if watchuserphonenumbers:
                 if watch["ward"]["phoneNumber"] in watchuserphonenumbers:
@@ -107,8 +106,8 @@ class PyXplora:
                 watch_IDs.append(watch["ward"]["id"])
         return watch_IDs
 
-    def getWatchUserPhoneNumbers(self, wuid: str | List[str], ignoreError: bool = False) -> str | List[str]:
-        watchuserphonenumbers: List[str] = []
+    def getWatchUserPhoneNumbers(self, wuid: str | list[str], ignoreError: bool = False) -> str | list[str]:
+        watchuserphonenumbers: list[str] = []
         for watch in self.watchs:
             if str(watch["ward"]["phoneNumber"]) != "" and ignoreError:
                 raise ChildNoError()
@@ -122,8 +121,8 @@ class PyXplora:
             raise ChildNoError()
         return watchuserphonenumbers
 
-    def getWatchUserNames(self, wuid: str | List[str]) -> str | List[str]:
-        watchusernames: List[str] = []
+    def getWatchUserNames(self, wuid: str | list[str]) -> str | list[str]:
+        watchusernames: list[str] = []
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
@@ -135,8 +134,8 @@ class PyXplora:
             raise ChildNoError()
         return watchusernames
 
-    def getWatchUserIcons(self, wuid: str | List[str]) -> str | List[str]:
-        watchusericons: List[str] = []
+    def getWatchUserIcons(self, wuid: str | list[str]) -> str | list[str]:
+        watchusericons: list[str] = []
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
@@ -148,8 +147,8 @@ class PyXplora:
             raise ChildNoError()
         return watchusericons
 
-    def getWatchUserXcoins(self, wuid: str | List[str]) -> int | List[int]:
-        watchuserxcoins: List[int] = []
+    def getWatchUserXcoins(self, wuid: str | list[str]) -> int | list[int]:
+        watchuserxcoins: list[int] = []
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
@@ -161,8 +160,8 @@ class PyXplora:
             raise ChildNoError()
         return watchuserxcoins
 
-    def getWatchUserCurrentStep(self, wuid: str | List[str]) -> int | List[int]:
-        watchusercurrentstep: List[int] = []
+    def getWatchUserCurrentStep(self, wuid: str | list[str]) -> int | list[int]:
+        watchusercurrentstep: list[int] = []
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
@@ -174,8 +173,8 @@ class PyXplora:
             raise ChildNoError()
         return watchusercurrentstep
 
-    def getWatchUserTotalStep(self, wuid: str | List[str]) -> int | List[int]:
-        watchusertotalstep: List[int] = []
+    def getWatchUserTotalStep(self, wuid: str | list[str]) -> int | list[int]:
+        watchusertotalstep: list[int] = []
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
