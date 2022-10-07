@@ -5,7 +5,6 @@ import logging
 from asyncio import create_task, sleep
 from datetime import datetime
 from time import time
-from typing import Any, Dict, List
 
 from .const import VERSION, VERSION_APP
 from .exception_classes import LoginError, NoAdminError
@@ -15,7 +14,7 @@ from .status import LocationType, NormalStatus, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 
-_LIST_DICT: List[Dict[str, Any]] = []
+_LIST_DICT: list[dict[str, any]] = []
 
 
 class PyXploraApi(PyXplora):
@@ -26,12 +25,12 @@ class PyXploraApi(PyXplora):
         password: str,
         userLang: str,
         timeZone: str,
-        childPhoneNumber: List[str] = [],
-        wuid: Any = None,
+        childPhoneNumber: list[str] = [],
+        wuid: any = None,
     ) -> None:
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid)
 
-    async def _login(self, forceLogin: bool = False) -> Dict[Any, Any]:
+    async def _login(self, forceLogin: bool = False) -> dict[any, any]:
         if not self._isConnected() or self._hasTokenExpired() or forceLogin:
             try:
                 self._logoff()
@@ -87,14 +86,14 @@ class PyXploraApi(PyXplora):
     def version(self) -> str:
         return "{0}-{1}".format(VERSION, VERSION_APP)
 
-    async def setDevices(self, ids: list = []) -> List[Dict[str, Any]]:
+    async def setDevices(self, ids: list = []) -> list[dict[str, any]]:
         return await self._setDevices(ids)
 
-    async def _setDevices(self, ids: list = []) -> List[str]:
+    async def _setDevices(self, ids: list = []) -> list[str]:
         if ids:
             wuids = ids
         else:
-            wuids: List[str] = self.getWatchUserIDs()
+            wuids: list[str] = self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
             self.device[wuid]["getWatchAlarm"] = await create_task(self.getWatchAlarm(wuid=wuid))
@@ -124,16 +123,16 @@ class PyXploraApi(PyXplora):
         return wuids
 
     ##### Contact Info #####
-    async def getWatchUserContacts(self, wuid: str) -> List[Dict[str, Any]]:
+    async def getWatchUserContacts(self, wuid: str) -> list[dict[str, any]]:
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
-        contacts_raw: Dict[str, Any] = {}
-        contacts: List[Dict[str, Any]] = []
+        dataOk: list[dict[str, any]] = []
+        contacts_raw: dict[str, any] = {}
+        contacts: list[dict[str, any]] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
                 contacts_raw = await self._gqlHandler.getWatchUserContacts_a(wuid)
-                _contacts: Dict[str, Any] = contacts_raw.get("contacts", {})
+                _contacts: dict[str, any] = contacts_raw.get("contacts", {})
                 if not _contacts:
                     dataOk.append({})
                     return contacts
@@ -168,11 +167,11 @@ class PyXploraApi(PyXplora):
                 await sleep(self.retryDelay)
         return contacts
 
-    async def getWatchAlarm(self, wuid: str) -> List[Dict[str, Any]]:
+    async def getWatchAlarm(self, wuid: str) -> list[dict[str, any]]:
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
-        alarms_raw: Dict[str, Any] = {}
-        alarms: List[Dict[str, Any]] = []
+        dataOk: list[dict[str, any]] = []
+        alarms_raw: dict[str, any] = {}
+        alarms: list[dict[str, any]] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
@@ -200,11 +199,11 @@ class PyXploraApi(PyXplora):
                 await sleep(self.retryDelay)
         return alarms
 
-    async def loadWatchLocation(self, wuid: str = "", withAsk: bool = True) -> Dict[str, Any]:
+    async def loadWatchLocation(self, wuid: str = "", withAsk: bool = True) -> dict[str, any]:
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
-        location_raw: Dict[str, Any] = {}
-        watch_location: Dict[str, Any] = {}
+        dataOk: list[dict[str, any]] = []
+        location_raw: dict[str, any] = {}
+        watch_location: dict[str, any] = {}
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
@@ -259,11 +258,11 @@ class PyXploraApi(PyXplora):
         return watch_location
 
     async def getWatchBattery(self, wuid: str) -> int:
-        watch_b: Dict[str, Any] = await self.loadWatchLocation(wuid=wuid)
+        watch_b: dict[str, any] = await self.loadWatchLocation(wuid=wuid)
         return int(watch_b.get("watch_battery", -1))
 
     async def getWatchIsCharging(self, wuid: str) -> bool:
-        watch_c: Dict[str, Any] = await self.loadWatchLocation(wuid=wuid)
+        watch_c: dict[str, any] = await self.loadWatchLocation(wuid=wuid)
         if watch_c.get("watch_charging", False):
             return True
         return False
@@ -296,12 +295,12 @@ class PyXploraApi(PyXplora):
         # bug?
         return (await self._gqlHandler.unReadChatMsgCount_a(wuid)).get("unReadChatMsgCount", -1)
 
-    async def getWatchChats(self, wuid: str, offset: int = 0, limit: int = 100, msgId: str = "") -> List[Dict[str, Any]]:
+    async def getWatchChats(self, wuid: str, offset: int = 0, limit: int = 100, msgId: str = "") -> list[dict[str, any]]:
         # bug?
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
-        chats_raw: Dict[str, Any] = {}
-        chats: List[Dict[str, Any]] = []
+        dataOk: list[dict[str, any]] = []
+        chats_raw: dict[str, any] = {}
+        chats: list[dict[str, any]] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
@@ -340,7 +339,7 @@ class PyXploraApi(PyXplora):
         return chats
 
     ##### Watch Location Info #####
-    async def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> Dict[str, Any]:
+    async def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> dict[str, any]:
         _loadWatchLocation = await self.loadWatchLocation(wuid=wuid, withAsk=withAsk)
         if isinstance(_loadWatchLocation, dict):
             return _loadWatchLocation.get("watch_last_location", {})
@@ -350,7 +349,7 @@ class PyXploraApi(PyXplora):
             return loadWatchLocation.get("watch_last_location", {})
         return {}
 
-    async def getWatchLocate(self, wuid: str) -> Dict[str, Any]:
+    async def getWatchLocate(self, wuid: str) -> dict[str, any]:
         _loadWatchLocation = await self.loadWatchLocation(wuid=wuid)
         if isinstance(_loadWatchLocation, dict):
             return _loadWatchLocation
@@ -369,11 +368,11 @@ class PyXploraApi(PyXplora):
     async def getWatchSafeZoneLabel(self, wuid: str) -> str:
         return (await self.getWatchLocate(wuid)).get("safeZoneLabel", "")
 
-    async def getWatchSafeZones(self, wuid: str) -> List[Dict[str, Any]]:
+    async def getWatchSafeZones(self, wuid: str) -> list[dict[str, any]]:
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
-        safeZones_raw: Dict[str, Any] = {}
-        safe_zones: List[Dict[str, Any]] = []
+        dataOk: list[dict[str, any]] = []
+        safeZones_raw: dict[str, any] = {}
+        safe_zones: list[dict[str, any]] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
@@ -409,11 +408,11 @@ class PyXploraApi(PyXplora):
         return (await self._gqlHandler.askWatchLocate_a(wuid)).get("askWatchLocate", False)
 
     ##### Feature #####
-    async def getSilentTime(self, wuid: str) -> List[Dict[str, Any]]:
+    async def getSilentTime(self, wuid: str) -> list[dict[str, any]]:
         retryCounter = 0
-        dataOk: List[Dict[str, Any]] = []
-        silentTimes_raw: Dict[str, Any] = {}
-        school_silent_mode: List[Dict[str, Any]] = []
+        dataOk: list[dict[str, any]] = []
+        silentTimes_raw: dict[str, any] = {}
+        school_silent_mode: list[dict[str, any]] = []
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
@@ -481,14 +480,14 @@ class PyXploraApi(PyXplora):
                 await sleep(self.retryDelay)
         return bool(_raw)
 
-    async def setAllEnableSilentTime(self, wuid: str) -> List[bool]:
-        res: List[bool] = []
+    async def setAllEnableSilentTime(self, wuid: str) -> list[bool]:
+        res: list[bool] = []
         for silentTime in await self.getSilentTime(wuid):
             res.append(await self.setEnableSilentTime(silentTime.get("id", ""), wuid))
         return res
 
-    async def setAllDisableSilentTime(self, wuid: str) -> List[bool]:
-        res: List[bool] = []
+    async def setAllDisableSilentTime(self, wuid: str) -> list[bool]:
+        res: list[bool] = []
         for silentTime in await self.getSilentTime(wuid):
             res.append(await self.setDisableSilentTime(silentTime.get("id", ""), wuid))
         return res
@@ -533,14 +532,14 @@ class PyXploraApi(PyXplora):
                 await sleep(self.retryDelay)
         return bool(_raw)
 
-    async def setAllEnableAlarmTime(self, wuid: str) -> List[bool]:
-        res: List[bool] = []
+    async def setAllEnableAlarmTime(self, wuid: str) -> list[bool]:
+        res: list[bool] = []
         for alarmTime in await self.getWatchAlarm(wuid):
             res.append(await self.setEnableAlarmTime(alarmTime.get("id", ""), wuid))
         return res
 
-    async def setAllDisableAlarmTime(self, wuid: str) -> List[bool]:
-        res: List[bool] = []
+    async def setAllDisableAlarmTime(self, wuid: str) -> list[bool]:
+        res: list[bool] = []
         for alarmTime in await self.getWatchAlarm(wuid):
             res.append(await self.setDisableAlarmTime(alarmTime.get("id", ""), wuid))
         return res
@@ -569,19 +568,19 @@ class PyXploraApi(PyXplora):
         raise NoAdminError()
 
     async def getFollowRequestWatchCount(self) -> int:
-        c: Dict[str, Any] = await self._gqlHandler.getFollowRequestWatchCount_a()
+        c: dict[str, any] = await self._gqlHandler.getFollowRequestWatchCount_a()
         return c.get("followRequestWatchCount", 0)
 
-    async def getWatches(self, wuid: str) -> Dict[str, Any]:
+    async def getWatches(self, wuid: str) -> dict[str, any]:
         retryCounter = 0
-        dataOk: Dict[str, Any] = {}
-        watches_raw: Dict[str, Any] = {}
-        watches: Dict[str, Any] = {}
+        dataOk: dict[str, any] = {}
+        watches_raw: dict[str, any] = {}
+        watches: dict[str, any] = {}
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
                 watches_raw = await self._gqlHandler.getWatches_a(wuid)
-                _watches: List[Dict[str, Any]] = watches_raw.get("watches", [])
+                _watches: list[dict[str, any]] = watches_raw.get("watches", [])
                 if not _watches:
                     return watches
                 for watch in _watches:
@@ -599,42 +598,42 @@ class PyXploraApi(PyXplora):
                 await sleep(self.retryDelay)
         return watches
 
-    async def getSWInfo(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
-        wqr: Dict[str, Any] = watches if watches else await self.getWatches(wuid=wuid)
+    async def getSWInfo(self, wuid: str, watches: dict[str, any] = {}) -> dict[str, any]:
+        wqr: dict[str, any] = watches if watches else await self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return await self._gqlHandler.getSWInfo_a(qrCode.split("=")[1])
 
-    async def getWatchState(self, wuid: str, watches: Dict[str, Any] = {}) -> Dict[str, Any]:
-        wqr: Dict[str, Any] = watches if watches else await self.getWatches(wuid=wuid)
+    async def getWatchState(self, wuid: str, watches: dict[str, any] = {}) -> dict[str, any]:
+        wqr: dict[str, any] = watches if watches else await self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return await self._gqlHandler.getWatchState_a(qrCode=qrCode.split("=")[1])
 
-    async def conv360IDToO2OID(self, qid: str, deviceId: str) -> Dict[str, Any]:
+    async def conv360IDToO2OID(self, qid: str, deviceId: str) -> dict[str, any]:
         return await self._gqlHandler.conv360IDToO2OID_a(qid, deviceId)
 
-    async def campaigns(self, id: str, categoryId: str) -> Dict[str, Any]:
+    async def campaigns(self, id: str, categoryId: str) -> dict[str, any]:
         return await self._gqlHandler.campaigns_a(id, categoryId)
 
-    async def getCountries(self) -> List[Dict[str, str]]:
-        countries: Dict[str, Any] = await self._gqlHandler.countries_a()
+    async def getCountries(self) -> list[dict[str, str]]:
+        countries: dict[str, any] = await self._gqlHandler.countries_a()
         return countries.get("countries", {})
 
-    async def getWatchLocHistory(self, wuid: str, date: int, tz: str, limit: int) -> Dict[str, Any]:
+    async def getWatchLocHistory(self, wuid: str, date: int, tz: str, limit: int) -> dict[str, any]:
         return await self._gqlHandler.getWatchLocHistory_a(wuid, date, tz, limit)
 
-    async def watchesDynamic(self) -> Dict[str, Any]:
+    async def watchesDynamic(self) -> dict[str, any]:
         return await self._gqlHandler.watchesDynamic_a()
 
-    async def watchGroups(self, id: str = "") -> Dict[str, Any]:
+    async def watchGroups(self, id: str = "") -> dict[str, any]:
         return await self._gqlHandler.watchGroups_a(id)
 
-    async def familyInfo(self, wuid: str, watchId: str, tz: str, date: int) -> Dict[str, Any]:
+    async def familyInfo(self, wuid: str, watchId: str, tz: str, date: int) -> dict[str, any]:
         return await self._gqlHandler.familyInfo_a(wuid, watchId, tz, date)
 
-    async def avatars(self, id: str) -> Dict[str, Any]:
+    async def avatars(self, id: str) -> dict[str, any]:
         return await self._gqlHandler.avatars_a(id)
 
-    async def getWatchUserSteps(self, wuid: str, date: int) -> Dict[str, Any]:
+    async def getWatchUserSteps(self, wuid: str, date: int) -> dict[str, any]:
         userSteps = await self._gqlHandler.getWatchUserSteps_a(wuid=wuid, tz=self._timeZone, date=date)
         if not userSteps:
             return {}
@@ -643,14 +642,24 @@ class PyXploraApi(PyXplora):
             return {}
         return userSteps
 
-    async def getStartTrackingWatch(self, wuid: str):
-        data: Dict[str, Any] = await self._gqlHandler.getStartTrackingWatch_a(wuid)
-        return data.get("startTrackingWatch", "")
+    # start tracking for 30min
+    async def getStartTrackingWatch(self, wuid: str) -> int:
+        data: dict[str, any] = await self._gqlHandler.getStartTrackingWatch_a(wuid)
+        return data.get("startTrackingWatch", -1)
+
+    # stop tracking from getStartTrackingWatch
+    async def getEndTrackingWatch(self, wuid: str) -> int:
+        data: dict[str, any] = await self._gqlHandler.getEndTrackingWatch_a(wuid)
+        return data.get("endTrackingWatch", -1)
 
     async def addStep(self, step: int) -> bool:
-        s: Dict[str, bool] = await self._gqlHandler.addStep_a(step)
+        s: dict[str, bool] = await self._gqlHandler.addStep_a(step)
         return s.get("addStep", False)
 
     async def submitIncorrectLocationData(self, wuid: str, lat: str, lng: str, timestamp: str) -> bool:
-        data: Dict[str, bool] = await self._gqlHandler.submitIncorrectLocationData(wuid, lat, lng, timestamp)
+        data: dict[str, bool] = await self._gqlHandler.submitIncorrectLocationData(wuid, lat, lng, timestamp)
         return data.get("submitIncorrectLocationData", False)
+
+    async def getAppVersion(self):
+        data = await self._gqlHandler.getAppVersion_a()
+        return data
