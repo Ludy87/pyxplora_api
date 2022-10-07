@@ -300,6 +300,14 @@ class GQLHandler(HandlerGQL):
                 self.errors.append({"function": "getStartTrackingWatch", "error": error})
         return data.get("data", {})
 
+    def getEndTrackingWatch(self, wuid: str) -> Dict[str, Any]:
+        data = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("endTrackingWatchQ", ""), {"uid": wuid})
+        errors: List[Dict[str, str]] = data.get("errors", [])
+        if errors:
+            for error in errors:
+                self.errors.append({"function": "getEndTrackingWatch", "error": error})
+        return data.get("data", {})
+
     ########## SECTION QUERY end ##########
 
     ########## SECTION MUTATION start ##########

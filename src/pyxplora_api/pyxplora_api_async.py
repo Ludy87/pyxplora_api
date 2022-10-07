@@ -643,9 +643,15 @@ class PyXploraApi(PyXplora):
             return {}
         return userSteps
 
-    async def getStartTrackingWatch(self, wuid: str):
+    # start tracking for 30min
+    async def getStartTrackingWatch(self, wuid: str) -> int:
         data: Dict[str, Any] = await self._gqlHandler.getStartTrackingWatch_a(wuid)
-        return data.get("startTrackingWatch", "")
+        return data.get("startTrackingWatch", -1)
+
+    # stop tracking from getStartTrackingWatch
+    async def getEndTrackingWatch(self, wuid: str) -> int:
+        data: Dict[str, Any] = await self._gqlHandler.getEndTrackingWatch_a(wuid)
+        return data.get("endTrackingWatch", -1)
 
     async def addStep(self, step: int) -> bool:
         s: Dict[str, bool] = await self._gqlHandler.addStep_a(step)

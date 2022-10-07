@@ -20,9 +20,9 @@ Unofficial python library for the Xplora® API
 Diese Projekt ist eine Übersetzung von TypeScript zu Python, mit Erweiterungen.
 Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com/MiGoller/xplora-api.js)
 
-# [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
+## [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
 
-# Usage
+## Usage
 
 ```python
 from pyxplora_api import pyxplora_api as PXA
@@ -32,11 +32,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 ---
 
-# Feature
-
----
-
-# User Info
+## User Info
 
 | Function             | Result Type | Return              |
 | -------------------- | ----------- | ------------------- |
@@ -49,7 +45,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | getUserCreate()      | str:        | 2021-12-31 23:59:59 |
 | getUserUpdate()      | str:        | 2022-01-01 00:00:01 |
 
-# Watch User Info
+## Watch User Info
 
 | Function                                                             | Result Type           |
 | -------------------------------------------------------------------- | --------------------- |
@@ -69,7 +65,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | getWatchUserSteps(wuid: str, date: int)                              | Dict[str, Any]:       |
 | getWatchUserContacts(wuid: str)                                      | List[Dict[str, Any]]: |
 
-# Watch Info
+## Watch Info
 
 | Function                              | Result Type           |
 | ------------------------------------- | --------------------- |
@@ -80,7 +76,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | getWatchUnReadChatMsgCount(wuid: str) | int:                  |
 | getWatchChats(wuid: str)              | List[Dict[str, Any]]: |
 
-# Watch Location Info
+## Watch Location Info
 
 | Function                                                      | Result Type           | Retrun        |
 | ------------------------------------------------------------- | --------------------- | ------------- |
@@ -93,8 +89,10 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | getWatchLocHistory(wuid: str, date: int, tz: str, limit: int) | Dict[str, Any]:       |
 | getTrackWatchInterval(wuid: str)                              | int:                  |
 | askWatchLocate(wuid: str)                                     | bool:                 |
+| getStartTrackingWatch(wuid: str)                              | int:                  | 1800          |
+| getEndTrackingWatch(wuid: str)                                | int:                  | 1             |
 
-# Watch Silent Mode
+## Watch Silent Mode
 
 | Function                                       | Result Type           |
 | ---------------------------------------------- | --------------------- |
@@ -104,7 +102,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | setAllEnableSilentTime(wuid: str)              | List[bool]:           |
 | setAllDisableSilentTime(wuid: str)             | List[bool]:           |
 
-# Watch Alarm
+## Watch Alarm
 
 | Function                                     | Result Type     |
 | -------------------------------------------- | --------------- |
@@ -114,7 +112,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | setAllEnableAlarmTime(wuid: str)             | List[bool]:     |
 | setAllDisableAlarmTime(wuid: str)            | List[bool]:     |
 
-# Feature
+## Feature
 
 | Function                       | Result Type |
 | ------------------------------ | ----------- |
@@ -139,7 +137,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 ---
 
-# Country Support
+## Country Support
 
 | country name                                 | country code |
 | -------------------------------------------- | ------------ |
@@ -386,7 +384,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | Zimbabwe                                     | 263          |
 | Åland Islands                                | 358          |
 
-# Functions
+## Functions
 
 ---
 
