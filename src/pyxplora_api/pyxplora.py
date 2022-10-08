@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from time import time
 
-from .exception_classes import ChildNoError
+from .exception_classes import ChildNoError, XTypeError
 
 
 class PyXplora:
@@ -106,84 +106,124 @@ class PyXplora:
                 watch_IDs.append(watch["ward"]["id"])
         return watch_IDs
 
-    def getWatchUserPhoneNumbers(self, wuid: str | list[str], ignoreError: bool = False) -> str | list[str]:
+    def getWatchUserPhoneNumbers(self, wuid: str | list[str] = None, ignoreError: bool = False) -> list[str]:
         watchuserphonenumbers: list[str] = []
+        i = 1
+        if wuid is None:
+            wuid = self.getWatchUserIDs()
+        if not wuid and not ignoreError:
+            raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
-            if str(watch["ward"]["phoneNumber"]) != "" and ignoreError:
-                raise ChildNoError()
+            if str(watch["ward"]["phoneNumber"]) == "" and not ignoreError:
+                if i == len(self.watchs):
+                    raise ChildNoError()
+                i += 1
+                continue
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
                     watchuserphonenumbers.append(str(watch["ward"]["phoneNumber"]))
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return str(watch["ward"]["phoneNumber"])
-        if not watchuserphonenumbers:
-            raise ChildNoError()
+                    return [str(watch["ward"]["phoneNumber"])]
+            else:
+                raise XTypeError("str | list[str]", type(wuid))
+        if not watchuserphonenumbers and not ignoreError:
+            raise ChildNoError(["Child phonenumber"])
         return watchuserphonenumbers
 
-    def getWatchUserNames(self, wuid: str | list[str]) -> str | list[str]:
+    def getWatchUserNames(self, wuid: str | list[str] = None) -> list[str]:
         watchusernames: list[str] = []
+        if wuid is None:
+            wuid = self.getWatchUserIDs()
+        if not wuid:
+            raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
                     watchusernames.append(str(watch["ward"]["name"]))
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return str(watch["ward"]["name"])
+                    return [str(watch["ward"]["name"])]
+            else:
+                raise XTypeError("str | list[str]", type(wuid))
         if not watchusernames:
-            raise ChildNoError()
+            raise ChildNoError(["Watch Username"])
         return watchusernames
 
-    def getWatchUserIcons(self, wuid: str | list[str]) -> str | list[str]:
+    def getWatchUserIcons(self, wuid: str | list[str] = None) -> list[str]:
         watchusericons: list[str] = []
+        if wuid is None:
+            wuid = self.getWatchUserIDs()
+        if not wuid:
+            raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
                     watchusericons.append(f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}")
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
+                    return [f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"]
+            else:
+                raise XTypeError("str | list[str]", type(wuid))
         if not watchusericons:
-            raise ChildNoError()
+            raise ChildNoError(["Watch User Icon"])
         return watchusericons
 
-    def getWatchUserXcoins(self, wuid: str | list[str]) -> int | list[int]:
+    def getWatchUserXcoins(self, wuid: str | list[str] = None) -> list[int]:
         watchuserxcoins: list[int] = []
+        if wuid is None:
+            wuid = self.getWatchUserIDs()
+        if not wuid:
+            raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
                     watchuserxcoins.append(int(watch["ward"]["xcoin"]))
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return int(watch["ward"]["xcoin"])
+                    return [int(watch["ward"]["xcoin"])]
+            else:
+                raise XTypeError("str | list[str]", type(wuid))
         if not watchuserxcoins:
-            raise ChildNoError()
+            raise ChildNoError(["Watch User XCoins"])
         return watchuserxcoins
 
-    def getWatchUserCurrentStep(self, wuid: str | list[str]) -> int | list[int]:
+    def getWatchUserCurrentStep(self, wuid: str | list[str] = None) -> list[int]:
         watchusercurrentstep: list[int] = []
+        if wuid is None:
+            wuid = self.getWatchUserIDs()
+        if not wuid:
+            raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
                     watchusercurrentstep.append(int(watch["ward"]["currentStep"]))
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return int(watch["ward"]["currentStep"])
+                    return [int(watch["ward"]["currentStep"])]
+            else:
+                raise XTypeError("str | list[str]", type(wuid))
         if not watchusercurrentstep:
-            raise ChildNoError()
+            raise ChildNoError(["Watch User Currentsteps"])
         return watchusercurrentstep
 
-    def getWatchUserTotalStep(self, wuid: str | list[str]) -> int | list[int]:
+    def getWatchUserTotalStep(self, wuid: str | list[str] = None) -> list[int]:
         watchusertotalstep: list[int] = []
+        if wuid is None:
+            wuid = self.getWatchUserIDs()
+        if not wuid:
+            raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
                     watchusertotalstep.append(int(watch["ward"]["totalStep"]))
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return int(watch["ward"]["totalStep"])
+                    return [int(watch["ward"]["totalStep"])]
+            else:
+                raise XTypeError("str | list[str]", type(wuid))
         if not watchusertotalstep:
-            raise ChildNoError()
+            raise ChildNoError(["Watch User totalsteps"])
         return watchusertotalstep
 
     ##### - #####
