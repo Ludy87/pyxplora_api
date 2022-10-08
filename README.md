@@ -47,29 +47,29 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 ## Watch User Info
 
-| Function                                                             | Result Type           | Change Ver. |
-| -------------------------------------------------------------------- | --------------------- | ----------- |
-| getWatchUserIDs(child_no: list[str] = [])                            | list[str]:            |             |
-| getWatchUserPhoneNumbers(wuid: None, ignoreError: bool = False)      | list[str]:            | 2.1.1       |
-| getWatchUserPhoneNumbers(wuid: str, ignoreError: bool = False)       | list[str]:            | 2.1.1       |
-| getWatchUserPhoneNumbers(wuid: list[str], ignoreError: bool = False) | list[str]:            |             |
-| getWatchUserNames(None)                                              | list[str]:            | 2.1.1       |
-| getWatchUserNames(wuid: str)                                         | list[str]:            | 2.1.1       |
-| getWatchUserNames(wuid: list[str])                                   | list[str]:            |             |
-| getWatchUserIcons(None)                                              | list[str]:            | 2.1.1       |
-| getWatchUserIcons(wuid: str)                                         | list[str]:            | 2.1.1       |
-| getWatchUserIcons(wuid: list[str])                                   | list[str]:            |             |
-| getWatchUserXcoins(None)                                             | list[str]:            | 2.1.1       |
-| getWatchUserXcoins(wuid: str)                                        | list[str]:            | 2.1.1       |
-| getWatchUserXcoins(wuid: list[str])                                  | list[int]:            |             |
-| getWatchUserCurrentStep(None)                                        | list[str]:            | 2.1.1       |
-| getWatchUserCurrentStep(wuid: str)                                   | list[str]:            | 2.1.1       |
-| getWatchUserCurrentStep(wuid: list[str])                             | list[int]:            |             |
-| getWatchUserTotalStep(None)                                          | list[str]:            | 2.1.1       |
-| getWatchUserTotalStep(wuid: str)                                     | list[str]:            | 2.1.1       |
-| getWatchUserTotalStep(wuid: list[str])                               | list[int]:            |             |
-| getWatchUserSteps(wuid: str, date: int)                              | dict[str, any]:       |             |
-| getWatchUserContacts(wuid: str)                                      | list[dict[str, any]]: |             |
+| Function                                                             | Result Type           | Change Ver.                                                        |
+| -------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------ |
+| getWatchUserIDs(child_no: list[str] = [])                            | list[str]:            |                                                                    |
+| getWatchUserPhoneNumbers(wuid: None, ignoreError: bool = False)      | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserPhoneNumbers(wuid: str, ignoreError: bool = False)       | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserPhoneNumbers(wuid: list[str], ignoreError: bool = False) | list[str]:            |                                                                    |
+| getWatchUserNames(None)                                              | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserNames(wuid: str)                                         | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserNames(wuid: list[str])                                   | list[str]:            |                                                                    |
+| getWatchUserIcons(None)                                              | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserIcons(wuid: str)                                         | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserIcons(wuid: list[str])                                   | list[str]:            |                                                                    |
+| getWatchUserXcoins(None)                                             | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserXcoins(wuid: str)                                        | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserXcoins(wuid: list[str])                                  | list[int]:            |                                                                    |
+| getWatchUserCurrentStep(None)                                        | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserCurrentStep(wuid: str)                                   | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserCurrentStep(wuid: list[str])                             | list[int]:            |                                                                    |
+| getWatchUserTotalStep(None)                                          | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserTotalStep(wuid: str)                                     | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserTotalStep(wuid: list[str])                               | list[int]:            |                                                                    |
+| getWatchUserSteps(wuid: str, date: int)                              | dict[str, any]:       |                                                                    |
+| getWatchUserContacts(wuid: str)                                      | list[dict[str, any]]: |                                                                    |
 
 ## Watch Info
 
@@ -100,23 +100,23 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 ## Watch Silent Mode
 
-| Function                            | Result Type           | Change Ver. |
-| ----------------------------------- | --------------------- | ----------- |
-| getSilentTime(wuid: str)            | list[dict[str, any]]: |             |
-| setEnableSilentTime(silentId: str)  | bool:                 | 2.1.1       |
-| setDisableSilentTime(silentId: str) | bool:                 | 2.1.1       |
-| setAllEnableSilentTime(wuid: str)   | list[bool]:           |             |
-| setAllDisableSilentTime(wuid: str)  | list[bool]:           |             |
+| Function                            | Result Type           | Change Ver.                                                        |
+| ----------------------------------- | --------------------- | ------------------------------------------------------------------ |
+| getSilentTime(wuid: str)            | list[dict[str, any]]: |                                                                    |
+| setEnableSilentTime(silentId: str)  | bool:                 | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setDisableSilentTime(silentId: str) | bool:                 | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setAllEnableSilentTime(wuid: str)   | list[bool]:           |                                                                    |
+| setAllDisableSilentTime(wuid: str)  | list[bool]:           |                                                                    |
 
 ## Watch Alarm
 
-| Function                          | Result Type     | Change Ver. |
-| --------------------------------- | --------------- | ----------- |
-| getAlarmTime(wuid: str)           | dict[str, any]: |             |
-| setEnableAlarmTime(alarmId: str)  | bool:           | 2.1.1       |
-| setDisableAlarmTime(alarmId: str) | bool:           | 2.1.1       |
-| setAllEnableAlarmTime(wuid: str)  | list[bool]:     |             |
-| setAllDisableAlarmTime(wuid: str) | list[bool]:     |             |
+| Function                          | Result Type     | Change Ver.                                                        |
+| --------------------------------- | --------------- | ------------------------------------------------------------------ |
+| getAlarmTime(wuid: str)           | dict[str, any]: |                                                                    |
+| setEnableAlarmTime(alarmId: str)  | bool:           | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setDisableAlarmTime(alarmId: str) | bool:           | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setAllEnableAlarmTime(wuid: str)  | list[bool]:     |                                                                    |
+| setAllDisableAlarmTime(wuid: str) | list[bool]:     |                                                                    |
 
 ## Chat Fetch
 
