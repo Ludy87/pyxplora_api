@@ -19,8 +19,9 @@ class GQLHandler(HandlerGQL):
         password: str,
         userLang: str,
         timeZone: str,
+        email: str = None,
     ) -> None:
-        super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone)
+        super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone, email)
 
     async def runGqlQuery_a(self, query: str, variables: dict[str, any]) -> dict[str, any]:
         if query is None:
@@ -40,16 +41,19 @@ class GQLHandler(HandlerGQL):
         return await self.runGqlQuery_a(query, variables)
 
     async def login_a(self) -> dict[str, any]:
-        dataAll: dict[str, any] = await self.runGqlQuery_a(gm.SIGN_M.get("issueTokenM", ""), self.variables)
+        if self.email:
+            dataAll: dict[str, any] = await self.runGqlQuery_a(gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables)
+        else:
+            dataAll: dict[str, any] = await self.runGqlQuery_a(gm.SIGN_M.get("issueTokenM", ""), self.variables)
         errors = dataAll.get("errors", [])
         if errors:
             self.errors.append({"function": "login", "errors": errors})
-        data = dataAll.get("data", {})
-        if data["issueToken"] is None:
+        data: dict[str, any] = dataAll.get("data", {})
+        if data.get("issueToken", data.get("signInWithEmailOrPhone", None)) is None:
             error_message: list[dict[str, str]] = dataAll.get("errors", [{"message": ""}])
             # Login failed.
             raise LoginError("Login to Xplora® API failed. Check your input!\n{}".format(error_message[0].get("message", "")))
-        self.issueToken = data["issueToken"]
+        self.issueToken = data.get("issueToken", data.get("signInWithEmailOrPhone", None))
 
         # Login succeeded
         self.sessionId = self.issueToken["id"]

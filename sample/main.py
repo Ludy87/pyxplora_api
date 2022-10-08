@@ -2,12 +2,14 @@ from pyxplora_api import pyxplora_api as PXA
 
 
 def main():
-    countryCode = "+49"
-    phoneNummer = "123456789"
-    password = "ACCOUNT_PASSWORT"
-    local = "de-DE"
-    timeZone = "Europe/Berlin"
-    childPhoneNumber = []
+    countryCode: str = "+49"
+    phoneNummer: str = "123456789"
+    password: str = "ACCOUNT_PASSWORT"
+    local: str = "de-DE"
+    timeZone: str = "Europe/Berlin"
+    childPhoneNumber: list[str] = []
+    wuid: list[str] = []
+    email: str = "your@mail.local"
 
     xplora = PXA.PyXploraApi(
         countrycode=countryCode,
@@ -16,6 +18,8 @@ def main():
         userLang=local,
         timeZone=timeZone,
         childPhoneNumber=childPhoneNumber,
+        wuid=wuid,
+        email=email,
     )
     xplora.init()
     print(xplora.getUserName())

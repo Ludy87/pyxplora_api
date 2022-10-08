@@ -6,6 +6,7 @@ from time import time
 from datetime import datetime, timezone
 
 from .const import API_KEY, API_SECRET
+from .status import ClientType
 
 
 class HandlerGQL:
@@ -16,6 +17,7 @@ class HandlerGQL:
         password: str,
         userLang: str,
         timeZone: str,
+        email: str = None,
     ) -> None:
         # init vars
         self.sessionId = None
@@ -25,6 +27,7 @@ class HandlerGQL:
         self.timeZone = timeZone
         self.countryPhoneNumber = countryPhoneNumber
         self.phoneNumber = phoneNumber
+        self.email = email
         self.passwordMD5 = hashlib.md5(password.encode()).hexdigest()
         self._API_KEY = API_KEY
         self._API_SECRET = API_SECRET
@@ -37,6 +40,8 @@ class HandlerGQL:
             "password": self.passwordMD5,
             "userLang": self.userLocale,
             "timeZone": self.timeZone,
+            "emailAddress": self.email,
+            "client": ClientType.APP.value,
         }
         self.issueToken: dict[str, any]
 

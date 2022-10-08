@@ -15,10 +15,12 @@ class PyXplora:
         userLang: str,
         timeZone: str,
         childPhoneNumber: list[str] = [],
-        wuid: any = None,
+        wuid: str | list = None,
+        email: str = None,
     ) -> None:
         self._countrycode = countrycode
         self._phoneNumber = phoneNumber
+        self._email = email
         self._password = password
         self._userLang = userLang
         self._timeZone = timeZone

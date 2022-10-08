@@ -25,9 +25,10 @@ class PyXploraApi(PyXplora):
         userLang: str,
         timeZone: str,
         childPhoneNumber: list[str] = [],
-        wuid: any = None,
+        wuid: str | list = None,
+        email: str = None,
     ) -> None:
-        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid)
+        super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
 
     def _login(self, forceLogin: bool = False) -> dict[any, any]:
         if not self._isConnected() or self._hasTokenExpired() or forceLogin:
@@ -39,6 +40,7 @@ class PyXploraApi(PyXplora):
                     self._password,
                     self._userLang,
                     self._timeZone,
+                    self._email,
                 )
                 if self._gqlHandler:
                     retryCounter = 0
