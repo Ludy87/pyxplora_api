@@ -87,7 +87,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | getWatchIsInSafeZone(wuid: str)                               | bool:                 |
 | getWatchSafeZoneLabel(wuid: str)                              | str:                  |
 | getWatchLocHistory(wuid: str, date: int, tz: str, limit: int) | dict[str, any]:       |
-| getTrackWatchInterval(wuid: str)                              | int:                  |
+| getTrackWatchInterval(wuid: str)                              | int:                  | 60            |
 | askWatchLocate(wuid: str)                                     | bool:                 |
 | getStartTrackingWatch(wuid: str)                              | int:                  | 1800          |
 | getEndTrackingWatch(wuid: str)                                | int:                  | 1             |
