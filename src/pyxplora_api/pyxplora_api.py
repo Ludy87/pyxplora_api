@@ -438,7 +438,7 @@ class PyXploraApi(PyXplora):
                 self.delay(self.retryDelay)
         return school_silent_mode
 
-    def setEnableSilentTime(self, silentId: str, wuid: str) -> bool:
+    def setEnableSilentTime(self, silentId: str) -> bool:
         retryCounter = 0
         dataOk = ""
         _raw = ""
@@ -458,7 +458,7 @@ class PyXploraApi(PyXplora):
                 self.delay(self.retryDelay)
         return bool(_raw)
 
-    def setDisableSilentTime(self, silentId: str, wuid: str) -> bool:
+    def setDisableSilentTime(self, silentId: str) -> bool:
         retryCounter = 0
         dataOk = ""
         _raw = ""
@@ -481,16 +481,16 @@ class PyXploraApi(PyXplora):
     def setAllEnableSilentTime(self, wuid: str) -> list[bool]:
         res: list[bool] = []
         for silentTime in self.getSilentTime(wuid):
-            res.append(self.setEnableSilentTime(silentTime.get("id", ""), wuid))
+            res.append(self.setEnableSilentTime(silentTime.get("id", "")))
         return res
 
     def setAllDisableSilentTime(self, wuid: str) -> list[bool]:
         res: list[bool] = []
         for silentTime in self.getSilentTime(wuid):
-            res.append(self.setDisableSilentTime(silentTime.get("id", ""), wuid))
+            res.append(self.setDisableSilentTime(silentTime.get("id", "")))
         return res
 
-    def setEnableAlarmTime(self, alarmId: str, wuid: str) -> bool:
+    def setEnableAlarmTime(self, alarmId: str) -> bool:
         retryCounter = 0
         dataOk = ""
         _raw = ""
@@ -510,7 +510,7 @@ class PyXploraApi(PyXplora):
                 self.delay(self.retryDelay)
         return bool(_raw)
 
-    def setDisableAlarmTime(self, alarmId: str, wuid: str) -> bool:
+    def setDisableAlarmTime(self, alarmId: str) -> bool:
         retryCounter = 0
         dataOk = ""
         _raw = ""
@@ -533,13 +533,13 @@ class PyXploraApi(PyXplora):
     def setAllEnableAlarmTime(self, wuid: str) -> list[bool]:
         res: list[bool] = []
         for alarmTime in self.getWatchAlarm(wuid):
-            res.append(self.setEnableAlarmTime(alarmTime.get("id", ""), wuid))
+            res.append(self.setEnableAlarmTime(alarmTime.get("id", "")))
         return res
 
     def setAllDisableAlarmTime(self, wuid: str) -> list[bool]:
         res: list[bool] = []
         for alarmTime in self.getWatchAlarm(wuid):
-            res.append(self.setDisableAlarmTime(alarmTime.get("id", ""), wuid))
+            res.append(self.setDisableAlarmTime(alarmTime.get("id", "")))
         return res
 
     def sendText(self, text: str, wuid: str) -> bool:

@@ -47,20 +47,26 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 ## Watch User Info
 
-| Function                                                             | Result Type           |
-| -------------------------------------------------------------------- | --------------------- |
+| Function                                                             | Result Type           | Change Ver. |
+| -------------------------------------------------------------------- | --------------------- | ----------- |
 | getWatchUserIDs(child_no: list[str] = [])                            | list[str]:            |
-| getWatchUserPhoneNumbers(wuid: str, ignoreError: bool = False)       | str:                  |
+| getWatchUserPhoneNumbers(wuid: None, ignoreError: bool = False)      | list[str]:            | 2.1.1       |
+| getWatchUserPhoneNumbers(wuid: str, ignoreError: bool = False)       | list[str]:            | 2.1.1       |
 | getWatchUserPhoneNumbers(wuid: list[str], ignoreError: bool = False) | list[str]:            |
-| getWatchUserNames(wuid: str)                                         | str:                  |
+| getWatchUserNames(None)                                              | list[str]:            | 2.1.1       |
+| getWatchUserNames(wuid: str)                                         | list[str]:            | 2.1.1       |
 | getWatchUserNames(wuid: list[str])                                   | list[str]:            |
-| getWatchUserIcons(wuid: str)                                         | str:                  |
+| getWatchUserIcons(None)                                              | list[str]:            | 2.1.1       |
+| getWatchUserIcons(wuid: str)                                         | list[str]:            | 2.1.1       |
 | getWatchUserIcons(wuid: list[str])                                   | list[str]:            |
-| getWatchUserXcoins(wuid: str)                                        | int:                  |
+| getWatchUserXcoins(None)                                             | list[str]:            | 2.1.1       |
+| getWatchUserXcoins(wuid: str)                                        | list[str]:            | 2.1.1       |
 | getWatchUserXcoins(wuid: list[str])                                  | list[int]:            |
-| getWatchUserCurrentStep(wuid: str)                                   | int:                  |
+| getWatchUserCurrentStep(None)                                        | list[str]:            | 2.1.1       |
+| getWatchUserCurrentStep(wuid: str)                                   | list[str]:            | 2.1.1       |
 | getWatchUserCurrentStep(wuid: list[str])                             | list[int]:            |
-| getWatchUserTotalStep(wuid: str)                                     | int:                  |
+| getWatchUserTotalStep(None)                                          | list[str]:            | 2.1.1       |
+| getWatchUserTotalStep(wuid: str)                                     | list[str]:            | 2.1.1       |
 | getWatchUserTotalStep(wuid: list[str])                               | list[int]:            |
 | getWatchUserSteps(wuid: str, date: int)                              | dict[str, any]:       |
 | getWatchUserContacts(wuid: str)                                      | list[dict[str, any]]: |
@@ -94,23 +100,23 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 
 ## Watch Silent Mode
 
-| Function                                       | Result Type           |
-| ---------------------------------------------- | --------------------- |
-| getSilentTime(wuid: str)                       | list[dict[str, any]]: |
-| setEnableSilentTime(silentId: str, wuid: str)  | bool:                 |
-| setDisableSilentTime(silentId: str, wuid: str) | bool:                 |
-| setAllEnableSilentTime(wuid: str)              | list[bool]:           |
-| setAllDisableSilentTime(wuid: str)             | list[bool]:           |
+| Function                            | Result Type           | Change Ver. |
+| ----------------------------------- | --------------------- | ----------- |
+| getSilentTime(wuid: str)            | list[dict[str, any]]: |
+| setEnableSilentTime(silentId: str)  | bool:                 | 2.1.1       |
+| setDisableSilentTime(silentId: str) | bool:                 | 2.1.1       |
+| setAllEnableSilentTime(wuid: str)   | list[bool]:           |
+| setAllDisableSilentTime(wuid: str)  | list[bool]:           |
 
 ## Watch Alarm
 
-| Function                                     | Result Type     |
-| -------------------------------------------- | --------------- |
-| getAlarmTime(wuid: str)                      | dict[str, any]: |
-| setEnableAlarmTime(alarmId: str, wuid: str)  | bool:           |
-| setDisableAlarmTime(alarmId: str, wuid: str) | bool:           |
-| setAllEnableAlarmTime(wuid: str)             | list[bool]:     |
-| setAllDisableAlarmTime(wuid: str)            | list[bool]:     |
+| Function                          | Result Type     | Change Ver. |
+| --------------------------------- | --------------- | ----------- |
+| getAlarmTime(wuid: str)           | dict[str, any]: |
+| setEnableAlarmTime(alarmId: str)  | bool:           | 2.1.1       |
+| setDisableAlarmTime(alarmId: str) | bool:           | 2.1.1       |
+| setAllEnableAlarmTime(wuid: str)  | list[bool]:     |
+| setAllDisableAlarmTime(wuid: str) | list[bool]:     |
 
 ## Chat Fetch
 
@@ -438,7 +444,7 @@ xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, c
 | Battery          | read       | int  |
 | Charging         | read       | bool |
 | Online Status    | read       | str  |
-| Unread Msg Count | read       | int  | ?BUG?                                           |
+| Unread Msg Count | read       | int  | ?BUG? Result is always 0                        |
 | Chats            | read       | list | Don't all chats - confused                      |
 | last locate      | read       | dict |
 | locate Type      | read       | str  | GPS/WIFI/CELL                                   |

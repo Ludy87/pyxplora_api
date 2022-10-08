@@ -14,11 +14,25 @@ class NoAdminError(Error):
 
 
 class ChildNoError(Error):
-    def __init__(self) -> None:
+    def __init__(self, msg=["Child phonenumber", "Watch ID"]) -> None:
+        self.msg = msg
         super().__init__()
 
     def __str__(self) -> str:
-        return "Child phonenumber or Watch ID not found!"
+        msg = " & ".join(self.msg)
+        return "{} not found!".format(msg)
+
+
+class XTypeError(Error):
+    def __init__(self, allow, deny) -> None:
+        self.allow = allow
+        self.deny = deny
+        super().__init__()
+
+    def __str__(self) -> str:
+        return "Transfer value has the wrong type! The following are permitted: {}. The specified type is: {}".format(
+            self.allow, self.deny
+        )
 
 
 class FunctionError(Error):
