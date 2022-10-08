@@ -27,8 +27,12 @@ Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com
 ```python
 from pyxplora_api import pyxplora_api as PXA
 
-xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber])
+xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber, wuid, email])
 ```
+
+## **add in Version 2.2.0**
+
+You can Sign In with Phone Number or Email. If you enter your email, the telephone number entered will be ignored.
 
 ---
 
