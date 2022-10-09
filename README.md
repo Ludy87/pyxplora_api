@@ -55,22 +55,22 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | -------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------ |
 | getWatchUserIDs(child_no: list[str] = [])                            | list[str]:            |                                                                    |
 | getWatchUserPhoneNumbers(wuid: None, ignoreError: bool = False)      | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| getWatchUserPhoneNumbers(wuid: str, ignoreError: bool = False)       | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserPhoneNumbers(wuid: str, ignoreError: bool = False)       | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserPhoneNumbers(wuid: list[str], ignoreError: bool = False) | list[str]:            |                                                                    |
 | getWatchUserNames(None)                                              | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| getWatchUserNames(wuid: str)                                         | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserNames(wuid: str)                                         | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserNames(wuid: list[str])                                   | list[str]:            |                                                                    |
 | getWatchUserIcons(None)                                              | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| getWatchUserIcons(wuid: str)                                         | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserIcons(wuid: str)                                         | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserIcons(wuid: list[str])                                   | list[str]:            |                                                                    |
 | getWatchUserXcoins(None)                                             | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| getWatchUserXcoins(wuid: str)                                        | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserXcoins(wuid: str)                                        | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserXcoins(wuid: list[str])                                  | list[int]:            |                                                                    |
 | getWatchUserCurrentStep(None)                                        | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| getWatchUserCurrentStep(wuid: str)                                   | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserCurrentStep(wuid: str)                                   | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserCurrentStep(wuid: list[str])                             | list[int]:            |                                                                    |
 | getWatchUserTotalStep(None)                                          | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| getWatchUserTotalStep(wuid: str)                                     | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserTotalStep(wuid: str)                                     | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserTotalStep(wuid: list[str])                               | list[int]:            |                                                                    |
 | getWatchUserSteps(wuid: str, date: int)                              | dict[str, any]:       |                                                                    |
 | getWatchUserContacts(wuid: str)                                      | list[dict[str, any]]: |                                                                    |
