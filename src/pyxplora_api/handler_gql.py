@@ -12,12 +12,13 @@ from .status import ClientType
 class HandlerGQL:
     def __init__(
         self,
-        countryPhoneNumber: str,
-        phoneNumber: str,
-        password: str,
-        userLang: str,
-        timeZone: str,
+        countryPhoneNumber: str = "",
+        phoneNumber: str = "",
+        password: str = "",
+        userLang: str = "",
+        timeZone: str = "",
         email: str = None,
+        signup: bool = True,
     ) -> None:
         # init vars
         self.sessionId = None
@@ -46,6 +47,8 @@ class HandlerGQL:
         self.issueToken: dict[str, any]
 
         self.errors: list[any] = []
+
+        self.signup = signup
 
     def c(self) -> HandlerGQL:
         return self
