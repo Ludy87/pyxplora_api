@@ -1,4 +1,10 @@
 from __future__ import annotations
+from enum import Enum
+
+
+class ErrorMSG(Enum):
+    SERVER_ERR = "Cannot connect to the server."
+    LOGIN_ERR = "Login to Xplora® API failed. Check your input!\n{}"
 
 
 class Error(Exception):
@@ -46,10 +52,9 @@ class FunctionError(Error):
 
 
 class LoginError(Error):
-    def __init__(self, message: str, res: str = "") -> None:
-        self.message = message
-        self.res = res
-        super().__init__(self.message, self.res)
+    def __init__(self, message: str | ErrorMSG) -> None:
+        self.message = message if isinstance(message, str) else message.value
+        super().__init__(self.message)
 
     def __str__(self) -> str:
-        return f"{self.message} - {self.res}"
+        return self.message
