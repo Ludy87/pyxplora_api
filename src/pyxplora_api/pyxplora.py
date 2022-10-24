@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import time
 
 from .exception_classes import ChildNoError, XTypeError
@@ -54,10 +54,10 @@ class PyXplora:
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
 
     def delay(self, duration_in_seconds):
-        current_time = datetime.datetime.now()
-        end_time = current_time + datetime.timedelta(0, duration_in_seconds)
+        current_time = datetime.now()
+        end_time = current_time + timedelta(0, duration_in_seconds)
         while current_time < end_time:
-            current_time = datetime.datetime.now()
+            current_time = datetime.now()
 
     def getDevice(self, wuid: str):
         try:
