@@ -3,9 +3,9 @@ from __future__ import annotations
 from python_graphql_client import GraphqlClient
 
 from .const import ENDPOINT
-from .exception_classes import LoginError, NoAdminError
+from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .handler_gql import HandlerGQL
-from .status import NormalStatus, YesOrNo
+from .status import NormalStatus, UserContactType, YesOrNo
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
@@ -20,8 +20,9 @@ class GQLHandler(HandlerGQL):
         userLang: str,
         timeZone: str,
         email: str = None,
+        signup: bool = True,
     ) -> None:
-        super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone, email)
+        super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone, email, signup)
 
     async def runGqlQuery_a(self, query: str, variables: dict[str, any]) -> dict[str, any]:
         if query is None:
@@ -35,7 +36,7 @@ class GQLHandler(HandlerGQL):
         return data
 
     async def runAuthorizedGqlQuery_a(self, query: str, variables: dict[str, any]) -> dict[str, any]:
-        if self.accessToken is None:
+        if self.accessToken is None and self.signup:
             raise Exception("You must first login to the Xplora® API.")
         # Run GraphQL query and return
         return await self.runGqlQuery_a(query, variables)
@@ -52,7 +53,7 @@ class GQLHandler(HandlerGQL):
         if data.get("issueToken", data.get("signInWithEmailOrPhone", None)) is None:
             error_message: list[dict[str, str]] = dataAll.get("errors", [{"message": ""}])
             # Login failed.
-            raise LoginError("Login to Xplora® API failed. Check your input!\n{}".format(error_message[0].get("message", "")))
+            raise LoginError(ErrorMSG.LOGIN_ERR.value.format(error_message[0].get("message", "")))
         self.issueToken = data.get("issueToken", data.get("signInWithEmailOrPhone", None))
 
         # Login succeeded
@@ -359,6 +360,13 @@ class GQLHandler(HandlerGQL):
         errors: list[dict[str, str]] = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getEndTrackingWatch", "error": errors})
+        return data.get("data", {})
+
+    async def checkEmailOrPhoneExist_a(self, userContactType: UserContactType, email: str, countryCode: str, phoneNumber: str):
+        data = await self.runAuthorizedGqlQuery_a(
+            gq.WATCH_Q.get("checkEmailOrPhoneExistQ", ""),
+            {"type": userContactType, "email": email, "countryCode": countryCode, "phoneNumber": phoneNumber},
+        )
         return data.get("data", {})
 
     ########## SECTION QUERY end ##########
