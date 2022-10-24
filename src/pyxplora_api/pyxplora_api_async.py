@@ -7,7 +7,7 @@ from datetime import datetime
 from time import time
 
 from .const import VERSION, VERSION_APP
-from .exception_classes import LoginError, NoAdminError
+from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
 from .pyxplora import PyXplora
 from .status import LocationType, NormalStatus, WatchOnlineStatus
@@ -31,7 +31,7 @@ class PyXploraApi(PyXplora):
     ) -> None:
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
 
-    async def _login(self, forceLogin: bool = False) -> dict[any, any]:
+    async def _login(self, forceLogin: bool = False, signup: bool = True) -> dict[any, any]:
         if not self._isConnected() or self._hasTokenExpired() or forceLogin:
             try:
                 self._logoff()
@@ -42,6 +42,7 @@ class PyXploraApi(PyXplora):
                     self._userLang,
                     self._timeZone,
                     self._email,
+                    signup,
                 )
                 if self._gqlHandler:
                     retryCounter = 0
@@ -55,7 +56,7 @@ class PyXploraApi(PyXplora):
                             self.error_message = err.message
                         except Exception:
                             if retryCounter == self.maxRetries + 2:
-                                self.error_message = "Cannot connect to the server."
+                                self.error_message = ErrorMSG.SERVER_ERR
                             else:
                                 pass
 
@@ -71,19 +72,21 @@ class PyXploraApi(PyXplora):
                 self._logoff()
         return self._issueToken
 
-    async def init(self, forceLogin: bool = False) -> None:
-        token = await self._login(forceLogin)
-        if token:
-            if token.get("user", {}):
-                if not self._childPhoneNumber:
-                    self.watchs = token.get("user", {}).get("children", _LIST_DICT)
-                else:
-                    for watch in token.get("user", {}).get("children", _LIST_DICT):
-                        if watch["ward"]["phoneNumber"] in self._childPhoneNumber:
-                            self.watchs.append(watch)
-                self.user = token.get("user", {})
-                return
-        raise LoginError(self.error_message)
+    async def init(self, forceLogin: bool = False, signup: bool = True) -> None:
+        token = await self._login(forceLogin, signup)
+        if signup:
+            if token:
+                if token.get("user", {}):
+                    if not self._childPhoneNumber:
+                        self.watchs = token.get("user", {}).get("children", _LIST_DICT)
+                    else:
+                        for watch in token.get("user", {}).get("children", _LIST_DICT):
+                            if watch["ward"]["phoneNumber"] in self._childPhoneNumber:
+                                self.watchs.append(watch)
+                    self.user = token.get("user", {})
+                    return
+            raise LoginError(self.error_message)
+        return
 
     def version(self) -> str:
         return "{0}-{1}".format(VERSION, VERSION_APP)
@@ -664,4 +667,8 @@ class PyXploraApi(PyXplora):
 
     async def getAppVersion(self):
         data = await self._gqlHandler.getAppVersion_a()
+        return data
+
+    async def checkEmailOrPhoneExist(self, userContactType, email, countryCode, phoneNumber):
+        data = await self._gqlHandler.checkEmailOrPhoneExist_a(userContactType, email, countryCode, phoneNumber)
         return data
