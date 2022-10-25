@@ -669,6 +669,6 @@ class PyXploraApi(PyXplora):
         data = await self._gqlHandler.getAppVersion_a()
         return data
 
-    async def checkEmailOrPhoneExist(self, userContactType, email: str = "", countryCode: str = "", phoneNumber: str = ""):
-        data = await self._gqlHandler.checkEmailOrPhoneExist_a(userContactType, email, countryCode, phoneNumber)
-        return data
+    async def checkEmailOrPhoneExist(self, type, email: str = "", countryCode: str = "", phoneNumber: str = "") -> bool:
+        data = await self._gqlHandler.checkEmailOrPhoneExist_a(type, email, countryCode, phoneNumber)
+        return data.get("checkEmailOrPhoneExist", False)
