@@ -670,6 +670,6 @@ class PyXploraApi(PyXplora):
         data = self._gqlHandler.getAppVersion()
         return data
 
-    def checkEmailOrPhoneExist(self, userContactType, email: str = "", countryCode: str = "", phoneNumber: str = ""):
-        data = self._gqlHandler.checkEmailOrPhoneExist(userContactType, email, countryCode, phoneNumber)
-        return data
+    def checkEmailOrPhoneExist(self, type, email: str = "", countryCode: str = "", phoneNumber: str = "") -> bool:
+        data = self._gqlHandler.checkEmailOrPhoneExist(type, email, countryCode, phoneNumber)
+        return data.get("checkEmailOrPhoneExist", False)
