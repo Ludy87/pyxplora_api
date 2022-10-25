@@ -5,7 +5,7 @@ from python_graphql_client import GraphqlClient
 from .const import ENDPOINT
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .handler_gql import HandlerGQL
-from .status import NormalStatus, UserContactType, YesOrNo
+from .status import NormalStatus, YesOrNo
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
@@ -319,7 +319,7 @@ class GQLHandler(HandlerGQL):
                 self.errors.append({"function": "getEndTrackingWatch", "error": error})
         return data.get("data", {})
 
-    def checkEmailOrPhoneExist(self, userContactType: UserContactType, email: str, countryCode: str, phoneNumber: str):
+    def checkEmailOrPhoneExist(self, userContactType: str, email: str, countryCode: str, phoneNumber: str):
         data = self.runAuthorizedGqlQuery(
             gq.WATCH_Q.get("checkEmailOrPhoneExistQ", ""),
             {"type": userContactType, "email": email, "countryCode": countryCode, "phoneNumber": phoneNumber},
