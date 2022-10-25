@@ -20,11 +20,11 @@ _LIST_DICT: list[dict[str, any]] = []
 class PyXploraApi(PyXplora):
     def __init__(
         self,
-        countrycode: str,
-        phoneNumber: str,
-        password: str,
-        userLang: str,
-        timeZone: str,
+        countrycode: str = "",
+        phoneNumber: str = "",
+        password: str = "",
+        userLang: str = "",
+        timeZone: str = "",
         childPhoneNumber: list[str] = [],
         wuid: str | list = None,
         email: str = None,
@@ -669,6 +669,6 @@ class PyXploraApi(PyXplora):
         data = await self._gqlHandler.getAppVersion_a()
         return data
 
-    async def checkEmailOrPhoneExist(self, userContactType, email, countryCode, phoneNumber):
+    async def checkEmailOrPhoneExist(self, userContactType, email: str = "", countryCode: str = "", phoneNumber: str = ""):
         data = await self._gqlHandler.checkEmailOrPhoneExist_a(userContactType, email, countryCode, phoneNumber)
         return data
