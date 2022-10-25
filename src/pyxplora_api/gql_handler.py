@@ -319,10 +319,10 @@ class GQLHandler(HandlerGQL):
                 self.errors.append({"function": "getEndTrackingWatch", "error": error})
         return data.get("data", {})
 
-    def checkEmailOrPhoneExist(self, userContactType: str, email: str, countryCode: str, phoneNumber: str):
+    def checkEmailOrPhoneExist(self, type: str, email: str, countryCode: str, phoneNumber: str) -> dict[str, bool]:
         data = self.runAuthorizedGqlQuery(
             gq.WATCH_Q.get("checkEmailOrPhoneExistQ", ""),
-            {"type": userContactType, "email": email, "countryCode": countryCode, "phoneNumber": phoneNumber},
+            {"type": type, "email": email, "countryCode": countryCode, "phoneNumber": phoneNumber},
         )
         return data.get("data", {})
 
