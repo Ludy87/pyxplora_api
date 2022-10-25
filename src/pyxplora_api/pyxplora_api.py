@@ -19,11 +19,11 @@ _LIST_DICT: list[dict[str, any]] = []
 class PyXploraApi(PyXplora):
     def __init__(
         self,
-        countrycode: str,
-        phoneNumber: str,
-        password: str,
-        userLang: str,
-        timeZone: str,
+        countrycode: str = "",
+        phoneNumber: str = "",
+        password: str = "",
+        userLang: str = "",
+        timeZone: str = "",
         childPhoneNumber: list[str] = [],
         wuid: str | list = None,
         email: str = None,
