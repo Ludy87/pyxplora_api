@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from time import time
+from typing import Any
 
 from .exception_classes import ChildNoError, XTypeError
 
@@ -15,8 +16,8 @@ class PyXplora:
         userLang: str,
         timeZone: str,
         childPhoneNumber: list[str] = [],
-        wuid: str | list = None,
-        email: str = None,
+        wuid: str | list | None = None,
+        email: str | None = None,
     ) -> None:
         self._countrycode = countrycode
         self._phoneNumber = phoneNumber
@@ -37,18 +38,18 @@ class PyXplora:
 
         self.dtIssueToken = int(time()) - (self.tokenExpiresAfter * 1000)
 
-        self.device: dict[str, any] = {}
+        self.device: dict[str, Any] = {}
 
-        self.watchs: list[any] = []
+        self.watchs: list[Any] = []
         self._logoff()
 
     def _isConnected(self) -> bool:
         return bool(self._gqlHandler and self._issueToken)
 
     def _logoff(self) -> None:
-        self.user: dict[any, any] = {}
+        self.user: dict[Any, Any] = {}
         self._gqlHandler = None
-        self._issueToken: dict[any, any] = {}
+        self._issueToken: dict[Any, Any] = {}
 
     def _hasTokenExpired(self) -> bool:
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
@@ -108,7 +109,7 @@ class PyXplora:
                 watch_IDs.append(watch["ward"]["id"])
         return watch_IDs
 
-    def getWatchUserPhoneNumbers(self, wuid: str | list[str] = None, ignoreError: bool = False) -> str | list[str]:
+    def getWatchUserPhoneNumbers(self, wuid: str | list[str] | None = None, ignoreError: bool = False) -> str | list[str]:
         watchuserphonenumbers: list[str] = []
         i = 1
         if wuid is None:
@@ -133,7 +134,7 @@ class PyXplora:
             raise ChildNoError(["Child phonenumber"])
         return watchuserphonenumbers
 
-    def getWatchUserNames(self, wuid: str | list[str] = None) -> str | list[str]:
+    def getWatchUserNames(self, wuid: str | list[str] | None = None) -> str | list[str]:
         watchusernames: list[str] = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
@@ -152,7 +153,7 @@ class PyXplora:
             raise ChildNoError(["Watch Username"])
         return watchusernames
 
-    def getWatchUserIcons(self, wuid: str | list[str] = None) -> str | list[str]:
+    def getWatchUserIcons(self, wuid: str | list[str] | None = None) -> str | list[str]:
         watchusericons: list[str] = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
@@ -171,7 +172,7 @@ class PyXplora:
             raise ChildNoError(["Watch User Icon"])
         return watchusericons
 
-    def getWatchUserXcoins(self, wuid: str | list[str] = None) -> int | list[int]:
+    def getWatchUserXcoins(self, wuid: str | list[str] | None = None) -> int | list[int]:
         watchuserxcoins: list[int] = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
@@ -190,7 +191,7 @@ class PyXplora:
             raise ChildNoError(["Watch User XCoins"])
         return watchuserxcoins
 
-    def getWatchUserCurrentStep(self, wuid: str | list[str] = None) -> int | list[int]:
+    def getWatchUserCurrentStep(self, wuid: str | list[str] | None = None) -> int | list[int]:
         watchusercurrentstep: list[int] = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
@@ -209,7 +210,7 @@ class PyXplora:
             raise ChildNoError(["Watch User Currentsteps"])
         return watchusercurrentstep
 
-    def getWatchUserTotalStep(self, wuid: str | list[str] = None) -> int | list[int]:
+    def getWatchUserTotalStep(self, wuid: str | list[str] | None = None) -> int | list[int]:
         watchusertotalstep: list[int] = []
         if wuid is None:
             wuid = self.getWatchUserIDs()

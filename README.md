@@ -20,14 +20,28 @@ Unofficial python library for the Xplora® API
 Diese Projekt ist eine Übersetzung von TypeScript zu Python, mit Erweiterungen.
 Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com/MiGoller/xplora-api.js)
 
-## [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample)
+## [Sample for beginning](https://github.com/Ludy87/pyxplora_api/tree/main/sample/main.py)
+
+## [Sample for scanner (Phonenumber and Email)](https://github.com/Ludy87/pyxplora_api/tree/main/sample/scanner.py)
 
 ## Usage
+
+### sync
 
 ```python
 from pyxplora_api import pyxplora_api as PXA
 
 xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber, wuid, email])
+xplora.init(forceLogin=False, signup=True)
+```
+
+### async
+
+```python
+from pyxplora_api import pyxplora_api_async as PXA
+
+xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber, wuid, email])
+await xplora.init(forceLogin=False, signup=True)
 ```
 
 ## **add in Version 2.2.0**
@@ -36,22 +50,23 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 
 ---
 
-## User Info
+## Sign in User: Infos
 
-| Function             | Result Type | Return              |
-| -------------------- | ----------- | ------------------- |
-| getUserID()          | str:        |                     |
-| getUserName()        | str:        |                     |
-| getUserIcon()        | str:        | Url                 |
-| getUserXcoin()       | int:        |                     |
-| getUserCurrentStep() | int:        |                     |
-| getUserTotalStep()   | int:        |                     |
-| getUserCreate()      | str:        | 2021-12-31 23:59:59 |
-| getUserUpdate()      | str:        | 2022-01-01 00:00:01 |
+| Function              | Result Type           | Return              |
+| --------------------- | --------------------- | ------------------- |
+| getUserID()           | str:                  |                     |
+| getUserName()         | str:                  |                     |
+| getUserIcon()         | str:                  | Url                 |
+| getUserXcoin()        | int:                  |                     |
+| getUserCurrentStep()  | int:                  |                     |
+| getUserTotalStep()    | int:                  |                     |
+| getUserCreate()       | str:                  | 2021-12-31 23:59:59 |
+| getUserUpdate()       | str:                  | 2022-01-01 00:00:01 |
+| getWatches(wuid: str) | list[dict[str, any]]: |                     |
 
-## Watch User Info
+## Watch: User Infos
 
-| Function                                                             | Result Type           | Change Ver.                                                        |
+| Function                                                             | Result Type           | Since Version                                                      |
 | -------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------ |
 | getWatchUserIDs(child_no: list[str] = [])                            | list[str]:            |                                                                    |
 | getWatchUserPhoneNumbers(wuid: None, ignoreError: bool = False)      | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
@@ -75,7 +90,7 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | getWatchUserSteps(wuid: str, date: int)                              | dict[str, any]:       |                                                                    |
 | getWatchUserContacts(wuid: str)                                      | list[dict[str, any]]: |                                                                    |
 
-## Watch Info
+## Watch: Infos
 
 | Function                              | Result Type           |
 | ------------------------------------- | --------------------- |
@@ -85,8 +100,10 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | getWatchOnlineStatus(wuid: str)       | str:                  |
 | getWatchUnReadChatMsgCount(wuid: str) | int:                  |
 | getWatchChats(wuid: str)              | list[dict[str, any]]: |
+| getSWInfo(wuid: str)                  | dict[str, any]:       |
+| getWatchState(wuid: str)              | dict[str, any]:       |
 
-## Watch Location Info
+## Watch: Location Infos
 
 | Function                                                      | Result Type           | Retrun        |
 | ------------------------------------------------------------- | --------------------- | ------------- |
@@ -102,9 +119,9 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | getStartTrackingWatch(wuid: str)                              | int:                  | 1800          |
 | getEndTrackingWatch(wuid: str)                                | int:                  | 1             |
 
-## Watch Silent Mode
+## Watch: Silent Mode
 
-| Function                            | Result Type           | Change Ver.                                                        |
+| Function                            | Result Type           | Since Version                                                      |
 | ----------------------------------- | --------------------- | ------------------------------------------------------------------ |
 | getSilentTime(wuid: str)            | list[dict[str, any]]: |                                                                    |
 | setEnableSilentTime(silentId: str)  | bool:                 | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
@@ -112,9 +129,9 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | setAllEnableSilentTime(wuid: str)   | list[bool]:           |                                                                    |
 | setAllDisableSilentTime(wuid: str)  | list[bool]:           |                                                                    |
 
-## Watch Alarm
+## Watch: Alarm
 
-| Function                          | Result Type     | Change Ver.                                                        |
+| Function                          | Result Type     | Since Version                                                      |
 | --------------------------------- | --------------- | ------------------------------------------------------------------ |
 | getAlarmTime(wuid: str)           | dict[str, any]: |                                                                    |
 | setEnableAlarmTime(alarmId: str)  | bool:           | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
@@ -122,7 +139,7 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | setAllEnableAlarmTime(wuid: str)  | list[bool]:     |                                                                    |
 | setAllDisableAlarmTime(wuid: str) | list[bool]:     |                                                                    |
 
-## Chat Fetch
+## Watch: Chat Fetch
 
 | Function                                              | Result Type     |
 | ----------------------------------------------------- | --------------- |
@@ -133,7 +150,7 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | fetchChatShortVideoCover(wuid: str, msgId: str)       | dict[str, any]: |
 | fetchChatVoice(wuid: str, msgId: str)                 | dict[str, any]: |
 
-## Feature
+## Watch: Feature
 
 | Function                       | Result Type |
 | ------------------------------ | ----------- |
@@ -143,21 +160,21 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | reboot(wuid: str)              | bool:       |
 | addStep(step: int)             | bool:       |
 
-| Function                                                                   | Result Type           |
-| -------------------------------------------------------------------------- | --------------------- |
-| getFollowRequestWatchCount()                                               | int:                  |
-| getWatches(wuid: str)                                                      | list[dict[str, any]]: |
-| getSWInfo(wuid: str)                                                       | dict[str, any]:       |
-| getWatchState(wuid: str)                                                   | dict[str, any]:       |
-| conv360IDToO2OID(qid: str, deviceId: str)                                  | dict[str, any]:       |
-| campaigns(id: str, categoryId: str)                                        | dict[str, any]:       |
-| getCountries()                                                             | list[dict[str, str]]: |
-| watchesDynamic()                                                           | dict[str, any]:       |
-| watchGroups(id: str = "")                                                  | dict[str, any]:       |
-| familyInfo(wuid: str, watchId: str, tz: str, date: int)                    | dict[str, any]:       |
-| avatars(id: str)                                                           | dict[str, any]:       |
-| submitIncorrectLocationData(wuid: str, lat: str, lng: str, timestamp: str) | bool                  |
-| getAppVersion()                                                            | dict[str, any]:       |
+## other
+
+| Function                                                                                      | Result Type           | Since Version                                                      |
+| --------------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------ |
+| getFollowRequestWatchCount()                                                                  | int:                  |
+| conv360IDToO2OID(qid: str, deviceId: str)                                                     | dict[str, any]:       |
+| campaigns(id: str, categoryId: str)                                                           | dict[str, any]:       |
+| getCountries()                                                                                | list[dict[str, str]]: |
+| watchesDynamic()                                                                              | dict[str, any]:       |
+| watchGroups(id: str)                                                                          | dict[str, any]:       |
+| familyInfo(wuid: str, watchId: str, tz: str, date: int)                                       | dict[str, any]:       |
+| avatars(id: str)                                                                              | dict[str, any]:       |
+| submitIncorrectLocationData(wuid: str, lat: str, lng: str, timestamp: str)                    | bool                  |
+| getAppVersion()                                                                               | dict[str, any]:       |
+| checkEmailOrPhoneExist(type: UserContactType, email: str, countryCode: str, phoneNumber: str) | bool                  | [2.2.2](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.2) |
 
 ---
 
@@ -408,10 +425,6 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | Zimbabwe                                     | 263          |
 | Åland Islands                                | 358          |
 
-## Functions
-
----
-
 ## Contacts
 
 | sections | mode | type |
@@ -437,28 +450,29 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 
 ## Watch
 
-| sections         | mode       | type | comment                                         |
-| ---------------- | ---------- | ---- | ----------------------------------------------- |
-| UID              | read       | str  |                                                 |
-| Name             | read       | str  |                                                 |
-| Xcoin            | read       | int  |                                                 |
-| current Step     | read       | int  |                                                 |
-| total Step       | read       | int  |                                                 |
-| Alarms           | read       | list | get all/enable/disable - enable all/disable all |
-| Battery          | read       | int  |                                                 |
-| Charging         | read       | bool |                                                 |
-| Online Status    | read       | str  |                                                 |
-| Unread Msg Count | read       | int  | ?BUG? Result is always 0                        |
-| Chats            | read       | list | Don't all chats - confused                      |
-| last locate      | read       | dict |                                                 |
-| locate Type      | read       | str  | GPS/WIFI/CELL                                   |
-| locate now       | read       | dict |                                                 |
-| is in Safezone   | read       | bool |                                                 |
-| Safezone Lable   | read       | str  |                                                 |
-| Safezone         | read/write | list |                                                 |
-| track Interval   | read       | int  |                                                 |
-| ask Watch Locate | read       | bool |                                                 |
-| silents          | read       | list | get all/enable/disable - enable all/disable all |
-| sendText         | read       | bool | sender: logged User                             |
-| shutdown         | read       | bool | only admins                                     |
-| reboot           | read       | bool | only admins                                     |
+| sections                         | mode       | type | comment                                         |
+| -------------------------------- | ---------- | ---- | ----------------------------------------------- |
+| UID                              | read       | str  |                                                 |
+| Name                             | read       | str  |                                                 |
+| Xcoin                            | read       | int  |                                                 |
+| current Step                     | read       | int  |                                                 |
+| total Step                       | read       | int  |                                                 |
+| Alarms                           | read       | list | get all/enable/disable - enable all/disable all |
+| Battery                          | read       | int  |                                                 |
+| Charging                         | read       | bool |                                                 |
+| Online Status                    | read       | str  |                                                 |
+| Unread Msg Count                 | read       | int  | ?BUG? Result is always 0                        |
+| Chats                            | read       | list | Don't all chats - confused                      |
+| last locate                      | read       | dict |                                                 |
+| locate Type                      | read       | str  | GPS/WIFI/CELL                                   |
+| locate now                       | read       | dict |                                                 |
+| is in Safezone                   | read       | bool |                                                 |
+| Safezone Lable                   | read       | str  |                                                 |
+| Safezone                         | read/write | list |                                                 |
+| track Interval                   | read       | int  |                                                 |
+| ask Watch Locate                 | read       | bool |                                                 |
+| silents                          | read       | list | get all/enable/disable - enable all/disable all |
+| sendText                         | read       | bool | sender: logged User                             |
+| shutdown                         | read       | bool | only admins                                     |
+| reboot                           | read       | bool | only admins                                     |
+| check exist Email or Phonenumber | read       | bool | no login required                               |

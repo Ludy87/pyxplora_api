@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import math
-from time import time
 from datetime import datetime, timezone
+from time import time
+from typing import Any
 
 from .const import API_KEY, API_SECRET
 from .status import ClientType
@@ -17,7 +18,7 @@ class HandlerGQL:
         password: str = "",
         userLang: str = "",
         timeZone: str = "",
-        email: str = None,
+        email: str | None = None,
         signup: bool = True,
     ) -> None:
         # init vars
@@ -44,16 +45,16 @@ class HandlerGQL:
             "emailAddress": self.email,
             "client": ClientType.APP.value,
         }
-        self.issueToken: dict[str, any]
+        self.issueToken: dict[str, Any]
 
-        self.errors: list[any] = []
+        self.errors: list[Any] = []
 
         self.signup = signup
 
     def c(self) -> HandlerGQL:
         return self
 
-    def getRequestHeaders(self, acceptedContentType: str) -> dict[str, any]:
+    def getRequestHeaders(self, acceptedContentType: str) -> dict[str, Any]:
         if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")
         if self._API_KEY is None:
