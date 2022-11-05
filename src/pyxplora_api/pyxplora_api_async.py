@@ -122,7 +122,9 @@ class PyXploraApi(PyXplora):
             )
             d = datetime.now()
             dt = datetime(year=d.year, month=d.month, day=d.day)
-            self.device[wuid]["getWatchUserSteps"] = await create_task(self.getWatchUserSteps(wuid=wuid, date=int(dt.timestamp())))
+            self.device[wuid]["getWatchUserSteps"] = await create_task(
+                self.getWatchUserSteps(wuid=wuid, date=int(dt.timestamp()))
+            )
             self.device[wuid]["getWatchOnlineStatus"] = await create_task(self.getWatchOnlineStatus(wuid=wuid))
             self.device[wuid]["getWatchUserIcons"] = self.getWatchUserIcons(wuid=wuid)
             self.device[wuid]["getWatchUserXcoins"] = self.getWatchUserXcoins(wuid=wuid)
@@ -670,7 +672,9 @@ class PyXploraApi(PyXplora):
         data = await self._gqlHandler.getAppVersion_a()
         return data
 
-    async def checkEmailOrPhoneExist(self, type: UserContactType, email: str = "", countryCode: str = "", phoneNumber: str = "") -> bool:
+    async def checkEmailOrPhoneExist(
+        self, type: UserContactType, email: str = "", countryCode: str = "", phoneNumber: str = ""
+    ) -> bool:
         data = await self._gqlHandler.checkEmailOrPhoneExist_a(type, email, countryCode, phoneNumber)
         return data.get("checkEmailOrPhoneExist", False)
 
