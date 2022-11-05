@@ -95,3 +95,17 @@ class LocationType(Enum):
     GPS = "GPS"
     UNKNOWN = "UNKNOWN"
     UNKNOWN__ = "UNKNOWN__"
+
+
+class UserContactType(Enum):
+    EMAIL = "EMAIL"
+    PHONE = "PHONE"
+    UNKNOWN__ = "UNKNOWN__"
+
+
+class EmailAndPhoneVerificationTypeV2(Enum):
+    REGIST = "REGIST"
+    RESET = "RESET"
+    RESEND = "RESEND"
+    UPDATE = "UPDATE"
+    UNKNOWN__ = "UNKNOWN__"
