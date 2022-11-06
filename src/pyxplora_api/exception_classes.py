@@ -6,6 +6,7 @@ from enum import Enum
 class ErrorMSG(Enum):
     SERVER_ERR = "Cannot connect to the server."
     LOGIN_ERR = "Login to Xplora® API failed. Check your input!\n{}"
+    PHONE_MAIL_ERR = "Phone Number or Email address not exist"
 
 
 class Error(Exception):
@@ -59,3 +60,8 @@ class LoginError(Error):
 
     def __str__(self) -> str:
         return self.message
+
+
+class PhoneOrEmailFail(LoginError):
+    def __init__(self, message: str = ErrorMSG.PHONE_MAIL_ERR) -> None:
+        super().__init__(message)

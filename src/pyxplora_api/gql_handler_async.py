@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from python_graphql_client import GraphqlClient
 
 from typing import Any
 
 from .const import ENDPOINT
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
+from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
 from .status import EmailAndPhoneVerificationTypeV2, NormalStatus, UserContactType
 
@@ -26,7 +26,9 @@ class GQLHandler(HandlerGQL):
     ) -> None:
         super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone, email, signup)
 
-    async def runGqlQuery_a(self, query: str, variables: dict[str, Any], operation_name: str | None = None) -> dict[str, Any]:
+    async def runGqlQuery_a(
+        self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
+    ) -> dict[str, Any]:
         if query is None:
             raise Exception("GraphQL guery string MUST NOT be empty!")
         # Add Xplora® API headers
@@ -38,7 +40,7 @@ class GQLHandler(HandlerGQL):
         return data
 
     async def runAuthorizedGqlQuery_a(
-        self, query: str, variables: dict[str, Any], operation_name: str | None = None
+        self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
     ) -> dict[str, Any]:
         if self.accessToken is None and self.signup:
             raise Exception("You must first login to the Xplora® API.")
@@ -417,7 +419,7 @@ class GQLHandler(HandlerGQL):
         return data.get("data", {})
 
     async def checkEmailOrPhoneExist_a(
-        self, type: UserContactType, email: str, countryCode: str, phoneNumber: str
+        self, type: UserContactType, email: str = "", countryCode: str = "", phoneNumber: str = ""
     ) -> dict[str, bool]:
         data: dict[str, dict[str, bool]] = await self.runAuthorizedGqlQuery_a(
             gq.UTILS_Q.get("checkEmailOrPhoneExistQ", ""),
