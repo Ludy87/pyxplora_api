@@ -11,6 +11,7 @@ from .const import VERSION, VERSION_APP
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
 from .pyxplora import PyXplora
+from .model import Chats, ChatsNew, SimpleChat
 from .status import LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
@@ -303,39 +304,30 @@ class PyXploraApi(PyXplora):
         # bug?
         return (await self._gqlHandler.unReadChatMsgCount_a(wuid)).get("unReadChatMsgCount", -1)
 
-    async def getWatchChats(self, wuid: str, offset: int = 0, limit: int = 100, msgId: str = "") -> list[dict[str, Any]]:
-        # bug?
+    async def getWatchChats(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> list[dict[str, Any]]:
         retryCounter = 0
         dataOk: list[dict[str, Any]] = []
-        chats_raw: dict[str, Any] = {}
         chats: list[dict[str, Any]] = []
+        _chatsNew: ChatsNew = {}
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
-                chats_raw = await self._gqlHandler.chats_a(wuid, offset, limit, msgId)
-                _chatsNew = chats_raw.get("chatsNew", {})
-                if not _chatsNew:
-                    dataOk.append({})
+                _chatsNew: ChatsNew = Chats.from_dict(await self.getWatchChatsRaw(wuid, offset, limit, msgId)).chatsNew
+                _list: list[SimpleChat] = _chatsNew.list
+                if not _chatsNew or not _list:
                     return chats
-                _list = _chatsNew.get("list", [])
-                if not _list:
-                    dataOk.append({})
-                    return chats
-                for chat in chats_raw["chatsNew"]["list"]:
+                for chat in _list:
                     chats.append(
                         {
-                            "msgId": chat["msgId"],
-                            "type": chat["type"],
-                            # chat['sender'],
-                            "sender_id": chat["sender"]["id"],
-                            "sender_name": chat["sender"]["name"],
-                            # chat['receiver'],
-                            "receiver_id": chat["receiver"]["id"],
-                            "receiver_name": chat["receiver"]["name"],
-                            # chat['data'],
-                            "data_text": chat["data"]["text"],
-                            "data_sender_name": chat["data"]["sender_name"],
-                            "create": datetime.fromtimestamp(chat["create"]).strftime("%Y-%m-%d %H:%M:%S"),
+                            "msgId": chat.msgId,
+                            "type": chat.type,
+                            "sender_id": chat.sender.id,
+                            "sender_name": chat.sender.name,
+                            "receiver_id": chat.receiver.id,
+                            "receiver_name": chat.receiver.name,
+                            "data_text": chat.data.text,
+                            "data_sender_name": chat.data.sender_name,
+                            "create": datetime.fromtimestamp(chat.create).strftime("%Y-%m-%d %H:%M:%S"),
                         }
                     )
             except Exception as error:
@@ -345,6 +337,22 @@ class PyXploraApi(PyXplora):
                 self._logoff()
                 await sleep(self.retryDelay)
         return chats
+
+    async def getWatchChatsRaw(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> dict[str, Any]:
+        retryCounter = 0
+        dataOk: dict[str, Any] = []
+        _chatsNew: dict[str, Any] = {}
+        while not dataOk and (retryCounter < self.maxRetries + 2):
+            retryCounter += 1
+            try:
+                _chatsNew = await self._gqlHandler.chats_a(wuid, offset, limit, msgId)
+            except Exception as error:
+                _LOGGER.debug(error)
+            dataOk = _chatsNew
+            if not dataOk:
+                self._logoff()
+                await sleep(self.retryDelay)
+        return _chatsNew
 
     ##### Watch Location Info #####
     async def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> dict[str, Any]:
