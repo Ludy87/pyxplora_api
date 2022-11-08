@@ -191,7 +191,7 @@ class GQLHandler(HandlerGQL):
             "data", {}
         )
 
-    async def chats_a(self, wuid: str, offset: int = 0, limit: int = 100, msgId: str = "") -> dict[str, Any]:
+    async def chats_a(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> dict[str, Any]:
         # ownUser id
         return (
             await self.runAuthorizedGqlQuery_a(

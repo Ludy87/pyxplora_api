@@ -178,7 +178,7 @@ class GQLHandler(HandlerGQL):
     def silentTimes(self, wuid: str) -> dict[str, Any]:
         return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("silentTimesQ", ""), {"uid": wuid}, "SlientTimes").get("data", {})
 
-    def chats(self, wuid: str, offset: int = 0, limit: int = 100, msgId: str = "") -> dict[str, Any]:
+    def chats(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> dict[str, Any]:
         # ownUser id
         return self.runAuthorizedGqlQuery(
             gq.WATCH_Q.get("chatsQ", ""), {"uid": wuid, "offset": offset, "limit": limit, "msgId": msgId}, "Chats"
