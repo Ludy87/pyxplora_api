@@ -574,12 +574,12 @@ class PyXploraApi(PyXplora):
         return False
 
     async def shutdown(self, wuid: str) -> bool:
-        if self.isAdmin(wuid):
+        if await self.isAdmin(wuid):
             return await self._gqlHandler.shutdown_a(wuid)
         raise NoAdminError()
 
     async def reboot(self, wuid: str) -> bool:
-        if self.isAdmin(wuid):
+        if await self.isAdmin(wuid):
             return await self._gqlHandler.reboot_a(wuid)
         raise NoAdminError()
 

@@ -89,7 +89,9 @@ class GQLHandler(HandlerGQL):
             if self.userId == id:
                 if contact["guardianType"] == "FIRST":
                     data: dict[str, Any] = (await self.runAuthorizedGqlQuery_a(query, variables, key)).get("data", {})
-                    return data.get(key, False)
+                    for k in data.keys():
+                        if k.upper() == key.upper():
+                            return data.get(k, False)
         raise NoAdminError()
 
     ########## SECTION QUERY start ##########

@@ -88,7 +88,9 @@ class GQLHandler(HandlerGQL):
             if self.userId == id:
                 if contact["guardianType"] == "FIRST":
                     data: dict[str, Any] = self.runAuthorizedGqlQuery(query, variables, key).get("data", {})
-                    return data.get(key, False)
+                    for k in data.keys():
+                        if k.upper() == key.upper():
+                            return data.get(k, False)
         raise NoAdminError()
 
     ########## SECTION QUERY start ##########
@@ -374,7 +376,7 @@ class GQLHandler(HandlerGQL):
 
     def shutdown(self, wuid: str) -> bool:
         # ownUser id
-        return self.isAdmin(wuid, gm.WATCH_M.get("shutdownM", ""), {"uid": wuid}, "shutDown")
+        return self.isAdmin(wuid, gm.WATCH_M.get("shutdownM", ""), {"uid": wuid}, "ShutDown")
 
     def reboot(self, wuid: str) -> bool:
         # ownUser id
