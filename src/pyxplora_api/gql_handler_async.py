@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-
 from typing import Any
 
+from . import gql_mutations as gm
+from . import gql_queries as gq
 from .const import ENDPOINT
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
 from .status import EmailAndPhoneVerificationTypeV2, NormalStatus, UserContactType
-
-from . import gql_mutations as gm
-from . import gql_queries as gq
 
 
 class GQLHandler(HandlerGQL):

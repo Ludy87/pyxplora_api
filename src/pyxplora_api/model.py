@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing_extensions import NotRequired
-from dataclasses_json import DataClassJsonMixin, dataclass_json
 from typing import Optional
+
+from dataclasses_json import DataClassJsonMixin, dataclass_json
+from typing_extensions import NotRequired
 
 from .status import ChatType, Emoticon
 
