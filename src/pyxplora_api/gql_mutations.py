@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 CAMPAIGN_M: dict[str, str] = {
     "subscribeM": "mutation SubscribeCampaign($id: String!, $uid: String!, $avatarId: String, $fileId: String, $name: String, $gender: Gender, $weight: String, $height: String, $birth: Int, $birthStr: String) {\n  subscribeCampaign(id: $id, uid: $uid, avatarId: $avatarId, fileId: $fileId, name: $name, gender: $gender, weight: $weight, height: $height, birth: $birth, birthStr: $birthStr) {\n    __typename\n    ...SubscribedCampaignFragment\n  }\n}\nfragment SubscribedCampaignFragment on CampaignSubscribed {\n  __typename\n  campaign {\n    __typename\n    id\n  }\n  user {\n    __typename\n    id\n  }\n  avatar {\n    __typename\n    ...FileFragment\n  }\n  profile {\n    __typename\n    ...FileFragment\n  }\n  name\n  subscribedDate\n}\nfragment FileFragment on File {\n  __typename\n  id\n  name\n}",
     "unsubscribeM": "mutation UnsubscribeCampaign($id : String!, $uid : String!) {\n  unsubscribeCampaign(id: $id, uid: $uid)\n}",

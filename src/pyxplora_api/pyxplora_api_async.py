@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-
 from asyncio import create_task, sleep
 from datetime import datetime
 from time import time
@@ -10,8 +9,8 @@ from typing import Any
 from .const import VERSION, VERSION_APP
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
-from .pyxplora import PyXplora
 from .model import Chats, ChatsNew, SimpleChat
+from .pyxplora import PyXplora
 from .status import LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
@@ -574,12 +573,12 @@ class PyXploraApi(PyXplora):
         return False
 
     async def shutdown(self, wuid: str) -> bool:
-        if self.isAdmin(wuid):
+        if await self.isAdmin(wuid):
             return await self._gqlHandler.shutdown_a(wuid)
         raise NoAdminError()
 
     async def reboot(self, wuid: str) -> bool:
-        if self.isAdmin(wuid):
+        if await self.isAdmin(wuid):
             return await self._gqlHandler.reboot_a(wuid)
         raise NoAdminError()
 

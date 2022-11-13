@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 QUERY: dict[str, str] = {
     "conv360IDToO2OIDQ": "query Conv360IDToO2OID($qid : String, $deviceId: String) {\n  conv360IDToO2OID(qid: $qid, deviceId: $deviceId) {\n    __typename\n    qid {\n      __typename\n      ori\n      o2oId\n    }\n    deviceId {\n      __typename\n      ori\n      o2oId\n    }\n  }\n}",
     "getAppVersionQ": "query GetAppVersion {\n  getAppVersion {\n    __typename\n    id\n    version\n    requireUpdate\n    downloadUrl\n    description\n    create\n    update\n  }\n}",

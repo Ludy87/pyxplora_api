@@ -1,11 +1,11 @@
 """Module containing graphQL client."""
 from __future__ import annotations
 
-import aiohttp
 import logging
-import requests
-
 from typing import Any
+
+import aiohttp
+import requests
 
 
 class GraphqlClient:
