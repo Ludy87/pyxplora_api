@@ -30,8 +30,6 @@ jobs:
         id: checkTag
         with: 
           tag: ${{ steps.version.outputs.version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
       - if: steps.checkTag.outputs.exists == 'false'
         name: Check Tag
         id: check-tag
