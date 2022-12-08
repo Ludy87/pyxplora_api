@@ -18,17 +18,17 @@ class NoAdminError(Error):
         super().__init__()
 
     def __str__(self) -> str:
-        return "no Admin"
+        return "You are not an Administrator!"
 
 
 class ChildNoError(Error):
-    def __init__(self, msg=["Child phonenumber", "Watch ID"]) -> None:
-        self.msg = msg
+    def __init__(self, error_message=["Child phonenumber", "Watch ID"]) -> None:
+        self.error_message = error_message
         super().__init__()
 
     def __str__(self) -> str:
-        msg = " & ".join(self.msg)
-        return "{} not found!".format(msg)
+        error_message = " & ".join(self.error_message)
+        return "{} not found!".format(error_message)
 
 
 class XTypeError(Error):
@@ -54,14 +54,18 @@ class FunctionError(Error):
 
 
 class LoginError(Error):
-    def __init__(self, message: str | ErrorMSG) -> None:
-        self.message = message if isinstance(message, str) else message.value
-        super().__init__(self.message)
+    def __init__(self, error_message: str | ErrorMSG = "") -> None:
+        self.error_message = error_message if isinstance(error_message, str) else error_message.value
+        super().__init__()
 
     def __str__(self) -> str:
-        return self.message
+        return f"{self.error_message}"
 
 
-class PhoneOrEmailFail(LoginError):
-    def __init__(self, message: str = ErrorMSG.PHONE_MAIL_ERR) -> None:
-        super().__init__(message)
+class PhoneOrEmailFail(Error):
+    def __init__(self, error_message: str | ErrorMSG = ErrorMSG.PHONE_MAIL_ERR) -> None:
+        self.error_message = error_message if isinstance(error_message, str) else error_message.value
+        super().__init__()
+
+    def __str__(self) -> str:
+        return f"{self.error_message}"

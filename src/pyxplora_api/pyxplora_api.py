@@ -5,7 +5,7 @@ from datetime import datetime
 from time import time
 from typing import Any
 
-from .const import VERSION, VERSION_APP
+from .const import LIST_DICT, VERSION, VERSION_APP
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .gql_handler import GQLHandler
 from .model import Chats, ChatsNew, SimpleChat
@@ -13,8 +13,6 @@ from .pyxplora import PyXplora
 from .status import LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
-
-_LIST_DICT: list[dict[str, Any]] = []
 
 
 class PyXploraApi(PyXplora):
@@ -52,8 +50,8 @@ class PyXploraApi(PyXplora):
                         # Try to login
                         try:
                             self._issueToken = self._gqlHandler.login()
-                        except LoginError as err:
-                            self.error_message = err.message
+                        except LoginError as error:
+                            self.error_message = error.message
                         except Exception:
                             if retryCounter == self.maxRetries + 2:
                                 self.error_message = ErrorMSG.SERVER_ERR
@@ -78,9 +76,9 @@ class PyXploraApi(PyXplora):
             if token:
                 if token.get("user", {}):
                     if not self._childPhoneNumber:
-                        self.watchs = token.get("user", {}).get("children", _LIST_DICT)
+                        self.watchs = token.get("user", {}).get("children", LIST_DICT)
                     else:
-                        for watch in token.get("user", {}).get("children", _LIST_DICT):
+                        for watch in token.get("user", {}).get("children", LIST_DICT):
                             if watch["ward"]["phoneNumber"] in self._childPhoneNumber:
                                 self.watchs.append(watch)
                     self.user = token.get("user", {})
@@ -140,11 +138,11 @@ class PyXploraApi(PyXplora):
                 if not _contacts:
                     dataOk.append({})
                     return contacts
-                _contacts_contacts = _contacts.get("contacts", _LIST_DICT)
+                _contacts_contacts = _contacts.get("contacts", LIST_DICT)
                 if not _contacts_contacts:
                     dataOk.append({})
                     return contacts
-                for contact in _contacts.get("contacts", _LIST_DICT):
+                for contact in _contacts.get("contacts", LIST_DICT):
                     try:
                         xcoin = contact["contactUser"]["xcoin"]
                         id = contact["contactUser"]["id"]
@@ -619,8 +617,8 @@ class PyXploraApi(PyXplora):
         qrCode: str = wqr.get("qrCode", "=")
         try:
             return self._gqlHandler.getWatchState(qrCode=qrCode.split("=")[1])
-        except Exception as err:
-            _LOGGER.debug(err)
+        except Exception as error:
+            _LOGGER.debug(error)
             return {}
 
     def conv360IDToO2OID(self, qid: str, deviceId: str) -> dict[str, Any]:
