@@ -6,7 +6,7 @@ from datetime import datetime
 from time import time
 from typing import Any
 
-from .const import LIST_DICT, VERSION, VERSION_APP
+from .const import VERSION, VERSION_APP
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
 from .model import Chats, ChatsNew, SimpleChat
@@ -14,6 +14,8 @@ from .pyxplora import PyXplora
 from .status import LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
+
+LIST_DICT: list[dict[str, any]] = []
 
 
 class PyXploraApi(PyXplora):
