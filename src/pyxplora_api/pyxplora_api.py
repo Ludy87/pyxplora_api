@@ -18,6 +18,8 @@ LIST_DICT: list[dict[str, any]] = []
 
 
 class PyXploraApi(PyXplora):
+    _gqlHandler: GQLHandler = None
+
     def __init__(
         self,
         countrycode: str = "",
