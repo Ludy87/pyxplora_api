@@ -48,7 +48,6 @@ class PyXplora:
 
     def _logoff(self) -> None:
         self.user: dict[Any, Any] = {}
-        self._gqlHandler = None
         self._issueToken: dict[Any, Any] = {}
 
     def _hasTokenExpired(self) -> bool:
