@@ -320,11 +320,11 @@ class GQLHandler(HandlerGQL):
         # Profil from login Account
         return (await self.runAuthorizedGqlQuery_a(gq.MYINFO_Q.get("readQ", ""), {}, "ReadMyInfo")).get("data", {})
 
-    async def readCampaignProfile_a(self) -> dict[str, Any]:
+    async def readCampaignProfile_a(self, wuid: str) -> dict[str, Any]:
         return (
             await self.runAuthorizedGqlQuery_a(
                 gq.MYINFO_Q.get("readCampaignProfileQ", ""),
-                {},
+                {"uid": wuid},
             )
         ).get("data", {})
 
@@ -381,11 +381,6 @@ class GQLHandler(HandlerGQL):
         return (await self.runAuthorizedGqlQuery_a(gq.CAMPAIGN_Q.get("ranksQ", ""), {"campaignId": campaignId}, "Ranks")).get(
             "data", {}
         )
-
-    async def campaignUserProfiles_a(self) -> dict[str, Any]:
-        return (
-            await self.runAuthorizedGqlQuery_a(gq.CAMPAIGN_Q.get("campaignUserProfilesQ", ""), {}, "CampaignUserProfiles")
-        ).get("data", {})
 
     async def conv360IDToO2OID_a(self, qid: str, deviceId: str) -> dict[str, Any]:
         return (
@@ -505,6 +500,7 @@ class GQLHandler(HandlerGQL):
         phoneNumber: str = "",
         countryCode: str = "",
         previousToken: str = "",
+        lang: str = "",
     ) -> dict[str, Any]:
         return await self.runAuthorizedGqlQuery_a(
             gm.SIGN_M.get("issueEmailOrPhoneCodeM", ""),
@@ -515,6 +511,7 @@ class GQLHandler(HandlerGQL):
                 "phoneNumber": phoneNumber,
                 "countryCode": countryCode,
                 "previousToken": previousToken,
+                "lang": lang,
             },
             "IssueEmailOrPhoneCode",
         )
