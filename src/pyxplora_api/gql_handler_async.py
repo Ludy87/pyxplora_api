@@ -40,7 +40,7 @@ class GQLHandler(HandlerGQL):
     async def runAuthorizedGqlQuery_a(
         self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
     ) -> dict[str, Any]:
-        if self.accessToken is None and self.signup and operation_name != "CheckEmailOrPhoneExist":
+        if self.accessToken is None and self.signup:
             raise Exception("You must first login to the Xplora® API.")
         # Run GraphQL query and return
         return await self.runGqlQuery_a(query, variables, operation_name)
