@@ -7,7 +7,7 @@ from time import time
 from typing import Any
 
 from .const import VERSION, VERSION_APP
-from .exception_classes import ErrorMSG, LoginError, NoAdminError
+from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError, PhoneOrEmailFail
 from .gql_handler_async import GQLHandler
 from .model import Chats, ChatsNew, SimpleChat
 from .pyxplora import PyXplora
@@ -48,6 +48,14 @@ class PyXploraApi(PyXplora):
                     signup,
                 )
                 if self._gqlHandler:
+                    if await self._gqlHandler.checkEmailOrPhoneExist_a(
+                        UserContactType.EMAIL if self._email else UserContactType.PHONE,
+                        email=self._email,
+                        countryCode=self._countrycode,
+                        phoneNumber=self._phoneNumber,
+                    ):
+                        self.error_message = ErrorMSG.PHONE_MAIL_ERR.value
+                        raise PhoneOrEmailFail()
                     retryCounter = 0
                     while not self._isConnected() and (retryCounter < self.maxRetries + 2):
                         retryCounter += 1
@@ -56,8 +64,9 @@ class PyXploraApi(PyXplora):
                         try:
                             self._issueToken = await self._gqlHandler.login_a()
                         except LoginError as error:
-                            self.error_message = error.message
-                        except Exception:
+                            self.error_message = error.error_message
+                            retryCounter = self.maxRetries + 2
+                        except Error:
                             if retryCounter == self.maxRetries + 2:
                                 self.error_message = ErrorMSG.SERVER_ERR
                             else:
@@ -70,7 +79,7 @@ class PyXploraApi(PyXplora):
                         self.dtIssueToken = int(time())
                 else:
                     raise Exception("Unknown error creating a new GraphQL handler instance.")
-            except Exception:
+            except Error:
                 # Login failed.
                 self._logoff()
         return self._issueToken
@@ -92,7 +101,7 @@ class PyXploraApi(PyXplora):
         return
 
     def version(self) -> str:
-        return "{0}-{1}".format(VERSION, VERSION_APP)
+        return f"{VERSION}-{VERSION_APP}"
 
     async def setDevices(self, ids: list = []) -> list[str]:
         return await self._setDevices(ids)
@@ -169,7 +178,7 @@ class PyXploraApi(PyXplora):
                             "xcoin": xcoin,
                         }
                     )
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = contacts
             if not dataOk:
@@ -201,7 +210,7 @@ class PyXploraApi(PyXplora):
                             "status": alarm["status"],
                         }
                     )
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = alarms
             if not dataOk:
@@ -259,7 +268,7 @@ class PyXploraApi(PyXplora):
                     "watch_charging": _watch_charging,
                     "watch_last_location": _watchLastLocate,
                 }
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = watch_location
             if not dataOk:
@@ -290,7 +299,7 @@ class PyXploraApi(PyXplora):
                     asktrack_raw = WatchOnlineStatus.ONLINE
                 else:
                     asktrack_raw = WatchOnlineStatus.OFFLINE
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = asktrack_raw
             if dataOk is WatchOnlineStatus.UNKNOWN:
@@ -331,7 +340,7 @@ class PyXploraApi(PyXplora):
                             "create": datetime.fromtimestamp(chat.create).strftime("%Y-%m-%d %H:%M:%S"),
                         }
                     )
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = chats
             if not dataOk:
@@ -347,7 +356,7 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             try:
                 _chatsNew = await self._gqlHandler.chats_a(wuid, offset, limit, msgId)
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = _chatsNew
             if not dataOk:
@@ -410,7 +419,7 @@ class PyXploraApi(PyXplora):
                             "address": safeZone["address"],
                         }
                     )
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = safe_zones
             if not dataOk:
@@ -449,7 +458,7 @@ class PyXploraApi(PyXplora):
                             "status": silentTime["status"],
                         }
                     )
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = school_silent_mode
             if not dataOk:
@@ -469,7 +478,7 @@ class PyXploraApi(PyXplora):
                 if not _setEnableSilentTime:
                     return bool(_raw)
                 _raw = _setEnableSilentTime
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
@@ -489,7 +498,7 @@ class PyXploraApi(PyXplora):
                 if not _setEnableSilentTime:
                     return bool(_raw)
                 _raw = _setEnableSilentTime
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
@@ -521,7 +530,7 @@ class PyXploraApi(PyXplora):
                 if not _modifyAlarm:
                     return bool(_raw)
                 _raw = _modifyAlarm
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
@@ -541,7 +550,7 @@ class PyXploraApi(PyXplora):
                 if not _modifyAlarm:
                     return bool(_raw)
                 _raw = _modifyAlarm
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
@@ -607,7 +616,7 @@ class PyXploraApi(PyXplora):
                         "qrCode": watch["qrCode"],
                         "model": watch["groupName"],
                     }
-            except Exception as error:
+            except Error as error:
                 _LOGGER.debug(error)
             dataOk = watches
             if not dataOk:

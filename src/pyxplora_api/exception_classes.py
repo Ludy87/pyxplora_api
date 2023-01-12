@@ -28,7 +28,7 @@ class ChildNoError(Error):
 
     def __str__(self) -> str:
         error_message = " & ".join(self.error_message)
-        return "{} not found!".format(error_message)
+        return f"{error_message} not found!"
 
 
 class XTypeError(Error):
@@ -38,8 +38,8 @@ class XTypeError(Error):
         super().__init__()
 
     def __str__(self) -> str:
-        return "Transfer value has the wrong type! The following are permitted: {}. The specified type is: {}".format(
-            self.allow, self.deny
+        return (
+            f"Transfer value has the wrong type! The following are permitted: {self.allow}. The specified type is: {self.deny}"
         )
 
 
@@ -50,7 +50,7 @@ class FunctionError(Error):
         super().__init__(self.fnc)
 
     def __str__(self) -> str:
-        return "Xplora API call finally failed with response: {0}".format(self.fnc)
+        return f"Xplora API call finally failed with response: {self.fnc}"
 
 
 class LoginError(Error):
