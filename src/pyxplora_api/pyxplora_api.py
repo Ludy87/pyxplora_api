@@ -47,7 +47,7 @@ class PyXploraApi(PyXplora):
                     signup,
                 )
                 if self._gqlHandler:
-                    if self._gqlHandler.checkEmailOrPhoneExist(
+                    if not self._gqlHandler.checkEmailOrPhoneExist(
                         UserContactType.EMAIL if self._email else UserContactType.PHONE,
                         email=self._email,
                         countryCode=self._countrycode,
