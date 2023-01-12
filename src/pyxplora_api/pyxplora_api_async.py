@@ -48,14 +48,6 @@ class PyXploraApi(PyXplora):
                     signup,
                 )
                 if self._gqlHandler:
-                    if not await self._gqlHandler.checkEmailOrPhoneExist_a(
-                        UserContactType.EMAIL if self._email else UserContactType.PHONE,
-                        email=self._email,
-                        countryCode=self._countrycode,
-                        phoneNumber=self._phoneNumber,
-                    ):
-                        self.error_message = ErrorMSG.PHONE_MAIL_ERR.value
-                        raise PhoneOrEmailFail()
                     retryCounter = 0
                     while not self._isConnected() and (retryCounter < self.maxRetries + 2):
                         retryCounter += 1
