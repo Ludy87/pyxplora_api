@@ -46,7 +46,8 @@ class GQLHandler(HandlerGQL):
         _LOGGER.debug(self.accessToken)
         _LOGGER.debug(self.signup)
         if self.accessToken is None and self.signup:
-            raise Exception("You must first login to the Xplora® API.")
+            await self.login_a()
+            # raise Exception("You must first login to the Xplora® API.")
         # Run GraphQL query and return
         return await self.runGqlQuery_a(query, variables, operation_name)
 
