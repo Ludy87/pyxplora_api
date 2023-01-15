@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from . import gql_mutations as gm
@@ -9,6 +10,8 @@ from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
 from .status import EmailAndPhoneVerificationTypeV2, NormalStatus, UserContactType
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class GQLHandler(HandlerGQL):
@@ -40,6 +43,8 @@ class GQLHandler(HandlerGQL):
     async def runAuthorizedGqlQuery_a(
         self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
     ) -> dict[str, Any]:
+        _LOGGER.debug(self.accessToken)
+        _LOGGER.debug(self.signup)
         if self.accessToken is None and self.signup:
             raise Exception("You must first login to the Xplora® API.")
         # Run GraphQL query and return
