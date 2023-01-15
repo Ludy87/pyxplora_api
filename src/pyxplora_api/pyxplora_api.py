@@ -102,7 +102,9 @@ class PyXploraApi(PyXplora):
     def version(self) -> str:
         return f"{VERSION}-{VERSION_APP}"
 
-    def setDevices(self, ids: list = []) -> list[str]:
+    def setDevices(self, ids: str | list = None) -> list[str]:
+        if isinstance(ids, str):
+            return self._setDevices([ids])
         return self._setDevices(ids)
 
     def _setDevices(self, ids: list = []) -> list[str]:

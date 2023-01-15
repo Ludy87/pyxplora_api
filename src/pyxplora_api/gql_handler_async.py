@@ -46,12 +46,9 @@ class GQLHandler(HandlerGQL):
         return await self.runGqlQuery_a(query, variables, operation_name)
 
     async def login_a(self) -> dict[str, Any]:
-        if self.email:
-            dataAll: dict[str, Any] = await self.runGqlQuery_a(
-                gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
-            )
-        else:
-            dataAll: dict[str, Any] = await self.runGqlQuery_a(gm.SIGN_M.get("issueTokenM", ""), self.variables, "IssueToken")
+        dataAll: dict[str, Any] = await self.runGqlQuery_a(
+            gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
+        )
         errors = dataAll.get("errors", [])
         if errors:
             self.errors.append({"function": "login", "errors": errors})

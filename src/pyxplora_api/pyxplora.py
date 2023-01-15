@@ -44,7 +44,7 @@ class PyXplora:
         self._logoff()
 
     def _isConnected(self) -> bool:
-        return bool(self._gqlHandler and self._issueToken)
+        return bool(self._gqlHandler and self._issueToken and self._gqlHandler.accessToken)
 
     def _logoff(self) -> None:
         self.user: dict[Any, Any] = {}
@@ -155,18 +155,20 @@ class PyXplora:
     def getWatchUserIcons(self, wuid: str | list[str] | None = None) -> str | list[str]:
         watchusericons: list[str] = []
         if wuid is None:
-            wuid = self.getWatchUserIDs()
-        if not wuid:
+            self._wuid = self.getWatchUserIDs()
+        else:
+            self._wuid = wuid
+        if not self._wuid:
             raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
-            if isinstance(wuid, list):
-                if watch["ward"]["id"] in wuid:
+            if isinstance(self._wuid, list):
+                if watch["ward"]["id"] in self._wuid:
                     watchusericons.append(f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}")
-            elif isinstance(wuid, str):
-                if watch["ward"]["id"] == wuid:
-                    return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
+            elif isinstance(self._wuid, str):
+                if watch["ward"]["id"] == self._wuid:
+                    watchusericons.append(f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}")
             else:
-                raise XTypeError("str | list[str]", type(wuid))
+                raise XTypeError("str | list[str]", type(self._wuid))
         if not watchusericons:
             raise ChildNoError(["Watch User Icon"])
         return watchusericons
