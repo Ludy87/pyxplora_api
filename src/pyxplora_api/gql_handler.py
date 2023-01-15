@@ -46,12 +46,9 @@ class GQLHandler(HandlerGQL):
         return self.runGqlQuery(query, variables, operation_name)
 
     def login(self) -> dict[str, Any]:
-        if self.email:
-            dataAll: dict[str, Any] = self.runGqlQuery(
-                gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
-            )
-        else:
-            dataAll: dict[str, Any] = self.runGqlQuery(gm.SIGN_M.get("issueTokenM", ""), self.variables, "IssueToken")
+        dataAll: dict[str, Any] = self.runGqlQuery(
+            gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
+        )
         errors = dataAll.get("errors", [])
         if errors:
             self.errors.append({"function": "login", "errors": errors})

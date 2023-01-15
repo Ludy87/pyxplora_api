@@ -95,7 +95,9 @@ class PyXploraApi(PyXplora):
     def version(self) -> str:
         return f"{VERSION}-{VERSION_APP}"
 
-    async def setDevices(self, ids: list = []) -> list[str]:
+    async def setDevices(self, ids: str | list = None) -> list[str]:
+        if isinstance(ids, str):
+            return await self._setDevices([ids])
         return await self._setDevices(ids)
 
     async def _setDevices(self, ids: list = []) -> list[str]:
