@@ -78,7 +78,8 @@ class PyXploraApi(PyXplora):
                         self.dtIssueToken = int(time())
                 else:
                     raise Exception("Unknown error creating a new GraphQL handler instance.")
-            except Error:
+            except Error as err:
+                _LOGGER.debug(err)
                 # Login failed.
                 self._logoff()
         return self._issueToken
