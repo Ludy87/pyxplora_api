@@ -7,7 +7,7 @@ from time import time
 from typing import Any
 
 from .const import VERSION, VERSION_APP
-from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError, PhoneOrEmailFail
+from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
 from .model import Chats, ChatsNew, SimpleChat
 from .pyxplora import PyXplora
@@ -28,7 +28,7 @@ class PyXploraApi(PyXplora):
         password: str = "",
         userLang: str = "",
         timeZone: str = "",
-        childPhoneNumber: list[str] = [],
+        childPhoneNumber: list[str] = None,
         wuid: str | list | None = None,
         email: str | None = None,
     ) -> None:
@@ -101,7 +101,7 @@ class PyXploraApi(PyXplora):
             return await self._setDevices([ids])
         return await self._setDevices(ids)
 
-    async def _setDevices(self, ids: list = []) -> list[str]:
+    async def _setDevices(self, ids: list = None) -> list[str]:
         if ids:
             wuids = ids
         else:

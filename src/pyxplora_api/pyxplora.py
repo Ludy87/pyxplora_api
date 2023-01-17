@@ -92,7 +92,7 @@ class PyXplora:
         return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
     ##### Watch Info #####
-    def getWatchUserIDs(self, watchuserphonenumbers: list[str] = []) -> list[str]:
+    def getWatchUserIDs(self, watchuserphonenumbers: list[str] = None) -> list[str]:
         if isinstance(self._wuid, list):
             if self._wuid:
                 return self._wuid
