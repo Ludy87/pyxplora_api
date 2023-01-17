@@ -27,7 +27,7 @@ class PyXploraApi(PyXplora):
         password: str = "",
         userLang: str = "",
         timeZone: str = "",
-        childPhoneNumber: list[str] = [],
+        childPhoneNumber: list[str] = None,
         wuid: str | list | None = None,
         email: str | None = None,
     ) -> None:
@@ -108,7 +108,7 @@ class PyXploraApi(PyXplora):
             return self._setDevices([ids])
         return self._setDevices(ids)
 
-    def _setDevices(self, ids: list = []) -> list[str]:
+    def _setDevices(self, ids: list = None) -> list[str]:
         if ids:
             wuids = ids
         else:

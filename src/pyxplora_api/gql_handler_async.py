@@ -43,8 +43,6 @@ class GQLHandler(HandlerGQL):
     async def runAuthorizedGqlQuery_a(
         self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
     ) -> dict[str, Any]:
-        _LOGGER.debug(self.accessToken)
-        _LOGGER.debug(self.signup)
         if self.accessToken is None and self.signup:
             await self.login_a()
             # raise Exception("You must first login to the Xplora® API.")
@@ -59,11 +57,12 @@ class GQLHandler(HandlerGQL):
         if errors:
             self.errors.append({"function": "login", "errors": errors})
         data: dict[str, Any] = dataAll.get("data", {})
-        if data.get("issueToken", data.get("signInWithEmailOrPhone", None)) is None:
+        if data.get("signInWithEmailOrPhone", None) is None:
             error_message: list[dict[str, str]] = dataAll.get("errors", [{"message": ""}])
             # Login failed.
+            # codiga-disable
             raise LoginError(ErrorMSG.LOGIN_ERR.value.format(error_message[0].get("message", "")))
-        self.issueToken = data.get("issueToken", data.get("signInWithEmailOrPhone", None))
+        self.issueToken = data.get("signInWithEmailOrPhone", None)
 
         # Login succeeded
         self.sessionId = self.issueToken["id"]

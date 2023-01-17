@@ -58,11 +58,12 @@ class GQLHandler(HandlerGQL):
         if errors:
             self.errors.append({"function": "login", "errors": errors})
         data: dict[str, Any] = dataAll.get("data", {})
-        if data.get("issueToken", data.get("signInWithEmailOrPhone", None)) is None:
+        if data.get("signInWithEmailOrPhone", None) is None:
             error_message: list[dict[str, str]] = dataAll.get("errors", [{"message": ""}])
             # Login failed.
+            # codiga-disable
             raise LoginError(ErrorMSG.LOGIN_ERR.value.format(error_message[0].get("message", "")))
-        self.issueToken = data.get("issueToken", data.get("signInWithEmailOrPhone", None))
+        self.issueToken = data.get("signInWithEmailOrPhone", None)
 
         # Login succeeded
         self.sessionId = self.issueToken["id"]
