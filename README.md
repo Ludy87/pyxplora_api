@@ -90,17 +90,17 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 
 ## Watch: Infos
 
-| Function                                                                      | Result Type           | Result                                                                                                               |
-| ----------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| getWatchAlarm(wuid: str)                                                      | list[dict[str, any]]: |
-| getWatchBattery(wuid: str)                                                    | int:                  |
-| getWatchIsCharging(wuid: str)                                                 | bool:                 |
-| getWatchOnlineStatus(wuid: str)                                               | str:                  |
-| getWatchUnReadChatMsgCount(wuid: str)                                         | int:                  |
-| getWatchChats(wuid: str, offset: int = 0, limit: int = 0, msgId: str = "")    | list[dict[str, any]]: | "msgId", "type", "sender_id", "sender_name", "receiver_id", receiver_name", "data_text", data_sender_name", "create" |
-| getWatchChatsRaw(wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") | list[dict[str, any]]: |
-| getSWInfo(wuid: str)                                                          | dict[str, any]:       |
-| getWatchState(wuid: str)                                                      | dict[str, any]:       |
+| Function                                                                                                 | Result Type           | Result                                                                                                               |
+| -------------------------------------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| getWatchAlarm(wuid: str)                                                                                 | list[dict[str, any]]: |
+| getWatchBattery(wuid: str)                                                                               | int:                  |
+| getWatchIsCharging(wuid: str)                                                                            | bool:                 |
+| getWatchOnlineStatus(wuid: str)                                                                          | str:                  |
+| getWatchUnReadChatMsgCount(wuid: str)                                                                    | int:                  |
+| getWatchChats(wuid: str, offset: int = 0, limit: int = 0, msgId: str = "")                               | list[dict[str, any]]: | "msgId", "type", "sender_id", "sender_name", "receiver_id", receiver_name", "data_text", data_sender_name", "create" |
+| getWatchChatsRaw(wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True) | list[dict[str, any]]: |
+| getSWInfo(wuid: str)                                                                                     | dict[str, any]:       |
+| getWatchState(wuid: str)                                                                                 | dict[str, any]:       |
 
 ## Watch: Location Infos
 
@@ -151,13 +151,14 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 
 ## Watch: Feature
 
-| Function                       | Result Type |
-| ------------------------------ | ----------- |
-| sendText(text: str, wuid: str) | bool:       |
-| isAdmin(wuid: str)             | bool:       |
-| shutdown(wuid: str)            | bool:       |
-| reboot(wuid: str)              | bool:       |
-| addStep(step: int)             | bool:       |
+| Function                                    | Result Type | Since Version                                                      |
+| ------------------------------------------- | ----------- | ------------------------------------------------------------------ |
+| sendText(text: str, wuid: str)              | bool:       |
+| deleteMessageFromApp(wuid: str, msgId: str) | bool:       | [2.5.0](https://github.com/Ludy87/pyxplora_api/releases/tag/2.5.0) |
+| isAdmin(wuid: str)                          | bool:       |
+| shutdown(wuid: str)                         | bool:       |
+| reboot(wuid: str)                           | bool:       |
+| addStep(step: int)                          | bool:       |
 
 ## other
 

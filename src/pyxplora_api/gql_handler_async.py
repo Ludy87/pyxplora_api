@@ -567,4 +567,11 @@ class GQLHandler(HandlerGQL):
             "verifyEmailOrPhoneCode",
         )
 
+    async def deleteMessageFromApp_a(self, wuid: str, msgId: str):
+        return (
+            await self.runAuthorizedGqlQuery_a(
+                gm.WATCH_M.get("deleteChatMessageM", ""), {"uid": wuid, "msgId": msgId}, "DeleteChatMessage"
+            )
+        ).get("data", {})
+
     ########## SECTION MUTATION end ##########
