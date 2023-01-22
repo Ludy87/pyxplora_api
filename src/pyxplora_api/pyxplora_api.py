@@ -358,8 +358,9 @@ class PyXploraApi(PyXplora):
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
-                _chatsNew = self._gqlHandler.chats(wuid, offset, limit, msgId)
-                oldChatList = Chats.from_dict(_chatsNew).chatsNew.list
+                chats: Chats = Chats.from_dict(self._gqlHandler.chats(wuid, offset, limit, msgId))
+
+                oldChatList: list[SimpleChat] = chats.chatsNew.list
                 newChatList: list[SimpleChat] = []
                 for chat in oldChatList:
                     chat.data.emoticon_id = Emoji["M%s" % chat.data.emoticon_id].value
