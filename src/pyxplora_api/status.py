@@ -106,7 +106,7 @@ class ChatEmoticonType(Enum):
 
 
 class Emoticon(Enum):
-    M1001 = "1001"  # 😄
+    M1001 = "1001"
     M1002 = "1002"
     M1003 = "1003"
     M1004 = "1004"
