@@ -15,7 +15,7 @@ class PyXplora:
         password: str,
         userLang: str,
         timeZone: str,
-        childPhoneNumber: list[str] = [],
+        childPhoneNumber: list[str] = None,
         wuid: str | list | None = None,
         email: str | None = None,
     ) -> None:

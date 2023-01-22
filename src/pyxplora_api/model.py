@@ -36,6 +36,7 @@ class Data(DataClassJsonMixin):
     lat: Optional[float] = None
     lng: Optional[float] = None
     radius: Optional[int] = None
+    delete_flag: Optional[int] = 0
 
 
 @dataclass_json
@@ -54,10 +55,10 @@ class SimpleChat(DataClassJsonMixin):
 @dataclass_json
 @dataclass
 class ChatsNew(DataClassJsonMixin):
-    list: list[SimpleChat]
+    list: Optional[list[SimpleChat]]
 
 
 @dataclass_json
 @dataclass
 class Chats(DataClassJsonMixin):
-    chatsNew: ChatsNew
+    chatsNew: Optional[ChatsNew]

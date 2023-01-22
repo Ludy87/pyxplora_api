@@ -10,7 +10,7 @@ from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError, PhoneO
 from .gql_handler import GQLHandler
 from .model import Chats, ChatsNew, SimpleChat
 from .pyxplora import PyXplora
-from .status import LocationType, NormalStatus, UserContactType, WatchOnlineStatus
+from .status import Emoji, LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -347,7 +347,9 @@ class PyXploraApi(PyXplora):
                 self.delay(self.retryDelay)
         return chats
 
-    def getWatchChatsRaw(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> list[dict[str, Any]]:
+    def getWatchChatsRaw(
+        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True
+    ) -> list[dict[str, Any]]:
         retryCounter = 0
         dataOk: dict[str, Any] = []
         _chatsNew: dict[str, Any] = {}
@@ -355,6 +357,15 @@ class PyXploraApi(PyXplora):
             retryCounter += 1
             try:
                 _chatsNew = self._gqlHandler.chats(wuid, offset, limit, msgId)
+                oldChatList = Chats.from_dict(_chatsNew).chatsNew.list
+                newChatList: list[SimpleChat] = []
+                for chat in oldChatList:
+                    chat.data.emoticon_id = Emoji["M%s" % chat.data.emoticon_id].value
+                    if show_del_msg:
+                        newChatList.append(chat)
+                    elif chat.data.delete_flag == 0:
+                        newChatList.append(chat)
+                _chatsNew = ChatsNew(newChatList).to_dict()
             except Error as error:
                 _LOGGER.debug(error)
             dataOk = _chatsNew
@@ -704,3 +715,9 @@ class PyXploraApi(PyXplora):
     ) -> dict[str, Any]:
         data = self._gqlHandler.modifyContact(contactId, isAdmin, contactName, fileId)
         return data
+
+    def deleteMessageFromApp(self, wuid: str, msgId: str) -> bool:
+        data = self._gqlHandler.deleteMessageFromApp(wuid, msgId)
+        if data.get("deleteMsg", False):
+            return True
+        return False
