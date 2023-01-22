@@ -313,7 +313,9 @@ class PyXploraApi(PyXplora):
         # bug?
         return (self._gqlHandler.unReadChatMsgCount(wuid)).get("unReadChatMsgCount", -1)
 
-    def getWatchChats(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> list[dict[str, Any]]:
+    def getWatchChats(
+        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True
+    ) -> list[dict[str, Any]]:
         retryCounter = 0
         dataOk: list[dict[str, Any]] = []
         chats: list[dict[str, Any]] = []
@@ -321,7 +323,7 @@ class PyXploraApi(PyXplora):
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
-                _chatsNew: ChatsNew = Chats.from_dict(self.getWatchChatsRaw(wuid, offset, limit, msgId)).chatsNew
+                _chatsNew: ChatsNew = ChatsNew.from_dict(self.getWatchChatsRaw(wuid, offset, limit, msgId, show_del_msg))
                 _list: list[SimpleChat] = _chatsNew.list
                 if not _chatsNew or not _list:
                     return chats
