@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from dataclasses_json import DataClassJsonMixin, dataclass_json
@@ -55,7 +55,13 @@ class SimpleChat(DataClassJsonMixin):
 @dataclass_json
 @dataclass
 class ChatsNew(DataClassJsonMixin):
-    list: Optional[list[SimpleChat]]
+    list: Optional[list[SimpleChat]] = field(default_factory=list[SimpleChat])
+
+    def get_list(self) -> list[SimpleChat] | None:
+        try:
+            return self.list
+        except AttributeError:
+            return None
 
 
 @dataclass_json

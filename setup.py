@@ -1,7 +1,7 @@
 import setuptools
 import configparser
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 with open("./src/pyxplora_api/const.py") as f:

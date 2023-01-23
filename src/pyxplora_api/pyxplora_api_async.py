@@ -177,7 +177,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = contacts
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return contacts
 
@@ -209,7 +209,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = alarms
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return alarms
 
@@ -267,7 +267,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = watch_location
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return watch_location
 
@@ -298,7 +298,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = asktrack_raw
             if dataOk is WatchOnlineStatus.UNKNOWN:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return asktrack_raw.value
 
@@ -335,13 +335,15 @@ class PyXploraApi(PyXplora):
                             "data_text": chat.data.text,
                             "data_sender_name": chat.data.sender_name,
                             "create": datetime.fromtimestamp(chat.create).strftime("%Y-%m-%d %H:%M:%S"),
+                            "delete_flag": chat.data.delete_flag,
+                            "emoticon_id": chat.data.emoticon_id,
                         }
                     )
             except Error as error:
                 _LOGGER.debug(error)
             dataOk = chats
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return chats
 
@@ -349,27 +351,31 @@ class PyXploraApi(PyXplora):
         self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True
     ) -> dict[str, Any]:
         retryCounter = 0
-        dataOk: dict[str, Any] = []
+        dataOk: dict[str, Any] = {}
         _chatsNew: dict[str, Any] = {}
         while not dataOk and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
                 chats: Chats = Chats.from_dict(await self._gqlHandler.chats_a(wuid, offset, limit, msgId))
 
-                oldChatList: list[SimpleChat] = chats.chatsNew.list
-                newChatList: list[SimpleChat] = []
-                for chat in oldChatList:
-                    chat.data.emoticon_id = Emoji["M%s" % chat.data.emoticon_id].value
-                    if show_del_msg:
-                        newChatList.append(chat)
-                    elif chat.data.delete_flag == 0:
-                        newChatList.append(chat)
-                _chatsNew = ChatsNew(newChatList).to_dict()
+                chatsNew: ChatsNew = ChatsNew.from_dict(chats.chatsNew)
+                chatsNew.__delattr__("list")
+
+                oldChatList: list[SimpleChat] = chatsNew.get_list()
+                if oldChatList:
+                    newChatList: list[SimpleChat] = []
+                    for chat in oldChatList:
+                        chat.data.emoticon_id = Emoji["M%s" % chat.data.emoticon_id].value
+                        if show_del_msg:
+                            newChatList.append(chat)
+                        elif chat.data.delete_flag == 0:
+                            newChatList.append(chat)
+                    _chatsNew = ChatsNew(newChatList).to_dict()
             except Error as error:
                 _LOGGER.debug(error)
             dataOk = _chatsNew
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return _chatsNew
 
@@ -432,7 +438,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = safe_zones
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return safe_zones
 
@@ -471,7 +477,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = school_silent_mode
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return school_silent_mode
 
@@ -491,7 +497,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return bool(_raw)
 
@@ -511,7 +517,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return bool(_raw)
 
@@ -543,7 +549,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return bool(_raw)
 
@@ -563,7 +569,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = _raw
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return bool(_raw)
 
@@ -629,7 +635,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
             dataOk = watches
             if not dataOk:
-                self._logoff()
+                # self._logoff()
                 await sleep(self.retryDelay)
         return watches
 
