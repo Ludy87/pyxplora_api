@@ -10,6 +10,28 @@ from .status import ChatType, Emoticon
 
 @dataclass_json
 @dataclass
+class SmallChat(DataClassJsonMixin):
+    msgId: str
+    type: ChatType.__str__
+    sender_id: str
+    sender_name: str
+    receiver_id: str
+    receiver_name: str
+    data_text: str
+    data_sender_name: str
+    create: str
+    emoticon_id: Optional[Emoticon.__str__] = Emoticon.UNKNOWN__.value
+    delete_flag: int = 0
+
+
+@dataclass_json
+@dataclass
+class SmallChatList(DataClassJsonMixin):
+    small_chat_list: list[SmallChat] = field(default_factory=list[SmallChat])
+
+
+@dataclass_json
+@dataclass
 class User(DataClassJsonMixin):
     id: str
     userId: str
@@ -42,26 +64,20 @@ class Data(DataClassJsonMixin):
 @dataclass_json
 @dataclass
 class SimpleChat(DataClassJsonMixin):
-    id: str
-    msgId: str
-    readFlag: int
-    type: ChatType.__str__
-    sender: User
-    receiver: User
-    data: Data
-    create: int
+    id: Optional[str]
+    msgId: Optional[str]
+    readFlag: Optional[int]
+    sender: Optional[User]
+    receiver: Optional[User]
+    data: Optional[Data]
+    create: Optional[int]
+    type: Optional[ChatType.__str__] = ChatType.UNKNOWN__.value
 
 
 @dataclass_json
 @dataclass
 class ChatsNew(DataClassJsonMixin):
     list: Optional[list[SimpleChat]] = field(default_factory=list[SimpleChat])
-
-    def get_list(self) -> list[SimpleChat] | None:
-        try:
-            return self.list
-        except AttributeError:
-            return None
 
 
 @dataclass_json

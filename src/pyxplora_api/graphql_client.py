@@ -7,6 +7,10 @@ from typing import Any
 import aiohttp
 import requests
 
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+)
+
 
 class GraphqlClient:
     """Class which represents the interface to make graphQL requests through."""
@@ -35,6 +39,8 @@ class GraphqlClient:
         """Make synchronous request to graphQL server."""
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
+        if "user-agent" not in headers:
+            headers["user-agent"] = DEFAULT_USER_AGENT
         result = requests.post(
             self.endpoint, json=request_body, headers={**self.headers, **headers}, **{**self.options, **kwargs}, timeout=5
         )
@@ -48,6 +54,12 @@ class GraphqlClient:
         """Make asynchronous request to graphQL server."""
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
+        if "user-agent" not in headers:
+            headers["user-agent"] = DEFAULT_USER_AGENT
         async with aiohttp.ClientSession() as session:
             async with session.post(self.endpoint, json=request_body, headers={**self.headers, **headers}) as response:
-                return await response.json()
+                try:
+                    return await response.json()
+                except aiohttp.ContentTypeError as err:
+                    self.logger.debug(err)
+                    return {}

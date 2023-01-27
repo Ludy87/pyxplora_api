@@ -9,6 +9,7 @@ from .const import ENDPOINT
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
+from .model import Chats
 from .status import EmailAndPhoneVerificationTypeV2, NormalStatus, UserContactType
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,6 +54,8 @@ class GQLHandler(HandlerGQL):
         dataAll: dict[str, Any] = await self.runGqlQuery_a(
             gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
         )
+        if dataAll is None:
+            return
         errors = dataAll.get("errors", [])
         if errors:
             self.errors.append({"function": "login", "errors": errors})
@@ -193,13 +196,21 @@ class GQLHandler(HandlerGQL):
             "data", {}
         )
 
-    async def chats_a(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> dict[str, Any]:
+    async def chats_a(
+        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", asObject=False
+    ) -> dict[str, Any] | Chats:
         # ownUser id
-        return (
-            await self.runAuthorizedGqlQuery_a(
-                gq.WATCH_Q.get("chatsQ", ""), {"uid": wuid, "offset": offset, "limit": limit, "msgId": msgId}, "Chats"
-            )
-        ).get("data", {})
+        res: dict = await self.runAuthorizedGqlQuery_a(
+            gq.WATCH_Q.get("chatsQ", ""), {"uid": wuid, "offset": offset, "limit": limit, "msgId": msgId}, "Chats"
+        )
+        if res.get("errors", None) or res.get("data", None) is None:
+            if asObject:
+                _LOGGER.error(res.get("data", {}))
+                return Chats.from_dict(res.get("data", {}))
+            return {}
+        if asObject:
+            return Chats.from_dict(res.get("data", {}))
+        return res.get("data", {})
 
     async def fetchChatImage_a(self, wuid: str, msgId: str) -> dict[str, Any]:
         return (
