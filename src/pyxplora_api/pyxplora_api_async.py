@@ -9,7 +9,7 @@ from typing import Any
 from .const import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
-from .model import Chats, ChatsNew, SimpleChat
+from .model import ChatsNew, SimpleChat, SmallChat, SmallChatList
 from .pyxplora import PyXplora
 from .status import Emoji, LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
@@ -306,65 +306,77 @@ class PyXploraApi(PyXplora):
         return (await self._gqlHandler.setReadChatMsg(self.getWatchUserIDs(), msgId, id))["setReadChatMsg"]"""
 
     async def getWatchUnReadChatMsgCount(self, wuid: str) -> int:
-        # bug?
         return (await self._gqlHandler.unReadChatMsgCount_a(wuid)).get("unReadChatMsgCount", -1)
 
     async def getWatchChats(
-        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True
-    ) -> list[dict[str, Any]]:
+        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True, asObject=False
+    ) -> list[dict[str, Any]] | SmallChatList:
         retryCounter = 0
-        dataOk: list[dict[str, Any]] = []
         chats: list[dict[str, Any]] = []
         _chatsNew: ChatsNew = {}
-        while not dataOk and (retryCounter < self.maxRetries + 2):
+        while not chats and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
-                _chatsNew: ChatsNew = ChatsNew.from_dict(await self.getWatchChatsRaw(wuid, offset, limit, msgId, show_del_msg))
+                _chatsNew = await self.getWatchChatsRaw(wuid, offset, limit, msgId, show_del_msg, asObject)
+                if isinstance(_chatsNew, dict):
+                    _chatsNew: ChatsNew = ChatsNew.from_dict(_chatsNew)
+
                 _list: list[SimpleChat] = _chatsNew.list
                 if not _chatsNew or not _list:
-                    return chats
+                    continue
+
                 for chat in _list:
-                    chats.append(
-                        {
-                            "msgId": chat.msgId,
-                            "type": chat.type,
-                            "sender_id": chat.sender.id,
-                            "sender_name": chat.sender.name,
-                            "receiver_id": chat.receiver.id,
-                            "receiver_name": chat.receiver.name,
-                            "data_text": chat.data.text,
-                            "data_sender_name": chat.data.sender_name,
-                            "create": datetime.fromtimestamp(chat.create).strftime("%Y-%m-%d %H:%M:%S"),
-                            "delete_flag": chat.data.delete_flag,
-                            "emoticon_id": chat.data.emoticon_id,
-                        }
-                    )
+                    _chat = {
+                        "msgId": chat.msgId,
+                        "type": chat.type,
+                        "sender_id": chat.sender.id,
+                        "sender_name": chat.sender.name,
+                        "receiver_id": chat.receiver.id,
+                        "receiver_name": chat.receiver.name,
+                        "data_text": chat.data.text,
+                        "data_sender_name": chat.data.sender_name,
+                        "create": datetime.fromtimestamp(chat.create).strftime("%Y-%m-%d %H:%M:%S"),
+                        "delete_flag": chat.data.delete_flag,
+                        "emoticon_id": chat.data.emoticon_id,
+                    }
+                    if asObject:
+                        chats.append(SmallChat.from_dict(_chat))
+                    else:
+                        chats.append(_chat)
             except Error as error:
                 _LOGGER.debug(error)
-            dataOk = chats
-            if not dataOk:
+            if not chats:
                 # self._logoff()
                 await sleep(self.retryDelay)
+        if asObject:
+            return SmallChatList(chats)
         return chats
 
     async def getWatchChatsRaw(
-        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True
-    ) -> dict[str, Any]:
+        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True, asObject=False
+    ) -> dict[str, Any] | ChatsNew:
         retryCounter = 0
-        dataOk: dict[str, Any] = {}
         _chatsNew: dict[str, Any] = {}
-        while not dataOk and (retryCounter < self.maxRetries + 2):
+        while not _chatsNew and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
-                chats: Chats = Chats.from_dict(await self._gqlHandler.chats_a(wuid, offset, limit, msgId))
+                chats = await self._gqlHandler.chats_a(wuid, offset, limit, msgId, asObject)
+                if not chats:
+                    continue
+                if not isinstance(chats, dict):
+                    chats = chats.to_dict()
+                chatsNew = chats.get("chatsNew", None)
+                if chatsNew is None:
+                    continue
 
-                chatsNew: ChatsNew = ChatsNew.from_dict(chats.chatsNew)
-                chatsNew.__delattr__("list")
+                chatsNew = ChatsNew.from_dict(chatsNew)
 
-                oldChatList: list[SimpleChat] = chatsNew.get_list()
+                oldChatList: list[SimpleChat] = chatsNew.list
                 if oldChatList:
                     newChatList: list[SimpleChat] = []
                     for chat in oldChatList:
+                        if chat.data is None:
+                            continue
                         chat.data.emoticon_id = Emoji["M%s" % chat.data.emoticon_id].value
                         if show_del_msg:
                             newChatList.append(chat)
@@ -373,10 +385,10 @@ class PyXploraApi(PyXplora):
                     _chatsNew = ChatsNew(newChatList).to_dict()
             except Error as error:
                 _LOGGER.debug(error)
-            dataOk = _chatsNew
-            if not dataOk:
-                # self._logoff()
+            if not _chatsNew:
                 await sleep(self.retryDelay)
+        if asObject:
+            return ChatsNew.from_dict(_chatsNew, infer_missing=True)
         return _chatsNew
 
     ##### Watch Location Info #####

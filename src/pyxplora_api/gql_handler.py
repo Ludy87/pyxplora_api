@@ -9,6 +9,7 @@ from .const import ENDPOINT
 from .exception_classes import ErrorMSG, LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
+from .model import Chats
 from .status import EmailAndPhoneVerificationTypeV2, NormalStatus, UserContactType
 
 _LOGGER = logging.getLogger(__name__)
@@ -43,10 +44,9 @@ class GQLHandler(HandlerGQL):
     def runAuthorizedGqlQuery(
         self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
     ) -> dict[str, Any]:
-        _LOGGER.debug(self.accessToken)
-        _LOGGER.debug(self.signup)
         if self.accessToken is None and self.signup:
-            raise Exception("You must first login to the Xplora® API.")
+            self.login()
+            # raise Exception("You must first login to the Xplora® API.")
         # Run GraphQL query and return
         return self.runGqlQuery(query, variables, operation_name)
 
@@ -54,6 +54,8 @@ class GQLHandler(HandlerGQL):
         dataAll: dict[str, Any] = self.runGqlQuery(
             gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
         )
+        if dataAll is None:
+            return
         errors = dataAll.get("errors", [])
         if errors:
             self.errors.append({"function": "login", "errors": errors})
@@ -154,9 +156,11 @@ class GQLHandler(HandlerGQL):
 
     def trackWatch(self, wuid: str) -> dict[str, Any]:
         # tracking time - seconds
-        res: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("trackQ", ""), {"uid": wuid}, "TrackWatch").get(
-            "data", {}
-        )
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("trackQ", ""), {"uid": wuid}, "TrackWatch")
+        errors = data.get("errors", [])
+        if errors:
+            self.errors.append({"function": "trackWatch", "errors": errors})
+        res = data.get("data", {})
         if res.get("trackWatch", {"trackWatch": -1}):
             return res
         return {"trackWatch": -1}
@@ -182,11 +186,19 @@ class GQLHandler(HandlerGQL):
     def silentTimes(self, wuid: str) -> dict[str, Any]:
         return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("silentTimesQ", ""), {"uid": wuid}, "SlientTimes").get("data", {})
 
-    def chats(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "") -> dict[str, Any]:
+    def chats(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", asObject=False) -> dict[str, Any]:
         # ownUser id
-        return self.runAuthorizedGqlQuery(
+        res: dict = self.runAuthorizedGqlQuery(
             gq.WATCH_Q.get("chatsQ", ""), {"uid": wuid, "offset": offset, "limit": limit, "msgId": msgId}, "Chats"
-        ).get("data", {})
+        )
+        if res.get("errors", None) or res.get("data", None) is None:
+            if asObject:
+                _LOGGER.error(res.get("data", {}))
+                return Chats.from_dict(res.get("data", {}))
+            return {}
+        if asObject:
+            return Chats.from_dict(res.get("data", {}))
+        return res.get("data", {})
 
     def fetchChatImage(self, wuid: str, msgId: str) -> dict[str, Any]:
         return self.runAuthorizedGqlQuery(
