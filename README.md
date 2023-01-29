@@ -76,9 +76,9 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | getWatchUserIcons(None)                                              | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
 | getWatchUserIcons(wuid: str)                                         | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserIcons(wuid: list[str])                                   | list[str]:            |                                                                    |
-| getWatchUserXcoins(None)                                             | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| getWatchUserXcoins(wuid: str)                                        | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
-| getWatchUserXcoins(wuid: list[str])                                  | list[int]:            |                                                                    |
+| getWatchUserXCoins(None)                                             | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| getWatchUserXCoins(wuid: str)                                        | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
+| getWatchUserXCoins(wuid: list[str])                                  | list[int]:            |                                                                    |
 | getWatchUserCurrentStep(None)                                        | list[str]:            | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
 | getWatchUserCurrentStep(wuid: str)                                   | str:                  | [2.2.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.1) |
 | getWatchUserCurrentStep(wuid: list[str])                             | list[int]:            |                                                                    |

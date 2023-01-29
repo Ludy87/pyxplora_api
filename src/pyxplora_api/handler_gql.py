@@ -13,12 +13,12 @@ from .status import ClientType
 class HandlerGQL:
     def __init__(
         self,
-        countryPhoneNumber: str = "",
-        phoneNumber: str = "",
-        password: str = "",
-        userLang: str = "",
-        timeZone: str = "",
-        email: str | None = None,
+        countryPhoneNumber: str,
+        phoneNumber: str,
+        password: str,
+        userLang: str,
+        timeZone: str,
+        email: str = None,
         signup: bool = True,
     ) -> None:
         # init vars
