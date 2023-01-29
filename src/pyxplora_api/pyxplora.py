@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from time import time
-from typing import Any
+from typing import Any, List, Optional, Union
 
 from .exception_classes import ChildNoError, XTypeError
 
@@ -19,6 +19,7 @@ class PyXplora:
         wuid: str | list | None = None,
         email: str | None = None,
     ) -> None:
+
         self._countrycode = countrycode
         self._phoneNumber = phoneNumber
         self._email = email
@@ -44,7 +45,7 @@ class PyXplora:
         self._logoff()
 
     def _isConnected(self) -> bool:
-        return bool(self._gqlHandler and self._issueToken and self._gqlHandler.accessToken)
+        return bool(self._gql_handler and self._issueToken and self._gql_handler.accessToken)
 
     def _logoff(self) -> None:
         self.user: dict[Any, Any] = {}
@@ -54,10 +55,9 @@ class PyXplora:
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
 
     def delay(self, duration_in_seconds):
-        current_time = datetime.now()
-        end_time = current_time + timedelta(0, duration_in_seconds)
-        while current_time < end_time:
-            current_time = datetime.now()
+        end_time = datetime.now() + timedelta(seconds=duration_in_seconds)
+        while datetime.now() < end_time:
+            pass
 
     def getDevice(self, wuid: str):
         try:
@@ -73,7 +73,7 @@ class PyXplora:
         return self.user.get("name", "")
 
     def getUserIcon(self) -> str:
-        extra: dict[str, str] = self.user.get("extra", {})
+        extra = self.user.get("extra", {})
         return extra.get("profileIcon", "https://s3.eu-central-1.amazonaws.com/kids360uc/default_icon.png")
 
     def getUserXcoin(self) -> int:
@@ -92,49 +92,44 @@ class PyXplora:
         return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
     ##### Watch Info #####
-    def getWatchUserIDs(self, watchuserphonenumbers: list[str] = None) -> list[str]:
-        if isinstance(self._wuid, list):
-            if self._wuid:
-                return self._wuid
-        if isinstance(self._wuid, str):
-            if self._wuid != "":
-                return [self._wuid]
-        watch_IDs: list[str] = []
+    def getWatchUserIDs(self, watch_user_phone_numbers: list[str] = None) -> list[str]:
+        if isinstance(self._wuid, list) and self._wuid:
+            return self._wuid
+        if isinstance(self._wuid, str) and self._wuid:
+            return [self._wuid]
+        watch_ids = []
         for watch in self.watchs:
-            if watchuserphonenumbers:
-                if watch["ward"]["phoneNumber"] in watchuserphonenumbers:
-                    watch_IDs.append(watch["ward"]["id"])
+            if watch_user_phone_numbers:
+                if watch["ward"]["phoneNumber"] in watch_user_phone_numbers:
+                    watch_ids.append(watch["ward"]["id"])
             else:
-                watch_IDs.append(watch["ward"]["id"])
-        return watch_IDs
+                watch_ids.append(watch["ward"]["id"])
+        return watch_ids
 
-    def getWatchUserPhoneNumbers(self, wuid: str | list[str] | None = None, ignoreError: bool = False) -> str | list[str]:
-        watchuserphonenumbers: list[str] = []
-        i = 1
+    def getWatchUserPhoneNumbers(self, wuid: Union[str, List[str]] = None, ignoreError: bool = False) -> Union[str, List[str]]:
+        watchuserphonenumbers = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
         if not wuid and not ignoreError:
             raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
-            if str(watch["ward"]["phoneNumber"]) == "" and not ignoreError:
-                if i == len(self.watchs):
-                    raise ChildNoError()
-                i += 1
+            phone_number = str(watch["ward"]["phoneNumber"])
+            if not phone_number and not ignoreError:
                 continue
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
-                    watchuserphonenumbers.append(str(watch["ward"]["phoneNumber"]))
+                    watchuserphonenumbers.append(phone_number)
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return str(watch["ward"]["phoneNumber"])
+                    return phone_number
             else:
                 raise XTypeError("str | list[str]", type(wuid))
         if not watchuserphonenumbers and not ignoreError:
             raise ChildNoError(["Child phonenumber"])
         return watchuserphonenumbers
 
-    def getWatchUserNames(self, wuid: str | list[str] | None = None) -> str | list[str]:
-        watchusernames: list[str] = []
+    def getWatchUserNames(self, wuid: Optional[Union[str, List[str]]] = None) -> Union[str, List[str]]:
+        watchusernames = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
         if not wuid:
@@ -142,39 +137,37 @@ class PyXplora:
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
-                    watchusernames.append(str(watch["ward"]["name"]))
+                    watchusernames.append(watch["ward"]["name"])
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
-                    return str(watch["ward"]["name"])
+                    return watch["ward"]["name"]
             else:
                 raise XTypeError("str | list[str]", type(wuid))
         if not watchusernames:
-            raise ChildNoError(["Watch Username"])
+            raise ChildNoError(["Watch username"])
         return watchusernames
 
-    def getWatchUserIcons(self, wuid: str | list[str] | None = None) -> str | list[str]:
-        watchusericons: list[str] = []
+    def getWatchUserIcons(self, wuid: Union[str, List[str], None] = None) -> Union[str, List[str]]:
+        watch_user_icons = []
         if wuid is None:
-            self._wuid = self.getWatchUserIDs()
-        else:
-            self._wuid = wuid
-        if not self._wuid:
+            wuid = self.getWatchUserIDs()
+        if not wuid:
             raise ChildNoError(["Watch ID"])
         for watch in self.watchs:
-            if isinstance(self._wuid, list):
-                if watch["ward"]["id"] in self._wuid:
-                    watchusericons.append(f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}")
-            elif isinstance(self._wuid, str):
-                if watch["ward"]["id"] == self._wuid:
-                    watchusericons.append(f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}")
+            if isinstance(wuid, list):
+                if watch["ward"]["id"] in wuid:
+                    watch_user_icons.append(f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}")
+            elif isinstance(wuid, str):
+                if watch["ward"]["id"] == wuid:
+                    return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
             else:
-                raise XTypeError("str | list[str]", type(self._wuid))
-        if not watchusericons:
+                raise XTypeError("str | list[str]", type(wuid))
+        if not watch_user_icons:
             raise ChildNoError(["Watch User Icon"])
-        return watchusericons
+        return watch_user_icons
 
-    def getWatchUserXcoins(self, wuid: str | list[str] | None = None) -> int | list[int]:
-        watchuserxcoins: list[int] = []
+    def getWatchUserXCoins(self, wuid: Optional[Union[str, List[str]]] = None) -> Union[int, List[int]]:
+        watchuserxcoins = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
         if not wuid:
@@ -192,7 +185,7 @@ class PyXplora:
             raise ChildNoError(["Watch User XCoins"])
         return watchuserxcoins
 
-    def getWatchUserCurrentStep(self, wuid: str | list[str] | None = None) -> int | list[int]:
+    def getWatchUserCurrentStep(self, wuid: Union[str, List[str], None] = None) -> Union[int, List[int]]:
         watchusercurrentstep: list[int] = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
@@ -211,7 +204,7 @@ class PyXplora:
             raise ChildNoError(["Watch User Currentsteps"])
         return watchusercurrentstep
 
-    def getWatchUserTotalStep(self, wuid: str | list[str] | None = None) -> int | list[int]:
+    def getWatchUserTotalStep(self, wuid: Union[str, List[str], None] = None) -> Union[int, List[int]]:
         watchusertotalstep: list[int] = []
         if wuid is None:
             wuid = self.getWatchUserIDs()
@@ -232,6 +225,6 @@ class PyXplora:
 
     ##### - #####
     def _helperTime(self, t: str) -> str:
-        h = str(int(t) / 60).split(".")
-        h2 = str(int(h[1]) * 60).zfill(2)[:2]
-        return h[0].zfill(2) + ":" + str(h2).zfill(2)
+        hours = str(int(t) // 60).zfill(2)
+        minutes = str(int(t) % 60).zfill(2)
+        return f"{hours}:{minutes}"

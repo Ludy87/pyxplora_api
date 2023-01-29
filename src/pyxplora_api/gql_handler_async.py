@@ -6,7 +6,7 @@ from typing import Any
 from . import gql_mutations as gm
 from . import gql_queries as gq
 from .const import ENDPOINT
-from .exception_classes import ErrorMSG, LoginError, NoAdminError
+from .exception_classes import LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
 from .model import Chats
@@ -51,35 +51,36 @@ class GQLHandler(HandlerGQL):
         return await self.runGqlQuery_a(query, variables, operation_name)
 
     async def login_a(self) -> dict[str, Any]:
-        dataAll: dict[str, Any] = await self.runGqlQuery_a(
+        dataAll = await self.runGqlQuery_a(
             gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
         )
         if dataAll is None:
             return
-        errors = dataAll.get("errors", [])
+        errors = dataAll.get("errors", None)
         if errors:
             self.errors.append({"function": "login", "errors": errors})
-        data: dict[str, Any] = dataAll.get("data", {})
-        if data.get("signInWithEmailOrPhone", None) is None:
-            error_message: list[dict[str, str]] = dataAll.get("errors", [{"message": ""}])
-            # Login failed.
-            # codiga-disable
-            raise LoginError(ErrorMSG.LOGIN_ERR.value.format(error_message[0].get("message", "")))
-        self.issueToken = data.get("signInWithEmailOrPhone", None)
+        data = dataAll.get("data", {})
+        signIn = data.get("signInWithEmailOrPhone", None)
+        if signIn is None:
+            error_message = dataAll.get("errors", [{"message": ""}])[0].get("message", "")
+            raise LoginError(f"Login error: {error_message}")
 
-        # Login succeeded
+        self.issueToken = signIn
         self.sessionId = self.issueToken["id"]
         self.userId = self.issueToken["user"]["id"]
         self.accessToken = self.issueToken["token"]
         self.issueDate = self.issueToken["issueDate"]
         self.expireDate = self.issueToken["expireDate"]
 
-        if self.issueToken["app"] is not None:
-            # Update API_KEY and API_SECRET?
-            if self.issueToken["app"]["apiKey"]:
-                self._API_KEY = self.issueToken["app"]["apiKey"]
-            if self.issueToken["app"]["apiSecret"]:
-                self._API_SECRET = self.issueToken["app"]["apiSecret"]
+        app = self.issueToken.get("app")
+        if app:
+            apiKey = app.get("apiKey")
+            if apiKey:
+                self._API_KEY = apiKey
+            apiSecret = app.get("apiSecret")
+            if apiSecret:
+                self._API_SECRET = apiSecret
+
         return self.issueToken
 
     async def isAdmin_a(self, wuid: str, query: str, variables: dict[str, Any], key: str) -> bool:
@@ -469,7 +470,7 @@ class GQLHandler(HandlerGQL):
             gm.WATCH_M.get("modifyAlertM", ""), {"uid": id, "remind": yesOrNo}, "modifyAlert"
         )
 
-    async def setEnableSlientTime_a(self, silentId: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
+    async def setEnableSilentTime_a(self, silentId: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
         return (
             await self.runAuthorizedGqlQuery_a(
                 gm.WATCH_M.get("setEnableSlientTimeM", ""), {"silentId": silentId, "status": status}, "SetEnableSlientTime"

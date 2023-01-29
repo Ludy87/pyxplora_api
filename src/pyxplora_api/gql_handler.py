@@ -6,7 +6,7 @@ from typing import Any
 from . import gql_mutations as gm
 from . import gql_queries as gq
 from .const import ENDPOINT
-from .exception_classes import ErrorMSG, LoginError, NoAdminError
+from .exception_classes import LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
 from .model import Chats
@@ -51,35 +51,34 @@ class GQLHandler(HandlerGQL):
         return self.runGqlQuery(query, variables, operation_name)
 
     def login(self) -> dict[str, Any]:
-        dataAll: dict[str, Any] = self.runGqlQuery(
-            gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
-        )
+        dataAll = self.runGqlQuery(gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone")
         if dataAll is None:
             return
-        errors = dataAll.get("errors", [])
+        errors = dataAll.get("errors", None)
         if errors:
             self.errors.append({"function": "login", "errors": errors})
-        data: dict[str, Any] = dataAll.get("data", {})
-        if data.get("signInWithEmailOrPhone", None) is None:
-            error_message: list[dict[str, str]] = dataAll.get("errors", [{"message": ""}])
-            # Login failed.
-            # codiga-disable
-            raise LoginError(ErrorMSG.LOGIN_ERR.value.format(error_message[0].get("message", "")))
-        self.issueToken = data.get("signInWithEmailOrPhone", None)
+        data = dataAll.get("data", {})
+        signIn = data.get("signInWithEmailOrPhone", None)
+        if signIn is None:
+            error_message = dataAll.get("errors", [{"message": ""}])[0].get("message", "")
+            raise LoginError(f"Login error: {error_message}")
 
-        # Login succeeded
+        self.issueToken = signIn
         self.sessionId = self.issueToken["id"]
         self.userId = self.issueToken["user"]["id"]
         self.accessToken = self.issueToken["token"]
         self.issueDate = self.issueToken["issueDate"]
         self.expireDate = self.issueToken["expireDate"]
 
-        if self.issueToken["app"] is not None:
-            # Update API_KEY and API_SECRET?
-            if self.issueToken["app"]["apiKey"]:
-                self._API_KEY = self.issueToken["app"]["apiKey"]
-            if self.issueToken["app"]["apiSecret"]:
-                self._API_SECRET = self.issueToken["app"]["apiSecret"]
+        app = self.issueToken.get("app")
+        if app:
+            apiKey = app.get("apiKey")
+            if apiKey:
+                self._API_KEY = apiKey
+            apiSecret = app.get("apiSecret")
+            if apiSecret:
+                self._API_SECRET = apiSecret
+
         return self.issueToken
 
     def isAdmin(self, wuid: str, query: str, variables: dict[str, Any], key: str) -> bool:
@@ -296,9 +295,13 @@ class GQLHandler(HandlerGQL):
         return self.runAuthorizedGqlQuery(gq.REVIEW_Q.get("getStatusQ", ""), {"uid": wuid}, "GetReviewStatus").get("data", {})
 
     def getWatchUserSteps(self, wuid: str, tz: str, date: int) -> dict[str, Any]:
-        return self.runAuthorizedGqlQuery(gq.STEP_Q.get("userQ", ""), {"uid": wuid, "tz": tz, "date": date}, "UserSteps").get(
-            "data", {}
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(
+            gq.STEP_Q.get("userQ", ""), {"uid": wuid, "tz": tz, "date": date}, "UserSteps"
         )
+        errors = data.get("errors", [])
+        if errors:
+            self.errors.append({"function": "getWatchUserSteps", "errors": errors})
+        return data.get("data", {})
 
     def countries(self) -> dict[str, Any]:
         # Country Support
@@ -345,19 +348,19 @@ class GQLHandler(HandlerGQL):
         data = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("startTrackingWatchQ", ""), {"uid": wuid}, "StartTrackingWatch")
         errors: list[dict[str, str]] = data.get("errors", [])
         if errors:
-            for error in errors:
-                self.errors.append({"function": "getStartTrackingWatch", "error": error})
+            self.errors.append({"function": "getStartTrackingWatch", "error": errors})
         return data.get("data", {})
 
     def getEndTrackingWatch(self, wuid: str) -> dict[str, Any]:
         data = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("endTrackingWatchQ", ""), {"uid": wuid}, "EndTrackingWatch")
         errors: list[dict[str, str]] = data.get("errors", [])
         if errors:
-            for error in errors:
-                self.errors.append({"function": "getEndTrackingWatch", "error": error})
+            self.errors.append({"function": "getEndTrackingWatch", "error": errors})
         return data.get("data", {})
 
-    def checkEmailOrPhoneExist(self, type: UserContactType, email: str, countryCode: str, phoneNumber: str) -> dict[str, bool]:
+    def checkEmailOrPhoneExist(
+        self, type: UserContactType, email: str = "", countryCode: str = "", phoneNumber: str = ""
+    ) -> dict[str, bool]:
         data = self.runAuthorizedGqlQuery(
             gq.UTILS_Q.get("checkEmailOrPhoneExistQ", ""),
             {"type": type.value, "email": email, "countryCode": countryCode, "phoneNumber": phoneNumber},
@@ -380,7 +383,7 @@ class GQLHandler(HandlerGQL):
             return True
         return False
 
-    def addStep(self, stepCount: int) -> dict[str, bool]:
+    def addStep(self, stepCount: int) -> dict[str, Any]:
         return self.runAuthorizedGqlQuery(gm.STEP_M.get("addM", ""), {"stepCount": stepCount}, "AddStep").get("data", {})
 
     def shutdown(self, wuid: str) -> bool:
@@ -395,7 +398,7 @@ class GQLHandler(HandlerGQL):
         # function?
         return self.runAuthorizedGqlQuery(gm.WATCH_M.get("modifyAlertM", ""), {"uid": id, "remind": yesOrNo}, "modifyAlert")
 
-    def setEnableSlientTime(self, silentId: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
+    def setEnableSilentTime(self, silentId: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
         return self.runAuthorizedGqlQuery(
             gm.WATCH_M.get("setEnableSlientTimeM", ""), {"silentId": silentId, "status": status}, "SetEnableSlientTime"
         ).get("data", {})
@@ -417,9 +420,7 @@ class GQLHandler(HandlerGQL):
             "SubmitIncorrectLocationData",
         ).get("data", {})
 
-    def modifyContact(
-        self, contactId: str, isAdmin: bool | None = None, contactName: str = "", fileId: str = ""
-    ) -> dict[str, Any]:
+    def modifyContact(self, contactId: str, isAdmin: bool, contactName: str = "", fileId: str = "") -> dict[str, Any]:
         return self.runAuthorizedGqlQuery(
             gm.WATCH_M.get("modifyContactM", ""),
             {"contactId": contactId, "contactName": contactName, "fileId": fileId, "isAdmin": isAdmin},
