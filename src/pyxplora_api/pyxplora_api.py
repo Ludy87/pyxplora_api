@@ -8,9 +8,9 @@ from typing import Any, Dict, List, Optional, Union
 from .const import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler import GQLHandler
-from .model import ChatsNew, SmallChat, SmallChatList
+from .model import Chats, ChatsNew, SmallChat, SmallChatList
 from .pyxplora import PyXplora
-from .status import LocationType, NormalStatus, UserContactType, WatchOnlineStatus
+from .status import Emoji, LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,33 +34,33 @@ class PyXploraApi(PyXplora):
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
 
     def _login(self, force_login: bool = False, sign_up: bool = True) -> dict:
-        if self._gql_handler is None or self._has_token_expired() or force_login:
+        if self._gql_handler is None or self._hasTokenExpired() or force_login:
             self._logoff()
 
             self._gql_handler = GQLHandler(
-                self._country_code, self._phone_number, self._password, self._user_lang, self._time_zone, self._email, sign_up
+                self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
             )
 
-            for i in range(self.max_retries + 2):
+            for i in range(self.maxRetries + 2):
                 try:
-                    self._issue_token = self._gql_handler.login()
+                    self._issueToken = self._gql_handler.login()
                     break
                 except LoginError as error:
                     self.error_message = error.error_message
                     return {}
                 except Error:
-                    if i == self.max_retries + 1:
+                    if i == self.maxRetries + 1:
                         self.error_message = ErrorMSG.SERVER_ERR
                         return {}
                     else:
-                        self.delay(self.retry_delay)
+                        self.delay(self.retryDelay)
 
-            if not self._issue_token:
+            if not self._issueToken:
                 raise Exception("Unknown error logging in.")
 
             self.issued_token_datetime = int(time())
 
-        return self._issue_token
+        return self._issueToken
 
     def init(self, forceLogin: bool = False, signup: bool = True) -> None:
         token = self._login(forceLogin, signup)
@@ -333,9 +333,16 @@ class PyXploraApi(PyXplora):
                 result = self._gql_handler.chats(wuid, offset, limit, msgId, asObject)
                 if not result:
                     continue
-                result = result.get("chatsNew", None)
+                if isinstance(result, dict):
+                    result = ChatsNew.from_dict(result.get("chatsNew", None))
+                elif isinstance(result, Chats):
+                    result = result.chatsNew
+
                 if result is None:
                     continue
+
+                for d in result.list:
+                    d.data.emoticon_id = Emoji[f"M{d.data.emoticon_id}"].value
 
                 result = ChatsNew.from_dict(result)
 
