@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Union
 from .const import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
-from .model import ChatsNew, SmallChat, SmallChatList
+from .model import Chats, ChatsNew, SmallChat, SmallChatList
 from .pyxplora import PyXplora
 from .status import Emoji, LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
