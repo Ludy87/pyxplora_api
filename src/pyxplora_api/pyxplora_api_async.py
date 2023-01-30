@@ -11,7 +11,7 @@ from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
 from .model import ChatsNew, SmallChat, SmallChatList
 from .pyxplora import PyXplora
-from .status import LocationType, NormalStatus, UserContactType, WatchOnlineStatus
+from .status import Emoji, LocationType, NormalStatus, UserContactType, WatchOnlineStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -344,9 +344,16 @@ class PyXploraApi(PyXplora):
                 result = await self._gql_handler.chats_a(wuid, offset, limit, msgId, asObject)
                 if not result:
                     continue
-                result = result.get("chatsNew", None)
+                if isinstance(result, dict):
+                    result = ChatsNew.from_dict(result.get("chatsNew", None))
+                elif isinstance(result, Chats):
+                    result = result.chatsNew
+
                 if result is None:
                     continue
+
+                for d in result.list:
+                    d.data.emoticon_id = Emoji[f"M{d.data.emoticon_id}"].value
 
                 result = ChatsNew.from_dict(result)
 
@@ -457,7 +464,7 @@ class PyXploraApi(PyXplora):
                 _LOGGER.debug(error)
 
             if not result:
-                await asyncio.sleep(self.retry_delay)
+                await asyncio.sleep(self.retryDelay)
 
         return bool(result)
 
