@@ -21,7 +21,6 @@ class PyXplora:
         wuid: str | list | None = None,
         email: str | None = None,
     ) -> None:
-
         self._countrycode = countrycode
         self._phoneNumber = phoneNumber
         self._email = email
