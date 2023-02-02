@@ -37,6 +37,7 @@ class PyXploraApi(PyXplora):
         )
 
     def _login(self, force_login: bool = False, sign_up: bool = True) -> dict:
+
         if not self._isConnected() or self._hasTokenExpired() or force_login:
 
             retryCounter = 0
