@@ -67,7 +67,11 @@ class HandlerGQL:
             authorizationHeader = f"Open {self._API_KEY}:{self._API_SECRET}"
         else:
             # BEARER authorization
-            authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
+            w360: dict = self.issueToken.get("w360", None)
+            if w360:
+                authorizationHeader = f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
+            else:
+                authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
 
         rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
         requestHeaders["H-Date"] = rfc1123DateString

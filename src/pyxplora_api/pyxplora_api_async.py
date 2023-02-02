@@ -76,7 +76,6 @@ class PyXploraApi(PyXplora):
             self.watchs = children
         else:
             self.watchs = [watch for watch in children if watch["ward"]["phoneNumber"] in self._childPhoneNumber]
-
         self.user = user
 
     def version(self) -> str:
