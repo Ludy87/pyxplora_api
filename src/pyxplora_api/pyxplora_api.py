@@ -18,8 +18,6 @@ LIST_DICT: list[dict[str, any]] = []
 
 
 class PyXploraApi(PyXplora):
-    _gql_handler: GQLHandler = None
-
     def __init__(
         self,
         countrycode: str = "",
@@ -33,43 +31,44 @@ class PyXploraApi(PyXplora):
     ) -> None:
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
 
+    def initHandler(self, sign_up):
+        self._gql_handler: GQLHandler = GQLHandler(
+            self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
+        )
+
     def _login(self, force_login: bool = False, sign_up: bool = True) -> dict:
-        if self._gql_handler is None or self._hasTokenExpired() or force_login:
-            self._logoff()
 
-            self._gql_handler = GQLHandler(
-                self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
-            )
+        if not self._isConnected() or self._hasTokenExpired() or force_login:
 
-            for i in range(self.maxRetries + 2):
+            retryCounter = 0
+            while not self._isConnected() and (retryCounter < self.maxRetries + 2):
+                retryCounter += 1
+
+                # Try to login
                 try:
                     self._issueToken = self._gql_handler.login()
-                    break
                 except LoginError as error:
                     self.error_message = error.error_message
-                    return {}
+                    retryCounter = self.maxRetries + 2
                 except Error:
-                    if i == self.maxRetries + 1:
+                    if retryCounter == self.maxRetries + 2:
                         self.error_message = ErrorMSG.SERVER_ERR
-                        return {}
                     else:
                         self.delay(self.retryDelay)
 
-            if not self._issueToken:
-                raise Exception("Unknown error logging in.")
-
-            self.issued_token_datetime = int(time())
-
+            if self._issueToken:
+                self.dtIssueToken = int(time())
         return self._issueToken
 
     def init(self, forceLogin: bool = False, signup: bool = True) -> None:
+        self.initHandler(signup)
         token = self._login(forceLogin, signup)
         if not signup:
             return
         if not token:
             raise LoginError(self.error_message)
 
-        user = token.get("user")
+        user = token.get("user", None)
         if not user:
             raise LoginError(self.error_message)
 
@@ -147,12 +146,7 @@ class PyXploraApi(PyXplora):
                             }
                         )
                 break
-            except Error as error:
-                retries += 1
-                _LOGGER.debug(error)
-                self.delay(self.retryDelay)
-            except TypeError as error:
-                retries += 1
+            except (Error, TypeError) as error:
                 _LOGGER.debug(error)
                 self.delay(self.retryDelay)
         return contacts
@@ -160,6 +154,7 @@ class PyXploraApi(PyXplora):
     def getWatchAlarm(self, wuid: str) -> List[Dict[str, Any]]:
         retry_counter = 0
         alarms: List[Dict[str, Any]] = []
+
         while retry_counter < self.maxRetries + 2:
             try:
                 alarms_raw = self._gql_handler.getAlarmTime(wuid)
@@ -257,7 +252,6 @@ class PyXploraApi(PyXplora):
                 ask_raw = self.askWatchLocate(wuid)
                 track_raw = self.getTrackWatchInterval(wuid)
                 status = WatchOnlineStatus.ONLINE if ask_raw or track_raw != -1 else WatchOnlineStatus.OFFLINE
-
             except Error as error:
                 _LOGGER.debug(error)
                 retries += 1
@@ -284,6 +278,7 @@ class PyXploraApi(PyXplora):
     ) -> Union[List[Dict[str, Any]], SmallChatList]:
         retry_counter = 0
         chats: List[Dict[str, Any]] = []
+
         while not chats and retry_counter < self.maxRetries + 2:
             retry_counter += 1
             try:
@@ -318,6 +313,7 @@ class PyXploraApi(PyXplora):
 
             if not chats:
                 self.delay(self.retryDelay)
+
         if asObject:
             return SmallChatList(chats)
         return chats
@@ -474,7 +470,7 @@ class PyXploraApi(PyXplora):
         return bool(result)
 
     def setAllEnableSilentTime(self, wuid: str) -> List[bool]:
-        results: list[bool] = []
+        results = []
         silent_times = self.getSilentTime(wuid)
         for silent_time in silent_times:
             id = silent_time.get("id")
@@ -483,10 +479,10 @@ class PyXploraApi(PyXplora):
         return results
 
     def setAllDisableSilentTime(self, wuid: str) -> list[bool]:
-        res: list[bool] = []
+        results = []
         for silentTime in self.getSilentTime(wuid):
-            res.append(self.setDisableSilentTime(silentTime.get("id", "")))
-        return res
+            results.append(self.setDisableSilentTime(silentTime.get("id", "")))
+        return results
 
     def setAlarmTime(self, alarmId: str, status: NormalStatus) -> bool:
         retryCounter = 0
@@ -548,7 +544,6 @@ class PyXploraApi(PyXplora):
 
     def getWatches(self, wuid: str) -> dict[str, Any]:
         retryCounter = 0
-
         watches_raw: dict[str, Any] = {}
         watch: dict[str, Any] = {}
         while not watch and (retryCounter < self.maxRetries + 2):
@@ -580,11 +575,7 @@ class PyXploraApi(PyXplora):
     def getWatchState(self, wuid: str, watches: dict[str, Any] = {}) -> dict[str, Any]:
         wqr: dict[str, Any] = watches if watches else self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
-        try:
-            return self._gql_handler.getWatchState(qrCode=qrCode.split("=")[1])
-        except Error as error:
-            _LOGGER.debug(error)
-            return {}
+        return self._gql_handler.getWatchState(qrCode=qrCode.split("=")[1])
 
     def conv360IDToO2OID(self, qid: str, deviceId: str) -> dict[str, Any]:
         return self._gql_handler.conv360IDToO2OID(qid, deviceId)

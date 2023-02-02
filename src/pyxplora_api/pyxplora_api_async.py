@@ -19,8 +19,6 @@ LIST_DICT: list[dict[str, any]] = []
 
 
 class PyXploraApi(PyXplora):
-    _gql_handler: GQLHandler = None
-
     def __init__(
         self,
         countrycode: str = "",
@@ -34,13 +32,13 @@ class PyXploraApi(PyXplora):
     ) -> None:
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
 
+    def initHandler(self, sign_up):
+        self._gql_handler: GQLHandler = GQLHandler(
+            self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
+        )
+
     async def _login(self, force_login: bool = False, sign_up: bool = True) -> dict:
         if not self._isConnected() or self._hasTokenExpired() or force_login:
-            self._logoff()
-
-            self._gql_handler = GQLHandler(
-                self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
-            )
 
             retryCounter = 0
             while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -63,13 +61,14 @@ class PyXploraApi(PyXplora):
         return self._issueToken
 
     async def init(self, forceLogin: bool = False, signup: bool = True) -> None:
+        self.initHandler(signup)
         token = await self._login(forceLogin, signup)
         if not signup:
             return
         if not token:
             raise LoginError(self.error_message)
 
-        user = token.get("user")
+        user = token.get("user", None)
         if not user:
             raise LoginError(self.error_message)
 
@@ -133,6 +132,7 @@ class PyXploraApi(PyXplora):
         retries = 0
         contacts = []
         while retries < self.maxRetries + 2:
+            retries += 1
             try:
                 raw_contacts = await self._gql_handler.getWatchUserContacts_a(wuid)
                 raw_contacts = raw_contacts.get("contacts", {})
@@ -156,12 +156,7 @@ class PyXploraApi(PyXplora):
                             }
                         )
                 break
-            except Error as error:
-                retries += 1
-                _LOGGER.debug(error)
-                await asyncio.sleep(self.retryDelay)
-            except TypeError as error:
-                retries += 1
+            except (Error, TypeError) as error:
                 _LOGGER.debug(error)
                 await asyncio.sleep(self.retryDelay)
         return contacts
@@ -251,7 +246,7 @@ class PyXploraApi(PyXplora):
         return watch_location
 
     async def getWatchBattery(self, wuid: str) -> int:
-        watch_b = await self.loadWatchLocation(wuid=wuid)
+        watch_b = await self.loadWatchLocation(wuid=wuid, with_ask=True)
         return int(watch_b.get("watch_battery", -1))
 
     async def getWatchIsCharging(self, wuid: str) -> bool:
@@ -494,10 +489,10 @@ class PyXploraApi(PyXplora):
         return results
 
     async def setAllDisableSilentTime(self, wuid: str) -> list[bool]:
-        res: list[bool] = []
+        results = []
         for silentTime in await self.getSilentTime(wuid):
-            res.append(await self.setDisableSilentTime(silentTime.get("id", "")))
-        return res
+            results.append(await self.setDisableSilentTime(silentTime.get("id", "")))
+        return results
 
     async def setAlarmTime(self, alarmId: str, status: NormalStatus) -> bool:
         retryCounter = 0
