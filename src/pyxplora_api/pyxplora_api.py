@@ -479,7 +479,7 @@ class PyXploraApi(PyXplora):
         return results
 
     def setAllDisableSilentTime(self, wuid: str) -> list[bool]:
-        results] = []
+        results = []
         for silentTime in self.getSilentTime(wuid):
             results.append(self.setDisableSilentTime(silentTime.get("id", "")))
         return results
