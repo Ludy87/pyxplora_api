@@ -11,6 +11,8 @@ from .status import ClientType
 
 
 class HandlerGQL:
+    accessToken: Any = None
+
     def __init__(
         self,
         countryPhoneNumber: str,
@@ -23,7 +25,7 @@ class HandlerGQL:
     ) -> None:
         # init vars
         self.sessionId = None
-        self.accessToken = None
+        # self.accessToken = None
         self.accessTokenExpire = 0
         self.userLocale = userLang
         self.timeZone = timeZone
@@ -33,8 +35,8 @@ class HandlerGQL:
         self.passwordMD5 = hashlib.md5(password.encode()).hexdigest()
         self._API_KEY = API_KEY
         self._API_SECRET = API_SECRET
-        self.issueDate = 0
-        self.expireDate = 0
+        # self.issueDate = 0
+        # self.expireDate = 0
         self.userId = None
         self.variables = {
             "countryPhoneNumber": self.countryPhoneNumber,
@@ -43,16 +45,13 @@ class HandlerGQL:
             "userLang": self.userLocale,
             "timeZone": self.timeZone,
             "emailAddress": self.email,
-            "client": ClientType.APP.value,
+            "client": ClientType.WEB.value,
         }
         self.issueToken: dict[str, Any]
 
         self.errors: list[Any] = []
 
         self.signup = signup
-
-    def c(self) -> HandlerGQL:
-        return self
 
     def getRequestHeaders(self, acceptedContentType: str) -> dict[str, Any]:
         if acceptedContentType == "" or acceptedContentType is None:

@@ -8,6 +8,8 @@ from .exception_classes import ChildNoError, XTypeError
 
 
 class PyXplora:
+    _gql_handler: Any = None
+
     def __init__(
         self,
         countrycode: str,
@@ -42,6 +44,7 @@ class PyXplora:
         self.device: dict[str, Any] = {}
 
         self.watchs: list[Any] = []
+
         self._logoff()
 
     def _isConnected(self) -> bool:

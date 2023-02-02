@@ -69,17 +69,6 @@ class GQLHandler(HandlerGQL):
         self.sessionId = self.issueToken["id"]
         self.userId = self.issueToken["user"]["id"]
         self.accessToken = self.issueToken["token"]
-        self.issueDate = self.issueToken["issueDate"]
-        self.expireDate = self.issueToken["expireDate"]
-
-        app = self.issueToken.get("app")
-        if app:
-            apiKey = app.get("apiKey")
-            if apiKey:
-                self._API_KEY = apiKey
-            apiSecret = app.get("apiSecret")
-            if apiSecret:
-                self._API_SECRET = apiSecret
 
         return self.issueToken
 
