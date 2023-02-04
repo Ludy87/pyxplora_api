@@ -37,7 +37,7 @@ class PyXploraApi(PyXplora):
             self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
         )
 
-    async def _login(self, force_login: bool = False, sign_up: bool = True) -> dict:
+    async def _login(self, force_login: bool = False) -> dict:
         if not self._isConnected() or self._hasTokenExpired() or force_login:
             retryCounter = 0
             while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -61,7 +61,7 @@ class PyXploraApi(PyXplora):
 
     async def init(self, forceLogin: bool = False, signup: bool = True) -> None:
         self.initHandler(signup)
-        token = await self._login(forceLogin, signup)
+        token = await self._login(forceLogin)
         if not signup:
             return
         if not token:
@@ -109,8 +109,8 @@ class PyXploraApi(PyXplora):
         watch_alarm, watch_location, watch_safe_zones, silent_time, watches, sw_info, user_steps, online_status = results
         self.device[wuid] = {
             "getWatchAlarm": watch_alarm,
-            "watch_battery": int(watch_location.get("watch_battery", -1)),
-            "watch_charging": watch_location.get("watch_charging", False),
+            "watch_battery": int(watch_location.get("battery", -1)),
+            "watch_charging": watch_location.get("isCharging", False),
             "locateType": watch_location.get("locateType", LocationType.UNKNOWN.value),
             "lastTrackTime": watch_location.get("tm", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
             "isInSafeZone": watch_location.get("isInSafeZone", False),
@@ -244,12 +244,18 @@ class PyXploraApi(PyXplora):
         return watch_location
 
     async def getWatchBattery(self, wuid: str) -> int:
-        watch_b = await self.loadWatchLocation(wuid=wuid, with_ask=True)
-        return int(watch_b.get("watch_battery", -1))
+        tasks = [self.loadWatchLocation(wuid)]
+        results = await asyncio.gather(*tasks)
+        if results:
+            return results[0].get("watch_battery", -1)
+        return -1
 
     async def getWatchIsCharging(self, wuid: str) -> bool:
-        watch_c = await self.loadWatchLocation(wuid=wuid)
-        return watch_c.get("watch_charging", False)
+        tasks = [self.loadWatchLocation(wuid)]
+        results = await asyncio.gather(*tasks)
+        if results:
+            return results[0].get("watch_charging", False)
+        return False
 
     async def getWatchOnlineStatus(self, wuid: str) -> str:
         retries = 0
@@ -362,11 +368,18 @@ class PyXploraApi(PyXplora):
 
     ##### Watch Location Info #####
     async def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> dict:
-        loc = await self.loadWatchLocation(wuid, withAsk)
-        return loc.get("watch_last_location", {}) if isinstance(loc, dict) else {}
+        tasks = [self.loadWatchLocation(wuid)]
+        results = await asyncio.gather(*tasks)
+        if results:
+            return results[0].get("watch_last_location", {})
+        return {}
 
     async def getWatchLocate(self, wuid: str) -> dict[str, Any]:
-        return await self.loadWatchLocation(wuid=wuid) or {}
+        tasks = [self.loadWatchLocation(wuid)]
+        results = await asyncio.gather(*tasks)
+        if results:
+            return results[0]
+        return {}
 
     async def getWatchLocateType(self, wuid: str) -> str:
         locate_info = await self.getWatchLocate(wuid)
