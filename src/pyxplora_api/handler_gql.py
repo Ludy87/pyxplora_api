@@ -88,6 +88,7 @@ class HandlerGQL:
                     authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
             else:
                 authorizationHeader = f"Bearer {self._API_KEY}:{self._API_SECRET}"
+
         rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
         requestHeaders["H-Date"] = rfc1123DateString
         requestHeaders["H-Tid"] = str(math.floor(time()))
