@@ -9,6 +9,7 @@ from typing import Any
 
 from .const import API_KEY, API_SECRET
 from .status import ClientType
+
 _LOGGER = logging.getLogger(__name__)
 
 
