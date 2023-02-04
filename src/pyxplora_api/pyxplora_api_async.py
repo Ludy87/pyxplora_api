@@ -30,10 +30,9 @@ class PyXploraApi(PyXplora):
         childPhoneNumber: list[str] = None,
         wuid: str | list | None = None,
         email: str | None = None,
+        sign_up: bool = True,
     ) -> None:
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
-
-    def initHandler(self, sign_up):
         self._gql_handler: GQLHandler = GQLHandler(
             self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
         )
@@ -61,7 +60,7 @@ class PyXploraApi(PyXplora):
         return self._issueToken
 
     async def init(self, forceLogin: bool = False, signup: bool = True, key=None, sec=None) -> None:
-        self.initHandler(signup)
+        # self.initHandler(signup)
         token = await self._login(forceLogin, key, sec)
         if not signup:
             return
