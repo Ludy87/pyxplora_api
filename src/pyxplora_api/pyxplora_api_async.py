@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import sys
 from datetime import datetime
 from time import time
 from typing import Any, Dict, List, Optional, Union
