@@ -5,7 +5,7 @@ from typing import Any
 
 from . import gql_mutations as gm
 from . import gql_queries as gq
-from .const import ENDPOINT
+from .const import API_KEY, API_SECRET, ENDPOINT
 from .exception_classes import LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
@@ -44,13 +44,16 @@ class GQLHandler(HandlerGQL):
     async def runAuthorizedGqlQuery_a(
         self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
     ) -> dict[str, Any]:
-        if self.accessToken is None and self.signup:
-            await self.login_a()
+        # if self.accessToken is None and self.signup:
+            # await self.login_a(self._API_KEY, self._API_SECRET)
             # raise Exception("You must first login to the Xplora® API.")
         # Run GraphQL query and return
         return await self.runGqlQuery_a(query, variables, operation_name)
 
-    async def login_a(self) -> dict[str, Any]:
+    async def login_a(self, key, sec) -> dict[str, Any]:
+        if key and sec:
+            self._API_KEY = key
+            self._API_SECRET = sec
         dataAll = await self.runGqlQuery_a(
             gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone"
         )
@@ -69,6 +72,11 @@ class GQLHandler(HandlerGQL):
         self.sessionId = self.issueToken["id"]
         self.userId = self.issueToken["user"]["id"]
         self.accessToken = self.issueToken["token"]
+        w360: dict = self.issueToken.get("w360", None)
+        if w360:
+            if w360.get("token") and w360.get("secret"):
+                self._API_KEY = w360.get("token", API_KEY)
+                self._API_SECRET = w360.get("secret", API_SECRET)
 
         return self.issueToken
 
@@ -244,7 +252,7 @@ class GQLHandler(HandlerGQL):
             )
         ).get("data", {})
 
-    async def getWatchLocHistory_a(self, wuid: str, date: int, tz: str, limit: int) -> dict[str, Any]:
+    async def getWatchLocHistory_a(self, wuid: str, date: int = None, tz: str= None, limit: int = 1) -> dict[str, Any]:
         return (
             await self.runAuthorizedGqlQuery_a(
                 gq.WATCH_Q.get("locHistoryQ", ""), {"uid": wuid, "date": date, "tz": tz, "limit": limit}, "LocHistory"

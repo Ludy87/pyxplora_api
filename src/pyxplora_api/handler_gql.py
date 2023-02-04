@@ -55,6 +55,12 @@ class HandlerGQL:
 
         self.signup = signup
 
+    def getApiKey(self):
+        return self._API_KEY
+
+    def getSecret(self):
+        return self._API_SECRET
+
     def getRequestHeaders(self, acceptedContentType: str) -> dict[str, Any]:
         if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")
@@ -64,7 +70,7 @@ class HandlerGQL:
             raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
         requestHeaders = {}
 
-        if self.accessToken is None or not self.issueToken:
+        if (self.accessToken is None or not self.issueToken) and self._API_KEY == API_KEY:
             # OPEN authorization
             authorizationHeader = f"Open {self._API_KEY}:{self._API_SECRET}"
         else:
@@ -76,11 +82,12 @@ class HandlerGQL:
                         authorizationHeader = (
                             f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
                         )
+                        self._API_KEY = w360.get("token", API_KEY)
+                        self._API_SECRET = w360.get("secret", API_SECRET)
                 else:
                     authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
             else:
-                authorizationHeader = f"Bearer {self.key}:{self.secret_key}"
-        _LOGGER.debug(authorizationHeader)
+                authorizationHeader = f"Bearer {self._API_KEY}:{self._API_SECRET}"
         rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
         requestHeaders["H-Date"] = rfc1123DateString
         requestHeaders["H-Tid"] = str(math.floor(time()))
