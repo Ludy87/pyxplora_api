@@ -45,9 +45,14 @@ class GQLHandler(HandlerGQL):
         # create GQLClient
         gqlClient = GraphqlClient(endpoint=ENDPOINT, headers=requestHeaders)
         # execute QUERY|MUTATION
-        data: dict[str, Any] = await gqlClient.ha_execute_async(
-            query=query, variables=variables, operation_name=operation_name, session=self._session
-        )
+        if self._session:
+            data: dict[str, Any] = await gqlClient.ha_execute_async(
+                query=query, variables=variables, operation_name=operation_name, session=self._session
+            )
+        else:
+            data: dict[str, Any] = await gqlClient.execute_async(
+                query=query, variables=variables, operation_name=operation_name
+            )
         return data
 
     async def runAuthorizedGqlQuery_a(
