@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sys
 from datetime import datetime
 from time import time
 from typing import Any, Dict, List, Optional, Union
@@ -37,7 +38,7 @@ class PyXploraApi(PyXplora):
             self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
         )
 
-    async def _login(self, force_login: bool = False) -> dict:
+    async def _login(self, force_login: bool = False, key=None, sec=None) -> dict:
         if not self._isConnected() or self._hasTokenExpired() or force_login:
             retryCounter = 0
             while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -45,7 +46,7 @@ class PyXploraApi(PyXplora):
 
                 # Try to login
                 try:
-                    self._issueToken = await self._gql_handler.login_a()
+                    self._issueToken = await self._gql_handler.login_a(key, sec)
                 except LoginError as error:
                     self.error_message = error.error_message
                     retryCounter = self.maxRetries + 2
@@ -59,9 +60,9 @@ class PyXploraApi(PyXplora):
                 self.dtIssueToken = int(time())
         return self._issueToken
 
-    async def init(self, forceLogin: bool = False, signup: bool = True) -> None:
+    async def init(self, forceLogin: bool = False, signup: bool = True, key=None, sec=None) -> None:
         self.initHandler(signup)
-        token = await self._login(forceLogin)
+        token = await self._login(forceLogin, key, sec)
         if not signup:
             return
         if not token:
@@ -96,7 +97,12 @@ class PyXploraApi(PyXplora):
         tasks = [
             self.getWatchAlarm(wuid),
             self.loadWatchLocation(wuid),
+            self.getWatchBattery(wuid),
+            self.getWatchIsCharging(wuid),
+            self.getWatchLocateType(wuid),
+            self.getWatchSafeZoneLabel(wuid),
             self.getWatchSafeZones(wuid),
+            self.getWatchIsInSafeZone(wuid),
             self.getSilentTime(wuid),
             self.getWatches(wuid),
             self.getSWInfo(wuid, watches=await self.getWatches(wuid)),
@@ -106,15 +112,29 @@ class PyXploraApi(PyXplora):
             self.getWatchOnlineStatus(wuid),
         ]
         results = await asyncio.gather(*tasks)
-        watch_alarm, watch_location, watch_safe_zones, silent_time, watches, sw_info, user_steps, online_status = results
+        (
+            watch_alarm,
+            watch_location,
+            battery,
+            isCharging,
+            locateType,
+            safeZoneLabel,
+            watch_safe_zones,
+            isInSafeZone,
+            silent_time,
+            watches,
+            sw_info,
+            user_steps,
+            online_status,
+        ) = results
         self.device[wuid] = {
             "getWatchAlarm": watch_alarm,
-            "watch_battery": int(watch_location.get("battery", -1)),
-            "watch_charging": watch_location.get("isCharging", False),
-            "locateType": watch_location.get("locateType", LocationType.UNKNOWN.value),
+            "watch_battery": battery,
+            "watch_charging": isCharging,
+            "locateType": locateType,
             "lastTrackTime": watch_location.get("tm", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-            "isInSafeZone": watch_location.get("isInSafeZone", False),
-            "safeZoneLabel": watch_location.get("safeZoneLabel", ""),
+            "isInSafeZone": isInSafeZone,
+            "safeZoneLabel": safeZoneLabel,
             "getWatchSafeZones": watch_safe_zones,
             "getSilentTime": silent_time,
             "getWatches": watches,
@@ -194,11 +214,11 @@ class PyXploraApi(PyXplora):
             try:
                 if with_ask:
                     await self.askWatchLocate(wuid)
+                    await asyncio.sleep(1)
                 location_raw = await self._gql_handler.getWatchLastLocation_a(wuid)
                 _watch_last_locate = location_raw.get("watchLastLocate", {})
                 if not _watch_last_locate:
                     return watch_location
-
                 _tm = 31532399 if _watch_last_locate.get("tm") is None else _watch_last_locate.get("tm")
                 _lat = _watch_last_locate.get("lat", "0.0")
                 _lng = _watch_last_locate.get("lng", "0.0")
