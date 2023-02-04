@@ -62,3 +62,24 @@ class GraphqlClient:
                 except (aiohttp.ContentTypeError, aiohttp.ClientResponseError) as err:
                     self.logger.debug(err)
                     return {}
+
+    async def ha_execute_async(
+        self,
+        query: str,
+        variables: Dict[str, Any] = None,
+        operation_name: str = None,
+        headers: Dict[str, str] = {},
+        session: aiohttp.ClientSession = None,
+    ):
+        """Make asynchronous request to graphQL server."""
+        request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
+
+        if "user-agent" not in headers:
+            headers["user-agent"] = DEFAULT_USER_AGENT
+        async with session.post(self.endpoint, json=request_body, headers={**self.headers, **headers}) as response:
+            try:
+                response.raise_for_status()
+                return await response.json()
+            except (aiohttp.ContentTypeError, aiohttp.ClientResponseError) as err:
+                self.logger.debug(err)
+                return {}

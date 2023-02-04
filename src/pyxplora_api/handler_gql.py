@@ -69,7 +69,8 @@ class HandlerGQL:
             raise Exception("Xplorao2o API_KEY MUST NOT be empty!")
         if self._API_SECRET is None:
             raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
-        requestHeaders = {}
+
+        authorizationHeader = ""
 
         if (self.accessToken is None or not self.issueToken) and self._API_KEY == API_KEY:
             # OPEN authorization
@@ -90,9 +91,10 @@ class HandlerGQL:
             else:
                 authorizationHeader = f"Bearer {self._API_KEY}:{self._API_SECRET}"
 
-        rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
-        requestHeaders["H-Date"] = rfc1123DateString
-        requestHeaders["H-Tid"] = str(math.floor(time()))
-        requestHeaders["Content-Type"] = acceptedContentType
-        requestHeaders["H-BackDoor-Authorization"] = authorizationHeader
+        requestHeaders = {
+            "H-Date": datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT",
+            "H-Tid": str(math.floor(time())),
+            "Content-Type": acceptedContentType,
+            "H-BackDoor-Authorization": authorizationHeader,
+        }
         return requestHeaders

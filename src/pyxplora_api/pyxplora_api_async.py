@@ -6,6 +6,8 @@ from datetime import datetime
 from time import time
 from typing import Any, Dict, List, Optional, Union
 
+import aiohttp
+
 from .const import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
@@ -30,10 +32,11 @@ class PyXploraApi(PyXplora):
         wuid: str | list | None = None,
         email: str | None = None,
         sign_up: bool = True,
+        session: aiohttp.ClientSession = None,
     ) -> None:
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
         self._gql_handler: GQLHandler = GQLHandler(
-            self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
+            self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up, session
         )
 
     async def _login(self, force_login: bool = False, key=None, sec=None) -> dict:
