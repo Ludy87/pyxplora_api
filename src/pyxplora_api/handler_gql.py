@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import math
 from datetime import datetime, timezone
 from time import time
@@ -8,6 +9,7 @@ from typing import Any
 
 from .const import API_KEY, API_SECRET
 from .status import ClientType
+_LOGGER = logging.getLogger(__name__)
 
 
 class HandlerGQL:
@@ -47,7 +49,7 @@ class HandlerGQL:
             "emailAddress": self.email,
             "client": ClientType.WEB.value,
         }
-        self.issueToken: dict[str, Any]
+        self.issueToken: dict[str, Any] = None
 
         self.errors: list[Any] = []
 
@@ -62,17 +64,23 @@ class HandlerGQL:
             raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
         requestHeaders = {}
 
-        if self.accessToken is None:
+        if self.accessToken is None or not self.issueToken:
             # OPEN authorization
             authorizationHeader = f"Open {self._API_KEY}:{self._API_SECRET}"
         else:
             # BEARER authorization
-            w360: dict = self.issueToken.get("w360", None)
-            if w360:
-                authorizationHeader = f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
+            if self.issueToken:
+                w360: dict = self.issueToken.get("w360", None)
+                if w360:
+                    if w360.get("token") and w360.get("secret"):
+                        authorizationHeader = (
+                            f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
+                        )
+                else:
+                    authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
             else:
-                authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
-
+                authorizationHeader = f"Bearer {self.key}:{self.secret_key}"
+        _LOGGER.debug(authorizationHeader)
         rfc1123DateString = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT"
         requestHeaders["H-Date"] = rfc1123DateString
         requestHeaders["H-Tid"] = str(math.floor(time()))
