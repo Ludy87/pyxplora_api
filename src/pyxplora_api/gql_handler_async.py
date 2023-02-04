@@ -45,8 +45,8 @@ class GQLHandler(HandlerGQL):
         self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
     ) -> dict[str, Any]:
         # if self.accessToken is None and self.signup:
-            # await self.login_a(self._API_KEY, self._API_SECRET)
-            # raise Exception("You must first login to the Xplora® API.")
+        # await self.login_a(self._API_KEY, self._API_SECRET)
+        # raise Exception("You must first login to the Xplora® API.")
         # Run GraphQL query and return
         return await self.runGqlQuery_a(query, variables, operation_name)
 
@@ -252,7 +252,7 @@ class GQLHandler(HandlerGQL):
             )
         ).get("data", {})
 
-    async def getWatchLocHistory_a(self, wuid: str, date: int = None, tz: str= None, limit: int = 1) -> dict[str, Any]:
+    async def getWatchLocHistory_a(self, wuid: str, date: int = None, tz: str = None, limit: int = 1) -> dict[str, Any]:
         return (
             await self.runAuthorizedGqlQuery_a(
                 gq.WATCH_Q.get("locHistoryQ", ""), {"uid": wuid, "date": date, "tz": tz, "limit": limit}, "LocHistory"
