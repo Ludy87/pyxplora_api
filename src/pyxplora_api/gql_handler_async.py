@@ -117,7 +117,7 @@ class GQLHandler(HandlerGQL):
         if errors:
             self.errors.append({"function": "askWatchLocate", "errors": errors})
         res: dict[str, Any] = data.get("data", {})
-        if res["askWatchLocate"] is not None:
+        if res.get("askWatchLocate", None) is not None:
             return res
         return {"askWatchLocate": False}
 

@@ -86,7 +86,7 @@ WATCH_M: dict[str, str] = {
     "submitIncorrectLocationDataM": "mutation SubmitIncorrectLocationData($uid: String!, $lat: String!, $lng: String!, $timestamp: String!) {\n  submitIncorrectLocationData(uid: $uid, lat: $lat, lng: $lng, timestamp : $timestamp)\n}",
 }
 WATCHGROUP_M: dict[str, str] = {
-    "addM": "mutation AddWatchGroup($name: String!, $extra: JSON, $description: String) {\n  addWatchGroup(name: $name, extra: $extra, description: $description) {\n    __typename\n    ...WatchGroupFragment\n  }\n}\nfragment WatchGroupFragment on WatchGroup {\n  __typename\n  id\n  name\n  status\n  extra\n  description\n  create\n  update\n}",
+    "addWatchGroupM": "mutation AddWatchGroup($name: String!, $extra: JSON, $description: String) {\n  addWatchGroup(name: $name, extra: $extra, description: $description) {\n    __typename\n    ...WatchGroupFragment\n  }\n}\nfragment WatchGroupFragment on WatchGroup {\n  __typename\n  id\n  name\n  status\n  extra\n  description\n  create\n  update\n}",
     "modifyM": "mutation ModifyWatchGroup($id: String, $name: String!, $extra: JSON, $description: String, $status: NormalStatus) {\n  modifyWatchGroup(id: $id, name: $name, extra: $extra, description: $description, status: $status)\n}",
     "removeM": "mutation RemoveWatchGroup($id: String) {\n  removeWatchGroup(id: $id)\n}",
 }
