@@ -122,14 +122,14 @@ class GQLHandler(HandlerGQL):
         return data.get("data", {})
 
     def getWatchState(self, qrCode: str, qrt: str = "", qrc: str = "") -> dict[str, Any]:
-        vari = {}
-        if qrCode != "":
-            vari["qrCode"] = qrCode
-        if qrt != "":
-            vari["qrt"] = qrt
-        if qrc != "":
-            vari["qrc"] = qrc
-        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("stateQ", ""), vari, "WatchState")
+        variables = {}
+        if qrCode:
+            variables["qrCode"] = qrCode
+        if qrt:
+            variables["qrt"] = qrt
+        if qrc:
+            variables["qrc"] = qrc
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("stateQ", ""), variables, "WatchState")
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatchState", "errors": errors})
