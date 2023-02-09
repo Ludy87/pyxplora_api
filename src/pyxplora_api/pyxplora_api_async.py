@@ -50,7 +50,7 @@ class PyXploraApi(PyXplora):
                     self._issueToken = await self._gql_handler.login_a(key, sec)
                 except LoginError as error:
                     self.error_message = error.error_message
-                    retryCounter = self.maxRetries + 2
+                    await asyncio.sleep(self.retryDelay)
                 except Error:
                     if retryCounter == self.maxRetries + 2:
                         self.error_message = ErrorMSG.SERVER_ERR
