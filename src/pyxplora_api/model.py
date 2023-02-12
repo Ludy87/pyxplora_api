@@ -52,6 +52,7 @@ class Data(DataClassJsonMixin):
     province: Optional[str] = None
     locate_type: Optional[str] = None
     emoticon_id: Optional[Emoticon.__str__] = Emoticon.UNKNOWN__.value
+    emoji_id: Optional[Emoticon.__str__] = Emoticon.UNKNOWN__.value
     call_name: Optional[str] = None
     call_time: Optional[int] = None
     call_type: Optional[int] = None

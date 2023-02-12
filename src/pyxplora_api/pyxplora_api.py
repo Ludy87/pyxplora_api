@@ -333,6 +333,7 @@ class PyXploraApi(PyXplora):
                     continue
 
                 for d in result.list:
+                    d.data.emoji_id = d.data.emoticon_id
                     d.data.emoticon_id = Emoji[f"M{d.data.emoticon_id}"].value
 
                 result = ChatsNew.from_dict(result)
