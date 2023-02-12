@@ -36,7 +36,7 @@ class PyXploraApi(PyXplora):
             self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up
         )
 
-    def _login(self, force_login: bool = False, sign_up: bool = True) -> dict:
+    def _login(self, force_login: bool = False, sign_up: bool = True) -> Dict[str, Any]:
         if not self._isConnected() or self._hasTokenExpired() or force_login:
             retryCounter = 0
             while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -90,7 +90,7 @@ class PyXploraApi(PyXplora):
         wuids = ids if ids else self.getWatchUserIDs()
         return wuids
 
-    def _setDevice(self, ids: list = None) -> list[str]:
+    def _setDevice(self, ids: list = None) -> List[str]:
         wuids = ids or self.getWatchUserIDs()
         for wuid in wuids:
             self.device[wuid] = {}
@@ -117,7 +117,7 @@ class PyXploraApi(PyXplora):
         return wuids
 
     ##### Contact Info #####
-    def getWatchUserContacts(self, wuid: str) -> list[dict[str, Any]]:
+    def getWatchUserContacts(self, wuid: str) -> List[dict[str, Any]]:
         retries = 0
         contacts = []
         while retries < self.maxRetries + 2:
@@ -258,9 +258,6 @@ class PyXploraApi(PyXplora):
 
         return status.value
 
-    """def __setReadChatMsg(self, msgId, id):
-        return (self._gql_handler.setReadChatMsg(self.getWatchUserIDs(), msgId, id))["setReadChatMsg"]"""
-
     def getWatchUnReadChatMsgCount(self, wuid: str) -> int:
         try:
             unread_count = self._gql_handler.unReadChatMsgCount(wuid)
@@ -351,11 +348,11 @@ class PyXploraApi(PyXplora):
         return ChatsNew.from_dict(chats_new, infer_missing=True) if asObject else chats_new
 
     ##### Watch Location Info #####
-    def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> dict:
+    def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> Dict[str, Any]:
         loc = self.loadWatchLocation(wuid, withAsk)
         return loc.get("watch_last_location", {}) if isinstance(loc, dict) else {}
 
-    def getWatchLocate(self, wuid: str) -> dict[str, Any]:
+    def getWatchLocate(self, wuid: str) -> Dict[str, Any]:
         return self.loadWatchLocation(wuid=wuid) or {}
 
     def getWatchLocateType(self, wuid: str) -> str:
@@ -368,7 +365,7 @@ class PyXploraApi(PyXplora):
     def getWatchSafeZoneLabel(self, wuid: str) -> str:
         return self.getWatchLocate(wuid).get("safeZoneLabel", "")
 
-    def getWatchSafeZones(self, wuid: str) -> list[dict[str, Any]]:
+    def getWatchSafeZones(self, wuid: str) -> List[dict[str, Any]]:
         retry_counter = 0
         safe_zones = []
         while retry_counter < self.maxRetries + 2:
@@ -476,7 +473,7 @@ class PyXploraApi(PyXplora):
                 results.append(self.setEnableSilentTime(id))
         return results
 
-    def setAllDisableSilentTime(self, wuid: str) -> list[bool]:
+    def setAllDisableSilentTime(self, wuid: str) -> List[bool]:
         results = []
         for silentTime in self.getSilentTime(wuid):
             results.append(self.setDisableSilentTime(silentTime.get("id", "")))
@@ -505,13 +502,13 @@ class PyXploraApi(PyXplora):
     def setDisableAlarmTime(self, alarmId: str) -> bool:
         return self.setAlarmTime(alarmId, NormalStatus.DISABLE)
 
-    def setAllEnableAlarmTime(self, wuid: str) -> list[bool]:
+    def setAllEnableAlarmTime(self, wuid: str) -> List[bool]:
         res: list[bool] = []
         for alarmTime in self.getWatchAlarm(wuid):
             res.append(self.setEnableAlarmTime(alarmTime.get("id", "")))
         return res
 
-    def setAllDisableAlarmTime(self, wuid: str) -> list[bool]:
+    def setAllDisableAlarmTime(self, wuid: str) -> List[bool]:
         res: list[bool] = []
         for alarmTime in self.getWatchAlarm(wuid):
             res.append(self.setDisableAlarmTime(alarmTime.get("id", "")))
@@ -540,7 +537,7 @@ class PyXploraApi(PyXplora):
         c: dict[str, Any] = self._gql_handler.getFollowRequestWatchCount()
         return c.get("followRequestWatchCount", 0)
 
-    def getWatches(self, wuid: str) -> dict[str, Any]:
+    def getWatches(self, wuid: str) -> Dict[str, Any]:
         retryCounter = 0
         watches_raw: dict[str, Any] = {}
         watch: dict[str, Any] = {}
@@ -565,42 +562,42 @@ class PyXploraApi(PyXplora):
                 self.delay(self.retryDelay)
         return watch
 
-    def getSWInfo(self, wuid: str, watches: dict[str, Any] = {}) -> dict[str, Any]:
+    def getSWInfo(self, wuid: str, watches: dict[str, Any] = {}) -> Dict[str, Any]:
         wqr: dict[str, Any] = watches if watches else self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return self._gql_handler.getSWInfo(qrCode.split("=")[1])
 
-    def getWatchState(self, wuid: str, watches: dict[str, Any] = {}) -> dict[str, Any]:
+    def getWatchState(self, wuid: str, watches: dict[str, Any] = {}) -> Dict[str, Any]:
         wqr: dict[str, Any] = watches if watches else self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return self._gql_handler.getWatchState(qrCode=qrCode.split("=")[1])
 
-    def conv360IDToO2OID(self, qid: str, deviceId: str) -> dict[str, Any]:
+    def conv360IDToO2OID(self, qid: str, deviceId: str) -> Dict[str, Any]:
         return self._gql_handler.conv360IDToO2OID(qid, deviceId)
 
-    def campaigns(self, id: str, categoryId: str) -> dict[str, Any]:
+    def campaigns(self, id: str, categoryId: str) -> Dict[str, Any]:
         return self._gql_handler.campaigns(id, categoryId)
 
-    def getCountries(self) -> list[dict[str, str]]:
+    def getCountries(self) -> List[dict[str, str]]:
         countries: dict[str, Any] = self._gql_handler.countries()
         return countries.get("countries", {})
 
-    def getWatchLocHistory(self, wuid: str, date: int, tz: str, limit: int) -> dict[str, Any]:
+    def getWatchLocHistory(self, wuid: str, date: int, tz: str, limit: int) -> Dict[str, Any]:
         return self._gql_handler.getWatchLocHistory(wuid, date, tz, limit)
 
-    def watchesDynamic(self) -> dict[str, Any]:
+    def watchesDynamic(self) -> Dict[str, Any]:
         return self._gql_handler.watchesDynamic()
 
-    def watchGroups(self, id: str = "") -> dict[str, Any]:
+    def watchGroups(self, id: str = "") -> Dict[str, Any]:
         return self._gql_handler.watchGroups(id)
 
-    def familyInfo(self, wuid: str, watchId: str, tz: str, date: int) -> dict[str, Any]:
+    def familyInfo(self, wuid: str, watchId: str, tz: str, date: int) -> Dict[str, Any]:
         return self._gql_handler.familyInfo(wuid, watchId, tz, date)
 
-    def avatars(self, id: str) -> dict[str, Any]:
+    def avatars(self, id: str) -> Dict[str, Any]:
         return self._gql_handler.avatars(id)
 
-    def getWatchUserSteps(self, wuid: str, date: int) -> dict[str, Any]:
+    def getWatchUserSteps(self, wuid: str, date: int) -> Dict[str, Any]:
         userSteps = self._gql_handler.getWatchUserSteps(wuid=wuid, tz=self._timeZone, date=date)
         if not userSteps:
             return {}
@@ -627,7 +624,7 @@ class PyXploraApi(PyXplora):
         data: dict[str, bool] = self._gql_handler.submitIncorrectLocationData(wuid, lat, lng, timestamp)
         return data.get("submitIncorrectLocationData", False)
 
-    def getAppVersion(self):
+    def getAppVersion(self) -> Dict[str, Any]:
         data = self._gql_handler.getAppVersion()
         return data
 
@@ -639,7 +636,7 @@ class PyXploraApi(PyXplora):
 
     def modifyContact(
         self, contactId: str, isAdmin: bool | None = None, contactName: str = "", fileId: str = ""
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         data = self._gql_handler.modifyContact(contactId, isAdmin, contactName, fileId)
         return data
 
@@ -648,3 +645,9 @@ class PyXploraApi(PyXplora):
         if data.get("deleteMsg", False):
             return True
         return False
+
+    def get_chat_voice(self, wuid: str, msgId: str):
+        data = self._gql_handler.fetchChatVoice(wuid, msgId)
+        if data.get("fetchChatVoice"):
+            return data.get("fetchChatVoice")
+        return None

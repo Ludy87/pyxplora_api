@@ -1,20 +1,37 @@
 from __future__ import annotations
 
 import hashlib
-import logging
 import math
 from datetime import datetime, timezone
 from time import time
-from typing import Any
+from typing import Any, Dict
 
 from .const import API_KEY, API_SECRET
 from .status import ClientType
 
-_LOGGER = logging.getLogger(__name__)
-
 
 class HandlerGQL:
+    """
+    A class to handle GraphQL API requests for PyXplora.
+
+    Attributes:
+        accessToken (Any): The access token used for authentication.
+        sessionId (None): The session ID.
+        userId (None): The user ID.
+        _API_KEY (str): The API key.
+        _API_SECRET (str): The API secret.
+        issueToken (dict[str, Any]): The issue token.
+        errors (list[Any]): A list of errors.
+
+    """
+
     accessToken: Any = None
+    sessionId = None
+    userId = None
+    _API_KEY = API_KEY
+    _API_SECRET = API_SECRET
+    issueToken: dict[str, Any] = None
+    errors: list[Any] = []
 
     def __init__(
         self,
@@ -26,21 +43,26 @@ class HandlerGQL:
         email: str = None,
         signup: bool = True,
     ) -> None:
+        """
+        Initializes the class with the given parameters.
+
+        Args:
+            countryPhoneNumber (str): The country phone number.
+            phoneNumber (str): The phone number.
+            password (str): The password.
+            userLang (str): The user language.
+            timeZone (str): The time zone.
+            email (str, optional): The email address. Defaults to None.
+            signup (bool, optional): Indicates if the user is signing up. Defaults to True.
+
+        """
         # init vars
-        self.sessionId = None
-        # self.accessToken = None
-        self.accessTokenExpire = 0
         self.userLocale = userLang
         self.timeZone = timeZone
         self.countryPhoneNumber = countryPhoneNumber
         self.phoneNumber = phoneNumber
         self.email = email
         self.passwordMD5 = hashlib.md5(password.encode()).hexdigest()
-        self._API_KEY = API_KEY
-        self._API_SECRET = API_SECRET
-        # self.issueDate = 0
-        # self.expireDate = 0
-        self.userId = None
         self.variables = {
             "countryPhoneNumber": self.countryPhoneNumber,
             "phoneNumber": self.phoneNumber,
@@ -50,19 +72,42 @@ class HandlerGQL:
             "emailAddress": self.email,
             "client": ClientType.WEB.value,
         }
-        self.issueToken: dict[str, Any] = None
-
-        self.errors: list[Any] = []
-
         self.signup = signup
 
     def getApiKey(self):
+        """
+        Returns the API key.
+
+        Returns:
+            str: The API key.
+
+        """
         return self._API_KEY
 
     def getSecret(self):
+        """
+        Returns the API secret.
+
+        Returns:
+            str: The API secret.
+
+        """
         return self._API_SECRET
 
-    def getRequestHeaders(self, acceptedContentType: str) -> dict[str, Any]:
+    def getRequestHeaders(self, acceptedContentType: str) -> Dict[str, Any]:
+        """
+        Returns the request headers with the specified content type.
+
+        Args:
+            acceptedContentType (str): The accepted content type.
+
+        Returns:
+            dict[str, Any]: The request headers.
+
+        Raises:
+            Exception: If `acceptedContentType` is empty or if `API_KEY` or `API_SECRET` is not set.
+
+        """
         if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")
         if self._API_KEY is None:
