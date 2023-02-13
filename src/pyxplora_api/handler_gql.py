@@ -28,8 +28,6 @@ class HandlerGQL:
     accessToken: Any = None
     sessionId = None
     userId = None
-    _API_KEY = API_KEY
-    _API_SECRET = API_SECRET
     issueToken: dict[str, Any] = None
     errors: list[Any] = []
 
@@ -63,6 +61,8 @@ class HandlerGQL:
         self.phoneNumber = phoneNumber
         self.email = email
         self.passwordMD5 = hashlib.md5(password.encode()).hexdigest()
+        self._API_KEY = API_KEY
+        self._API_SECRET = API_SECRET
         self.variables = {
             "countryPhoneNumber": self.countryPhoneNumber,
             "phoneNumber": self.phoneNumber,
