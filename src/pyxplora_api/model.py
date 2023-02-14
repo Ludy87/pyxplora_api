@@ -43,8 +43,9 @@ class User(DataClassJsonMixin):
 @dataclass
 class Data(DataClassJsonMixin):
     tm: int
-    text: str
     sender_name: str
+    text: Optional[str] = None
+    Text: Optional[str] = None
     battery: Optional[int] = None
     poi: Optional[str] = None
     city: Optional[str] = None
