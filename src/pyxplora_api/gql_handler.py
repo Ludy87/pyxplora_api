@@ -935,34 +935,34 @@ class GQLHandler(HandlerGQL):
         """
         return self.runAuthorizedGqlQuery(gm.WATCH_M.get("modifyAlertM", ""), {"uid": id, "remind": yesOrNo}, "modifyAlert")
 
-    def setEnableSilentTime(self, silentId: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
+    def setEnableSilentTime(self, silent_id: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
         """
         Sets the silent time for a specified user.
 
         Args:
-            silentId (str): The ID of the silent time.
+            silent_id (str): The ID of the silent time.
             status (str, optional): The status to set for the silent time. Defaults to `NormalStatus.ENABLE.value`.
 
         Returns:
             dict: A dictionary containing the data from the response.
         """
         return self.runAuthorizedGqlQuery(
-            gm.WATCH_M.get("setEnableSlientTimeM", ""), {"silentId": silentId, "status": status}, "SetEnableSlientTime"
+            gm.WATCH_M.get("setEnableSlientTimeM", ""), {"silentId": silent_id, "status": status}, "SetEnableSlientTime"
         ).get("data", {})
 
-    def setEnableAlarmTime(self, alarmId: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
+    def setEnableAlarmTime(self, alarm_id: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
         """
         Enable or disable alarm time.
 
         Args:
-            alarmId (str): ID of the alarm to modify.
+            alarm_id (str): ID of the alarm to modify.
             status (str, optional): New status for the alarm, either `NormalStatus.ENABLE.value` or `NormalStatus.DISABLE.value`. Defaults to `NormalStatus.ENABLE.value`.
 
         Returns:
             Dict[str, Any]: Dictionary containing the response data.
         """
         return self.runAuthorizedGqlQuery(
-            gm.WATCH_M.get("modifyAlarmM", ""), {"alarmId": alarmId, "status": status}, "ModifyAlarm"
+            gm.WATCH_M.get("modifyAlarmM", ""), {"alarmId": alarm_id, "status": status}, "ModifyAlarm"
         ).get("data", {})
 
     def setReadChatMsg(self, wuid: str, msgId: str, id: str) -> Dict[str, Any]:

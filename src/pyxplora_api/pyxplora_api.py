@@ -449,14 +449,14 @@ class PyXploraApi(PyXplora):
 
         return bool(result)
 
-    def setDisableSilentTime(self, silentId: str) -> bool:
+    def setDisableSilentTime(self, silent_id: str) -> bool:
         retry_counter = 0
         result = ""
 
         while not result and retry_counter < self.maxRetries + 2:
             retry_counter += 1
             try:
-                disable_raw = self._gql_handler.setEnableSilentTime(silentId, NormalStatus.DISABLE.value)
+                disable_raw = self._gql_handler.setEnableSilentTime(silent_id, NormalStatus.DISABLE.value)
                 result = disable_raw.get("setEnableSilentTime", False)
             except Error as error:
                 _LOGGER.debug(error)
@@ -480,13 +480,13 @@ class PyXploraApi(PyXplora):
             results.append(self.setDisableSilentTime(silentTime.get("id", "")))
         return results
 
-    def setAlarmTime(self, alarmId: str, status: NormalStatus) -> bool:
+    def setAlarmTime(self, alarm_id: str, status: NormalStatus) -> bool:
         retryCounter = 0
         result = ""
         while not result and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
-                raw = self._gql_handler.setEnableAlarmTime(alarmId, status.value)
+                raw = self._gql_handler.setEnableAlarmTime(alarm_id, status.value)
                 modifyAlarm = raw.get("modifyAlarm", -1)
                 if not modifyAlarm:
                     return False
@@ -497,11 +497,11 @@ class PyXploraApi(PyXplora):
                 self.delay(self.retryDelay)
         return bool(result)
 
-    def setEnableAlarmTime(self, alarmId: str) -> bool:
-        return self.setAlarmTime(alarmId, NormalStatus.ENABLE)
+    def setEnableAlarmTime(self, alarm_id: str) -> bool:
+        return self.setAlarmTime(alarm_id, NormalStatus.ENABLE)
 
-    def setDisableAlarmTime(self, alarmId: str) -> bool:
-        return self.setAlarmTime(alarmId, NormalStatus.DISABLE)
+    def setDisableAlarmTime(self, alarm_id: str) -> bool:
+        return self.setAlarmTime(alarm_id, NormalStatus.DISABLE)
 
     def setAllEnableAlarmTime(self, wuid: str) -> List[bool]:
         res: list[bool] = []

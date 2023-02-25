@@ -493,14 +493,14 @@ class PyXploraApi(PyXplora):
 
         return bool(result)
 
-    async def setDisableSilentTime(self, silentId: str) -> bool:
+    async def setDisableSilentTime(self, silent_id: str) -> bool:
         retry_counter = 0
         result = ""
 
         while not result and retry_counter < self.maxRetries + 2:
             retry_counter += 1
             try:
-                disable_raw = await self._gql_handler.setEnableSilentTime_a(silentId, NormalStatus.DISABLE.value)
+                disable_raw = await self._gql_handler.setEnableSilentTime_a(silent_id, NormalStatus.DISABLE.value)
                 result = disable_raw.get("setEnableSilentTime", False)
             except Error as error:
                 _LOGGER.debug(error)
@@ -524,13 +524,13 @@ class PyXploraApi(PyXplora):
             results.append(await self.setDisableSilentTime(silentTime.get("id", "")))
         return results
 
-    async def setAlarmTime(self, alarmId: str, status: NormalStatus) -> bool:
+    async def setAlarmTime(self, alarm_id: str, status: NormalStatus) -> bool:
         retryCounter = 0
         result = ""
         while not result and (retryCounter < self.maxRetries + 2):
             retryCounter += 1
             try:
-                raw = await self._gql_handler.setEnableAlarmTime_a(alarmId, status.value)
+                raw = await self._gql_handler.setEnableAlarmTime_a(alarm_id, status.value)
                 modifyAlarm = raw.get("modifyAlarm", -1)
                 if not modifyAlarm:
                     return False
@@ -541,11 +541,11 @@ class PyXploraApi(PyXplora):
                 await asyncio.sleep(self.retryDelay)
         return bool(result)
 
-    async def setEnableAlarmTime(self, alarmId: str) -> bool:
-        return await self.setAlarmTime(alarmId, NormalStatus.ENABLE)
+    async def setEnableAlarmTime(self, alarm_id: str) -> bool:
+        return await self.setAlarmTime(alarm_id, NormalStatus.ENABLE)
 
-    async def setDisableAlarmTime(self, alarmId: str) -> bool:
-        return await self.setAlarmTime(alarmId, NormalStatus.DISABLE)
+    async def setDisableAlarmTime(self, alarm_id: str) -> bool:
+        return await self.setAlarmTime(alarm_id, NormalStatus.DISABLE)
 
     async def setAllEnableAlarmTime(self, wuid: str) -> List[bool]:
         res: list[bool] = []

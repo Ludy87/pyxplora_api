@@ -120,23 +120,23 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 
 ## Watch: Silent Mode
 
-| Function                            | Result Type           | Since Version                                                      |
-| ----------------------------------- | --------------------- | ------------------------------------------------------------------ |
-| getSilentTime(wuid: str)            | list[dict[str, any]]: |                                                                    |
-| setEnableSilentTime(silentId: str)  | bool:                 | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| setDisableSilentTime(silentId: str) | bool:                 | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| setAllEnableSilentTime(wuid: str)   | list[bool]:           |                                                                    |
-| setAllDisableSilentTime(wuid: str)  | list[bool]:           |                                                                    |
+| Function                             | Result Type           | Since Version                                                      |
+| ------------------------------------ | --------------------- | ------------------------------------------------------------------ |
+| getSilentTime(wuid: str)             | list[dict[str, any]]: |                                                                    |
+| setEnableSilentTime(silent_id: str)  | bool:                 | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setDisableSilentTime(silent_id: str) | bool:                 | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setAllEnableSilentTime(wuid: str)    | list[bool]:           |                                                                    |
+| setAllDisableSilentTime(wuid: str)   | list[bool]:           |                                                                    |
 
 ## Watch: Alarm
 
-| Function                          | Result Type     | Since Version                                                      |
-| --------------------------------- | --------------- | ------------------------------------------------------------------ |
-| getAlarmTime(wuid: str)           | dict[str, any]: |                                                                    |
-| setEnableAlarmTime(alarmId: str)  | bool:           | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| setDisableAlarmTime(alarmId: str) | bool:           | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
-| setAllEnableAlarmTime(wuid: str)  | list[bool]:     |                                                                    |
-| setAllDisableAlarmTime(wuid: str) | list[bool]:     |                                                                    |
+| Function                           | Result Type     | Since Version                                                      |
+| ---------------------------------- | --------------- | ------------------------------------------------------------------ |
+| getAlarmTime(wuid: str)            | dict[str, any]: |                                                                    |
+| setEnableAlarmTime(alarm_id: str)  | bool:           | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setDisableAlarmTime(alarm_id: str) | bool:           | [2.1.1](https://github.com/Ludy87/pyxplora_api/releases/tag/2.1.1) |
+| setAllEnableAlarmTime(wuid: str)   | list[bool]:     |                                                                    |
+| setAllDisableAlarmTime(wuid: str)  | list[bool]:     |                                                                    |
 
 ## Watch: Chat Fetch
 

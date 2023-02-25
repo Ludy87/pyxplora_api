@@ -438,16 +438,18 @@ class GQLHandler(HandlerGQL):
         # function?
         return await self.runGqlQuery_a(gm.WATCH_M.get("modifyAlertM", ""), {"uid": id, "remind": yesOrNo}, "modifyAlert")
 
-    async def setEnableSilentTime_a(self, silentId: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
+    async def setEnableSilentTime_a(self, silent_id: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
         return (
             await self.runGqlQuery_a(
-                gm.WATCH_M.get("setEnableSlientTimeM", ""), {"silentId": silentId, "status": status}, "SetEnableSlientTime"
+                gm.WATCH_M.get("setEnableSlientTimeM", ""), {"silentId": silent_id, "status": status}, "SetEnableSlientTime"
             )
         ).get("data", {})
 
-    async def setEnableAlarmTime_a(self, alarmId: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
+    async def setEnableAlarmTime_a(self, alarm_id: str, status: str = NormalStatus.ENABLE.value) -> Dict[str, Any]:
         return (
-            await self.runGqlQuery_a(gm.WATCH_M.get("modifyAlarmM", ""), {"alarmId": alarmId, "status": status}, "ModifyAlarm")
+            await self.runGqlQuery_a(
+                gm.WATCH_M.get("modifyAlarmM", ""), {"alarmId": alarm_id, "status": status}, "ModifyAlarm"
+            )
         ).get("data", {})
 
     async def setReadChatMsg_a(self, wuid: str, msgId: str, id: str) -> Dict[str, Any]:
@@ -551,5 +553,10 @@ class GQLHandler(HandlerGQL):
                 gm.WATCH_M.get("deleteChatMessageM", ""), {"uid": wuid, "msgId": msgId}, "DeleteChatMessage"
             )
         ).get("data", {})
+
+    async def connect360_a(self):
+        data = await self.runGqlQuery_a(gm.SIGN_M.get("connect360M", ""), {}, "connect360")
+        print(data)
+        return data.get("data", {})
 
     ########## SECTION MUTATION end ##########
