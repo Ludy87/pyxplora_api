@@ -297,8 +297,8 @@ class PyXplora:
                     return watch["ward"]["name"]
             else:
                 raise XTypeError("str | list[str]", type(wuid))
-        if not watchusernames:
-            raise ChildNoError(["Watch username"])
+        # if not watchusernames:
+        #     raise ChildNoError(["Watch username"])
         return watchusernames
 
     def getWatchUserIcons(self, wuid: Optional[Union[str, List[str], None]] = None) -> Union[str, List[str]]:
@@ -363,8 +363,8 @@ class PyXplora:
                     return int(watch["ward"]["xcoin"])
             else:
                 raise XTypeError("str | list[str]", type(wuid))
-        if not watchuserxcoins:
-            raise ChildNoError(["Watch User XCoins"])
+        # if not watchuserxcoins:
+        #     raise ChildNoError(["Watch User XCoins"])
         return watchuserxcoins
 
     def getWatchUserCurrentStep(self, wuid: Union[str, List[str], None] = None) -> Union[int, List[int]]:
@@ -395,8 +395,8 @@ class PyXplora:
                     return int(watch["ward"]["currentStep"])
             else:
                 raise XTypeError("str | list[str]", type(wuid))
-        if not watchusercurrentstep:
-            raise ChildNoError(["Watch User Currentsteps"])
+        # if not watchusercurrentstep:
+        #     raise ChildNoError(["Watch User Currentsteps"])
         return watchusercurrentstep
 
     def getWatchUserTotalStep(self, wuid: Optional[Union[str, List[str], None]] = None) -> Union[int, List[int]]:
@@ -427,8 +427,8 @@ class PyXplora:
                     return int(watch["ward"]["totalStep"])
             else:
                 raise XTypeError("str | list[str]", type(wuid))
-        if not watchusertotalstep:
-            raise ChildNoError(["Watch User totalsteps"])
+        # if not watchusertotalstep:
+        #     raise ChildNoError(["Watch User totalsteps"])
         return watchusertotalstep
 
     ##### - #####
