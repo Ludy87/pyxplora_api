@@ -331,8 +331,8 @@ class PyXplora:
                     return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
             else:
                 raise XTypeError("str | list[str]", type(wuid))
-        if not watch_user_icons:
-            raise ChildNoError(["Watch User Icon"])
+        # if not watch_user_icons:
+        #     raise ChildNoError(["Watch User Icon"])
         return watch_user_icons
 
     def getWatchUserXCoins(self, wuid: Optional[Union[str, List[str]]] = None) -> Union[int, List[int]]:
