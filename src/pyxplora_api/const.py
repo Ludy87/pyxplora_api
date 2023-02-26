@@ -1,5 +1,5 @@
-VERSION = "2.5.22"
-VERSION_APP = "1287"
+VERSION = "2.5.23"
+VERSION_APP = "1288"
 API_KEY = "fc45d50304511edbf67a12b93c413b6a"
 API_SECRET = "1e9b6fe0327711ed959359c157878dcb"
 ENDPOINT = "https://api.myxplora.com/api"

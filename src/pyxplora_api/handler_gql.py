@@ -70,7 +70,7 @@ class HandlerGQL:
             "userLang": self.userLocale,
             "timeZone": self.timeZone,
             "emailAddress": self.email,
-            "client": ClientType.WEB.value,
+            "client": ClientType.APP.value,
         }
         self.signup = signup
 
