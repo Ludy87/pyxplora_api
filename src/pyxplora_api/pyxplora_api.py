@@ -314,7 +314,14 @@ class PyXploraApi(PyXplora):
         return chats
 
     def getWatchChatsRaw(
-        self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", show_del_msg: bool = True, asObject=False
+        self,
+        wuid: str,
+        offset: int = 0,
+        limit: int = 0,
+        msgId: str = "",
+        show_del_msg: bool = True,
+        asObject=False,
+        with_emoji_id=True,
     ) -> Union[dict, ChatsNew]:
         retry_counter = 0
         chats_new: dict = {}
@@ -332,9 +339,10 @@ class PyXploraApi(PyXplora):
                 if result is None:
                     continue
 
-                for d in result.list:
-                    d.data.emoji_id = d.data.emoticon_id
-                    d.data.emoticon_id = Emoji[f"M{d.data.emoticon_id}"].value
+                if with_emoji_id:
+                    for d in result.list:
+                        d.data.emoji_id = d.data.emoticon_id
+                        d.data.emoticon_id = Emoji[f"M{d.data.emoticon_id}"].value
 
                 result = ChatsNew.from_dict(result)
 
