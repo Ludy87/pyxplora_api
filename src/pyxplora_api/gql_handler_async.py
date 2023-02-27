@@ -556,7 +556,6 @@ class GQLHandler(HandlerGQL):
 
     async def connect360_a(self):
         data = await self.runGqlQuery_a(gm.SIGN_M.get("connect360M", ""), {}, "connect360")
-        print(data)
         return data.get("data", {})
 
     ########## SECTION MUTATION end ##########
