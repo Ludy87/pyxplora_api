@@ -67,7 +67,9 @@ class PyXploraApi(PyXplora):
         if not signup:
             return
         if not token:
-            raise LoginError(self.error_message)
+            if self.error_message:
+                raise LoginError(self.error_message)
+            self.init(forceLogin, signup, key, sec)
 
         user = token.get("user", None)
         if not user:
