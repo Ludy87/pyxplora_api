@@ -44,7 +44,7 @@ class GraphqlClient:
             json=request_body,
             headers={**self.headers, **headers},
             **self.options,
-            timeout=aiohttp.ClientTimeout(15),
+            timeout=aiohttp.ClientTimeout(60),
         )
 
         result.raise_for_status()
@@ -58,7 +58,7 @@ class GraphqlClient:
 
         if "user-agent" not in headers:
             headers["user-agent"] = DEFAULT_USER_AGENT
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(15)) as session:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(60)) as session:
             async with session.post(self.endpoint, json=request_body, headers={**self.headers, **headers}) as response:
                 try:
                     response.raise_for_status()
