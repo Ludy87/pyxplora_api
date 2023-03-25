@@ -68,6 +68,11 @@ class PyXploraApi(PyXplora):
             return
         if not token:
             if self.error_message:
+                # now = datetime.now()
+
+                # current_time = now.strftime("%H:%M:%S")
+                # print("Current Time =", current_time)
+                # print(self.error_message)
                 raise LoginError(self.error_message)
             self.init(forceLogin, signup, key, sec)
 
@@ -387,6 +392,7 @@ class PyXploraApi(PyXplora):
                     for d in result.list:
                         d.data.emoji_id = d.data.emoticon_id
                         d.data.emoticon_id = Emoji[f"M{d.data.emoticon_id}"].value
+                        await self.set_read_chat_msg(wuid, d.msgId, d.id)
 
                 result = ChatsNew.from_dict(result)
 
@@ -709,3 +715,7 @@ class PyXploraApi(PyXplora):
         if data.get("fetchChatVoice"):
             return data.get("fetchChatVoice")
         return None
+
+    async def set_read_chat_msg(self, wuid: str, msgId: str = "", id: str = ""):
+        data = await self._gql_handler.setReadChatMsg_a(wuid, msgId, id)
+        return data

@@ -77,7 +77,10 @@ class GQLHandler(HandlerGQL):
         signIn = data.get("signInWithEmailOrPhone", None)
         if signIn is None:
             error_message = dataAll.get("errors", [{"message": ""}])[0].get("message", "")
-            raise LoginError(f"Login error: {error_message}")
+            if error_message:
+                raise LoginError(f"Login error: {error_message}")
+            else:
+                raise LoginError("The server is not responding, please wait a moment and try again.")
 
         self.issueToken = signIn
         self.sessionId = self.issueToken["id"]
