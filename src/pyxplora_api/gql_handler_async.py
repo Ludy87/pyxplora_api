@@ -78,7 +78,7 @@ class GQLHandler(HandlerGQL):
         if signIn is None:
             error_message = dataAll.get("errors", [{"message": ""}])[0].get("message", "")
             if error_message:
-                raise LoginError(f"Login error: {error_message}")
+                raise LoginError("Login error: %s", error_message)
             else:
                 raise LoginError("The server is not responding, please wait a moment and try again.")
 
