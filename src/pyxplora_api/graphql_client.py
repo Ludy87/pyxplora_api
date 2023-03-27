@@ -7,9 +7,7 @@ from typing import Any, Dict
 import aiohttp
 import requests
 
-DEFAULT_USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
-)
+from .const import DEFAULT_TIMEOUT, DEFAULT_USER_AGENT
 
 
 class GraphqlClient:
@@ -44,7 +42,7 @@ class GraphqlClient:
             json=request_body,
             headers={**self.headers, **headers},
             **self.options,
-            timeout=aiohttp.ClientTimeout(60),
+            timeout=aiohttp.ClientTimeout(DEFAULT_TIMEOUT),
         )
 
         result.raise_for_status()
@@ -58,7 +56,7 @@ class GraphqlClient:
 
         if "user-agent" not in headers:
             headers["user-agent"] = DEFAULT_USER_AGENT
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(60)) as session:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(DEFAULT_TIMEOUT)) as session:
             async with session.post(self.endpoint, json=request_body, headers={**self.headers, **headers}) as response:
                 try:
                     response.raise_for_status()
