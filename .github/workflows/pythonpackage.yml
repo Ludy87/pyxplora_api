@@ -15,29 +15,30 @@ jobs:
         python-version: ['3.9','3.10','3.11']
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.5.0
-      with:
-        python-version: ${{ matrix.python-version }}
-        check-latest: true
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -e .
-    - name: Lint with flake8
-      run: |
-        pip install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --ignore=E501,E266,E202,E201,E301
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=20 --max-line-length=127 --statistics --ignore=E501,E266,E202,E201,E301
-    - name: formatting with black
-      run: |
-        pip install black
-        black --line-length=127 --check .
-    - name: Test with pytest
-      run: |
-        pip install pytest
-        # pytest
+      - uses: actions/checkout@v3.5.0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4.5.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          check-latest: true
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --ignore=E501,E266,E202,E201,E301
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=20 --max-line-length=127 --statistics --ignore=E501,E266,E202,E201,E301
+      - name: formatting with black
+        run: |
+          pip install black
+          black --line-length=127 --check .
+      - name: Test with pytest
+        run: |
+          pip install pytest
+          # pytest
