@@ -265,7 +265,7 @@ class PyXploraApi(PyXplora):
                 return unread_count.get("unReadChatMsgCount", -1)
             return -1
         except Error as e:
-            _LOGGER.error(f"Error getting unread chat message count: {e}")
+            _LOGGER.error("Error getting unread chat message count: %s", e)
             return -1
 
     def getWatchChats(
