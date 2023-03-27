@@ -4,7 +4,7 @@ import configparser
 with open("README.md") as fh:
     long_description = fh.read()
 
-with open("./src/pyxplora_api/const.py") as f:
+with open("./src/pyxplora_api/const_version.py") as f:
     config_string = "[dummy_section]\n" + f.read()
     config = configparser.ConfigParser()
     config.read_string(config_string)

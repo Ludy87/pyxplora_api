@@ -3,7 +3,7 @@ import configparser
 
 
 def main():
-    with open("./src/pyxplora_api/const.py") as f:
+    with open("./src/pyxplora_api/const_version.py") as f:
         config_string = "[dummy_section]\n" + f.read()
         config = configparser.ConfigParser()
         config.read_string(config_string)

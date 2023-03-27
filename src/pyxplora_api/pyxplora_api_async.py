@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
 
-from .const import VERSION, VERSION_APP
+from .const_version import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler_async import GQLHandler
 from .model import Chats, ChatsNew, SmallChat, SmallChatList

@@ -5,7 +5,7 @@ from datetime import datetime
 from time import time
 from typing import Any, Dict, List, Optional, Union
 
-from .const import VERSION, VERSION_APP
+from .const_version import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
 from .gql_handler import GQLHandler
 from .model import Chats, ChatsNew, SmallChat, SmallChatList
