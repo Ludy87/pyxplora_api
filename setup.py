@@ -40,6 +40,6 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords="api xplora watch",
-    install_requires=["python-graphql-client==0.4.3"],
+    install_requires=["python-graphql-client==0.4.3", "dataclasses-json==0.5.7"],
     python_requires=">=3.6",
 )
