@@ -10,6 +10,11 @@ with open("./src/pyxplora_api/const_version.py") as f:
     config.read_string(config_string)
     version = config["dummy_section"]["VERSION"].strip('"')
 
+requirements_array = []
+with open("requirements.txt") as my_file:
+    for line in my_file:
+        requirements_array.append(line.replace("\n", ""))
+
 setuptools.setup(
     name="pyxplora_api",
     version=version,
@@ -40,6 +45,6 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords="api xplora watch",
-    install_requires=["python-graphql-client==0.4.3", "dataclasses-json==0.5.7"],
-    python_requires=">=3.6",
+    install_requires=requirements_array,
+    python_requires=">=3.9",
 )
