@@ -621,7 +621,7 @@ class GQLHandler(HandlerGQL):
             dict: Information retrieved for the given user with coin history, including the data field.
         """
         return self.runAuthorizedGqlQuery(
-            gq.MYINFO_Q.get("coinHistoryQ", ""),
+            gq.MYINFO_Q.get("myInfoWithCoinHistoryQ", ""),
             {"uid": wuid, "start": start, "end": end, "tz": tz, "type": type, "offset": offset, "limit": limit},
             "MyInfoWithCoinHistory",
         ).get("data", {})

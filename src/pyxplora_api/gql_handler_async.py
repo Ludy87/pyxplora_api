@@ -315,7 +315,7 @@ class GQLHandler(HandlerGQL):
     ) -> Dict[str, Any]:
         return (
             await self.runGqlQuery_a(
-                gq.MYINFO_Q.get("coinHistoryQ", ""),
+                gq.MYINFO_Q.get("myInfoWithCoinHistoryQ", ""),
                 {"uid": wuid, "start": start, "end": end, "tz": tz, "type": type, "offset": offset, "limit": limit},
                 "MyInfoWithCoinHistory",
             )
