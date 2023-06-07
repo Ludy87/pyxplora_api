@@ -47,7 +47,7 @@ class PyXploraApi(PyXplora):
 
                 # Try to login
                 try:
-                    self._issueToken = await self._gql_handler.login_a(key, sec)
+                    self._issueToken, self._refresh_token = await self._gql_handler.login_a(key, sec)
                 except LoginError as error:
                     self.error_message = error.error_message
                     await asyncio.sleep(self.retryDelay)
@@ -59,14 +59,14 @@ class PyXploraApi(PyXplora):
 
             if self._issueToken:
                 self.dtIssueToken = int(time())
-        return self._issueToken
+        return self._issueToken, self._refresh_token
 
     async def init(self, forceLogin: bool = False, signup: bool = True, key=None, sec=None) -> None:
         # self.initHandler(signup)
-        token = await self._login(forceLogin, key, sec)
+        token, refresh_token = await self._login(forceLogin, key, sec)
         if not signup:
             return
-        if not token:
+        if not token and not refresh_token:
             if self.error_message:
                 # now = datetime.now()
 
@@ -719,3 +719,7 @@ class PyXploraApi(PyXplora):
     async def set_read_chat_msg(self, wuid: str, msgId: str = "", id: str = ""):
         data = await self._gql_handler.setReadChatMsg_a(wuid, msgId, id)
         return data
+
+    async def refresh_token(self, wuid: str, refresh_token: str = ""):
+        data = await self._gql_handler.refresh_token_a(wuid, self._refresh_token)
+        return data.get("refreshToken", None)

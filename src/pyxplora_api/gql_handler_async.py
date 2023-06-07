@@ -83,6 +83,7 @@ class GQLHandler(HandlerGQL):
                 raise LoginError("The server is not responding, please wait a moment and try again.")
 
         self.issueToken = signIn
+        self.refreshToken = self.issueToken["refreshToken"]
         self.sessionId = self.issueToken["id"]
         self.userId = self.issueToken["user"]["id"]
         self.accessToken = self.issueToken["token"]
@@ -92,7 +93,7 @@ class GQLHandler(HandlerGQL):
                 self._API_KEY = w360.get("token", API_KEY)
                 self._API_SECRET = w360.get("secret", API_SECRET)
 
-        return self.issueToken
+        return self.issueToken, self.refreshToken
 
     async def isAdmin_a(self, wuid: str, query: str, variables: dict[str, Any], key: str) -> bool:
         contacts: dict[str, Any] = await self.getWatchUserContacts_a(wuid)
@@ -559,6 +560,12 @@ class GQLHandler(HandlerGQL):
 
     async def connect360_a(self):
         data = await self.runGqlQuery_a(gm.SIGN_M.get("connect360M", ""), {}, "connect360")
+        return data.get("data", {})
+
+    async def refresh_token_a(self, wuid: str, refresh_token: str) -> str | None:
+        data = await self.runGqlQuery_a(
+            gm.SIGN_M.get("refreshTokenM", ""), {"uid": wuid, "refreshToken": refresh_token}, "RefreshToken"
+        )
         return data.get("data", {})
 
     ########## SECTION MUTATION end ##########

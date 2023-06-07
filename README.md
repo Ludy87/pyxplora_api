@@ -27,18 +27,18 @@ Ein dank geht an @MiGoller mit seinem Projekt [xplora-api.js](https://github.com
 ### sync
 
 ```python
-from pyxplora_api import pyxplora_api as PXA
+from pyxplora_api.pyxplora_api import PyXploraApi
 
-xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber, wuid, email])
+xplora = PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber, wuid, email])
 xplora.init(forceLogin=False, signup=True)
 ```
 
 ### async
 
 ```python
-from pyxplora_api import pyxplora_api_async as PXA
+from pyxplora_api.pyxplora_api_async import PyXploraApi
 
-xplora = PXA.PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber, wuid, email])
+xplora = PyXploraApi(countryCode, phoneNummer, password, local, timeZone[, childPhoneNumber, wuid, email])
 await xplora.init(forceLogin=False, signup=True)
 ```
 
@@ -172,9 +172,10 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | watchGroups(id: str)                                                                          | dict[str, any]:       |
 | familyInfo(wuid: str, watchId: str, tz: str, date: int)                                       | dict[str, any]:       |
 | avatars(id: str)                                                                              | dict[str, any]:       |
-| submitIncorrectLocationData(wuid: str, lat: str, lng: str, timestamp: str)                    | bool                  |
+| submitIncorrectLocationData(wuid: str, lat: str, lng: str, timestamp: str)                    | bool:                 |
 | getAppVersion()                                                                               | dict[str, any]:       |
-| checkEmailOrPhoneExist(type: UserContactType, email: str, countryCode: str, phoneNumber: str) | bool                  | [2.2.2](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.2) |
+| checkEmailOrPhoneExist(type: UserContactType, email: str, countryCode: str, phoneNumber: str) | bool:                 | [2.2.2](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.2) |
+| refresh_token(wuid: str, refresh_token: str)                                                  | str:                  | [2.8.0](https://github.com/Ludy87/pyxplora_api/releases/tag/2.8.0) |
 
 ---
 
