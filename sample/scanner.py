@@ -1,4 +1,4 @@
-from pyxplora_api import pyxplora_api as PXA
+from pyxplora_api.pyxplora_api import PyXploraApi
 from pyxplora_api.status import UserContactType
 
 german_area_codes = [
@@ -38,7 +38,7 @@ country_code = "+49"
 
 
 def main():
-    xplora = PXA.PyXploraApi()
+    xplora = PyXploraApi()
     xplora.init(signup=False)
     for i in range(0, 99999999):
         if i < 1000000:

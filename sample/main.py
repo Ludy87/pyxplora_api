@@ -1,4 +1,4 @@
-from pyxplora_api import pyxplora_api as PXA
+from pyxplora_api.pyxplora_api import PyXploraApi
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
     wuid: list[str] = []
     email: str = "your@mail.local"
 
-    xplora = PXA.PyXploraApi(
+    xplora = PyXploraApi(
         countrycode=countryCode,
         phoneNumber=phoneNummer,
         password=password,
