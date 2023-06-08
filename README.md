@@ -175,7 +175,7 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | submitIncorrectLocationData(wuid: str, lat: str, lng: str, timestamp: str)                    | bool:                 |
 | getAppVersion()                                                                               | dict[str, any]:       |
 | checkEmailOrPhoneExist(type: UserContactType, email: str, countryCode: str, phoneNumber: str) | bool:                 | [2.2.2](https://github.com/Ludy87/pyxplora_api/releases/tag/2.2.2) |
-| refresh_token(wuid: str, refresh_token: str)                                                  | str:                  | [2.8.0](https://github.com/Ludy87/pyxplora_api/releases/tag/2.8.0) |
+| refresh_token(wuid: str, refresh_token: str)                                                  | str:                  | [2.8.0](https://github.com/Ludy87/pyxplora_api/releases/tag/2.8.2) |
 
 ---
 

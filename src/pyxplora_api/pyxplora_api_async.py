@@ -44,6 +44,7 @@ class PyXploraApi(PyXplora):
             retryCounter = 0
             while not self._isConnected() and (retryCounter < self.maxRetries + 2):
                 retryCounter += 1
+                self._refresh_token = ""
 
                 # Try to login
                 try:
