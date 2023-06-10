@@ -717,6 +717,24 @@ class PyXploraApi(PyXplora):
             return data.get("fetchChatVoice")
         return None
 
+    async def get_chat_image(self, wuid: str, msgId: str):
+        data = await self._gql_handler.fetchChatImage_a(wuid, msgId)
+        if data.get("fetchChatImage"):
+            return data.get("fetchChatImage")
+        return None
+
+    async def get_short_video(self, wuid: str, msgId: str):
+        data = await self._gql_handler.fetchChatShortVideo_a(wuid, msgId)
+        if data.get("fetchChatShortVideo"):
+            return data.get("fetchChatShortVideo")
+        return None
+
+    async def get_short_video_cover(self, wuid: str, msgId: str):
+        data = await self._gql_handler.fetchChatShortVideoCover_a(wuid, msgId)
+        if data.get("fetchChatShortVideoCover"):
+            return data.get("fetchChatShortVideoCover")
+        return None
+
     async def set_read_chat_msg(self, wuid: str, msgId: str = "", id: str = ""):
         data = await self._gql_handler.setReadChatMsg_a(wuid, msgId, id)
         return data
