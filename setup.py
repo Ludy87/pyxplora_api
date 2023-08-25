@@ -1,18 +1,19 @@
+"""setup."""
 import configparser
 
 import setuptools
 
-with open("README.md") as fh:
+with open("README.md", encoding="utf8") as fh:
     long_description = fh.read()
 
-with open("./src/pyxplora_api/const_version.py") as f:
+with open("./src/pyxplora_api/const_version.py", encoding="utf8") as f:
     config_string = "[dummy_section]\n" + f.read()
     config = configparser.ConfigParser()
     config.read_string(config_string)
     version = config["dummy_section"]["VERSION"].strip('"')
 
 requirements_array = []
-with open("requirements.txt") as my_file:
+with open("requirements.txt", encoding="utf8") as my_file:
     for line in my_file:
         requirements_array.append(line.replace("\n", ""))
 
