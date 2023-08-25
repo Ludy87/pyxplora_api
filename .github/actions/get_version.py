@@ -1,5 +1,5 @@
-import sys
 import configparser
+import sys
 
 
 def main():
