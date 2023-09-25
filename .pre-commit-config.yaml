@@ -15,7 +15,7 @@ repos:
     rev: v0.0.289
     hooks:
       - id: ruff
-        exclude: (.github|sample)
+        exclude: ^.github|sample|gql_mutations\.py|gql_queries\.py
         args:
           - --fix
           - --line-length=127
