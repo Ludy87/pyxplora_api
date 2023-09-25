@@ -1,35 +1,38 @@
 from __future__ import annotations
 
+import sys
+
+if sys.version_info >= (3, 11):
+    from datetime import UTC, datetime
+else:
+    from datetime import datetime, timezone
 import hashlib
 import math
-from datetime import datetime, timezone
 from time import time
-from typing import Any, Dict
 
 from .const import API_KEY, API_SECRET
 from .status import ClientType
 
 
 class HandlerGQL:
-    """
-    A class to handle GraphQL API requests for PyXplora.
+    """A class to handle GraphQL API requests for PyXplora.
 
     Attributes:
-        accessToken (Any): The access token used for authentication.
+        accessToken (any): The access token used for authentication.
         sessionId (None): The session ID.
         userId (None): The user ID.
         _API_KEY (str): The API key.
         _API_SECRET (str): The API secret.
-        issueToken (dict[str, Any]): The issue token.
-        errors (list[Any]): A list of errors.
+        issueToken (dict[str, any]): The issue token.
+        errors (list[any]): A list of errors.
 
     """
 
-    accessToken: Any = None
-    sessionId = None
-    userId = None
-    issueToken: dict[str, Any] = None
-    errors: list[Any] = []
+    accessToken: any = None  # noqa: N815
+    sessionId = None  # noqa: N815
+    userId = None  # noqa: N815
+    issueToken: dict[str, any] = None  # noqa: N815
+    errors: list[any] = []
 
     def __init__(
         self,
@@ -41,8 +44,7 @@ class HandlerGQL:
         email: str = None,
         signup: bool = True,
     ) -> None:
-        """
-        Initializes the class with the given parameters.
+        """Initializes the class with the given parameters.
 
         Args:
             countryPhoneNumber (str): The country phone number.
@@ -75,8 +77,7 @@ class HandlerGQL:
         self.signup = signup
 
     def getApiKey(self):
-        """
-        Returns the API key.
+        """Returns the API key.
 
         Returns:
             str: The API key.
@@ -85,8 +86,7 @@ class HandlerGQL:
         return self._API_KEY
 
     def getSecret(self):
-        """
-        Returns the API secret.
+        """Returns the API secret.
 
         Returns:
             str: The API secret.
@@ -94,15 +94,14 @@ class HandlerGQL:
         """
         return self._API_SECRET
 
-    def getRequestHeaders(self, acceptedContentType: str) -> Dict[str, Any]:
-        """
-        Returns the request headers with the specified content type.
+    def getRequestHeaders(self, acceptedContentType: str) -> dict[str, any]:
+        """Returns the request headers with the specified content type.
 
         Args:
             acceptedContentType (str): The accepted content type.
 
         Returns:
-            dict[str, Any]: The request headers.
+            dict[str, any]: The request headers.
 
         Raises:
             Exception: If `acceptedContentType` is empty or if `API_KEY` or `API_SECRET` is not set.
@@ -120,24 +119,27 @@ class HandlerGQL:
         if (self.accessToken is None or not self.issueToken) and self._API_KEY == API_KEY:
             # OPEN authorization
             authorizationHeader = f"Open {self._API_KEY}:{self._API_SECRET}"
-        else:
-            # BEARER authorization
-            if self.issueToken:
-                w360: dict = self.issueToken.get("w360", None)
-                if w360:
-                    if w360.get("token") and w360.get("secret"):
-                        authorizationHeader = (
-                            f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
-                        )
-                        self._API_KEY = w360.get("token", API_KEY)
-                        self._API_SECRET = w360.get("secret", API_SECRET)
-                else:
-                    authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
+        # else:
+        # BEARER authorization
+        elif self.issueToken:
+            w360: dict = self.issueToken.get("w360", None)
+            if w360:
+                if w360.get("token") and w360.get("secret"):
+                    authorizationHeader = (
+                        f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
+                    )
+                    self._API_KEY = w360.get("token", API_KEY)
+                    self._API_SECRET = w360.get("secret", API_SECRET)
             else:
-                authorizationHeader = f"Bearer {self._API_KEY}:{self._API_SECRET}"
-
+                authorizationHeader = f"Bearer {self.accessToken}:{self._API_SECRET}"
+        else:
+            authorizationHeader = f"Bearer {self._API_KEY}:{self._API_SECRET}"
+        if sys.version_info >= (3, 11):
+            utc = UTC
+        else:
+            utc = timezone.utc
         requestHeaders = {
-            "H-Date": datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT",
+            "H-Date": datetime.now(utc).strftime("%a, %d %b %Y %H:%M:%S") + " GMT",
             "H-Tid": str(math.floor(time())),
             "Content-Type": acceptedContentType,
             "H-BackDoor-Authorization": authorizationHeader,
