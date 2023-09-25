@@ -10,7 +10,7 @@ permissions:
     issues: write
     pull-requests: write
     discussions: write
-      
+
 jobs:
   set-label-on-merge:
     runs-on: ubuntu-latest
@@ -36,7 +36,7 @@ jobs:
                   repo: context.repo.repo,
                   issue_number: prNumber
                 });
-    
+
                 const labelNames = pullRequestLabels.data.map(label => label.name);
                 if (labelNames.includes('in progress')) {
                   await github.rest.issues.removeLabel({
