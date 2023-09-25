@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class ErrorMSG(Enum):
-    """Enum class for error messages"""
+    """Enum class for error messages."""
 
     SERVER_ERR = "Cannot connect to the server."
     LOGIN_ERR = "Login to Xplora® API failed. Check your input!\n{}"
@@ -12,7 +12,7 @@ class ErrorMSG(Enum):
 
 
 class Error(Exception):
-    """Base class for all Exceptions"""
+    """Base class for all Exceptions."""
 
     pass
 

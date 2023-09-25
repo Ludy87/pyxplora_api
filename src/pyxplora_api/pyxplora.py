@@ -2,32 +2,30 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from time import time
-from typing import Any, List, Optional, Union
 
 from .exception_classes import ChildNoError, XTypeError
 
 
 class PyXplora:
-    """
-    This class represents the PyXplora client. It has class level attributes and methods to interact with the Xplora API.
+    """This class represents the PyXplora client. It has class level attributes and methods to interact with the Xplora API.
 
     Attributes:
-    _gql_handler (Any): The GQL handler to interact with the Xplora API.
+    _gql_handler (any): The GQL handler to interact with the Xplora API.
     error_message (str): A string representing the error message, if any.
     tokenExpiresAfter (int): An integer representing the time in seconds after which the token will expire.
     maxRetries (int): The maximum number of retries in case of API failure.
     retryDelay (int): The time in seconds to wait between retries.
-    device (dict[str, Any]): A dictionary representing the device details, if any.
-    watchs (list[Any]): A list of dictionaries representing the watch details, if any.
+    device (dict[str, any]): A dictionary representing the device details, if any.
+    watchs (list[any]): A list of dictionaries representing the watch details, if any.
     """
 
-    _gql_handler: Any = None
+    _gql_handler: any = None
     error_message = ""
-    tokenExpiresAfter = 240
-    maxRetries = 3
-    retryDelay = 2
-    device: dict[str, Any] = {}
-    watchs: list[Any] = []
+    tokenExpiresAfter = 240  # noqa: N815
+    maxRetries = 3  # noqa: N815
+    retryDelay = 2  # noqa: N815
+    device: dict[str, any] = {}
+    watchs: list[any] = []
 
     def __init__(
         self,
@@ -40,8 +38,7 @@ class PyXplora:
         wuid: str | list | None = None,
         email: str | None = None,
     ) -> None:
-        """
-        Initialize the instance with the user's account information.
+        """Initialize the instance with the user's account information.
 
         Args:
             countrycode (str): The country code of the user's phone number.
@@ -72,8 +69,7 @@ class PyXplora:
         self._logoff()
 
     def _isConnected(self) -> bool:
-        """
-        Check if the instance is connected to the server.
+        """Check if the instance is connected to the server.
 
         Returns:
             bool: True if the instance is connected, False otherwise.
@@ -81,18 +77,16 @@ class PyXplora:
         return bool(self._gql_handler and self._issueToken and self._gql_handler.accessToken)
 
     def _logoff(self) -> None:
-        """
-        Log off the user by clearing the stored information.
+        """Log off the user by clearing the stored information.
 
         Returns:
             None
         """
-        self.user: dict[Any, Any] = {}
-        self._issueToken: dict[Any, Any] = {}
+        self.user: dict[any, any] = {}
+        self._issueToken: dict[any, any] = {}
 
     def _hasTokenExpired(self) -> bool:
-        """
-        Check if the token has expired.
+        """Check if the token has expired.
 
         Returns:
             bool: True if the token has expired, False otherwise.
@@ -100,8 +94,7 @@ class PyXplora:
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
 
     def delay(self, duration_in_seconds):
-        """
-        Delay the execution for a specified duration.
+        """Delay the execution for a specified duration.
 
         Args:
             duration_in_seconds (int): The duration to delay in seconds.
@@ -114,8 +107,7 @@ class PyXplora:
             pass
 
     def getDevice(self, wuid: str):
-        """
-        Get the information for a specific watch.
+        """Get the information for a specific watch.
 
         Args:
             wuid (str): The ID of the watch.
@@ -130,8 +122,7 @@ class PyXplora:
 
     ##### User Info #####
     def getUserID(self) -> str:
-        """
-        This function returns the id of the user.
+        """This function returns the id of the user.
 
         Returns:
         str: The id of the user.
@@ -139,8 +130,7 @@ class PyXplora:
         return self.user.get("id", "")
 
     def getUserName(self) -> str:
-        """
-        This function returns the name of the user.
+        """This function returns the name of the user.
 
         Returns:
         str: The name of the user.
@@ -148,8 +138,7 @@ class PyXplora:
         return self.user.get("name", "")
 
     def getUserIcon(self) -> str:
-        """
-        This function returns the profile icon of the user.
+        """This function returns the profile icon of the user.
 
         Returns:
         str: The profile icon of the user.
@@ -158,8 +147,7 @@ class PyXplora:
         return extra.get("profileIcon", "https://s3.eu-central-1.amazonaws.com/kids360uc/default_icon.png")
 
     def getUserXcoin(self) -> int:
-        """
-        This function returns the xcoin amount of the user.
+        """This function returns the xcoin amount of the user.
 
         Returns:
         int: The xcoin amount of the user.
@@ -167,8 +155,7 @@ class PyXplora:
         return self.user.get("xcoin", -1)
 
     def getUserCurrentStep(self) -> int:
-        """
-        This function returns the current step count of the user.
+        """This function returns the current step count of the user.
 
         Returns:
         int: The current step count of the user.
@@ -176,8 +163,7 @@ class PyXplora:
         return self.user.get("currentStep", -1)
 
     def getUserTotalStep(self) -> int:
-        """
-        This function returns the total step count of the user.
+        """This function returns the total step count of the user.
 
         Returns:
         int: The total step count of the user.
@@ -185,8 +171,7 @@ class PyXplora:
         return self.user.get("totalStep", -1)
 
     def getUserCreate(self) -> str:
-        """
-        This function returns the creation date and time of the user.
+        """This function returns the creation date and time of the user.
 
         Returns:
         str: The creation date and time of the user in the format "YYYY-MM-DD HH:MM:SS".
@@ -194,8 +179,7 @@ class PyXplora:
         return datetime.fromtimestamp(self.user.get("create", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
     def getUserUpdate(self) -> str:
-        """
-        This function returns the user update time in a string format.
+        """This function returns the user update time in a string format.
 
         Returns:
         str: The user update time in the format 'YYYY-MM-DD HH:MM:SS'.
@@ -204,15 +188,15 @@ class PyXplora:
         return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
     ##### Watch Info #####
-    def getWatchUserIDs(self, watch_user_phone_numbers: Optional[List[str]] = None) -> List[str]:
-        """
-        This function returns the unique identifiers of the watch users.
+    def getWatchUserIDs(self, watch_user_phone_numbers: list[str] | None = None) -> list[str]:
+        """This function returns the unique identifiers of the watch users.
 
         Parameters:
-        watch_user_phone_numbers (List[str], optional): A list of watch user phone numbers to filter the watch users. If not provided, all watch user ids will be returned.
+        watch_user_phone_numbers (list[str], optional): A list of watch user phone numbers to filter the watch users.
+        If not provided, all watch user ids will be returned.
 
         Returns:
-        List[str]: A list of unique identifiers of the watch users.
+        list[str]: A list of unique identifiers of the watch users.
 
         """
         if isinstance(self._wuid, list) and self._wuid:
@@ -228,18 +212,17 @@ class PyXplora:
                 watch_ids.append(watch["ward"]["id"])
         return watch_ids
 
-    def getWatchUserPhoneNumbers(
-        self, wuid: Optional[Union[str, List[str]]] = None, ignoreError: bool = False
-    ) -> Union[str, List[str]]:
-        """
-        This function returns the phone number of the watch users.
+    def getWatchUserPhoneNumbers(self, wuid: str | list[str] | None = None, ignoreError: bool = False) -> str | list[str]:
+        """This function returns the phone number of the watch users.
 
         Parameters:
-        wuid (Union[str, List[str]], optional): The unique identifier of the watch user. If not provided, the function will retrieve all watch user ids using `self.getWatchUserIDs()`.
-        ignoreError (bool, optional): If True, the function will not raise error in case of missing information. Default value is False.
+        wuid (Union[str, list[str]], optional): The unique identifier of the watch user.
+        If not provided, the function will retrieve all watch user ids using `self.getWatchUserIDs()`.
+        ignoreError (bool, optional): If True, the function will not raise error in case of missing information.
+        Default value is False.
 
         Returns:
-        Union[str, List[str]]: The phone number(s) of the watch user(s).
+        Union[str, list[str]]: The phone number(s) of the watch user(s).
 
         Raises:
         ChildNoError: If no `wuid` provided or watch user ids are not found.
@@ -267,16 +250,17 @@ class PyXplora:
             raise ChildNoError(["Child phonenumber"])
         return watchuserphonenumbers
 
-    def getWatchUserNames(self, wuid: Optional[Union[str, List[str]]] = None) -> Union[str, List[str]]:
-        """
-        This function returns the name of one or multiple users specified by their user ID. If no user ID is specified,
+    def getWatchUserNames(self, wuid: str | list[str] | None = None) -> str | list[str]:
+        """This function returns the name of one or multiple users specified by their user ID. If no user ID is specified,
         the names of all watched users are returned.
 
         Parameters:
-        wuid (str, list[str], optional): A string or a list of strings representing the user IDs of the watched users. Defaults to None.
+        wuid (str, list[str], optional): A string or a list of strings representing the user IDs of the watched users.
+        Defaults to None.
 
         Returns:
-        Union[str, List[str]]: A string representing the name of a single user or a list of strings representing the names of multiple users.
+        Union[str, list[str]]:
+            A string representing the name of a single user or a list of strings representing the names of multiple users.
 
         Raises:
         ChildNoError: If the user IDs are not found.
@@ -301,9 +285,8 @@ class PyXplora:
         #     raise ChildNoError(["Watch username"])
         return watchusernames
 
-    def getWatchUserIcons(self, wuid: Optional[Union[str, List[str], None]] = None) -> Union[str, List[str]]:
-        """
-        Get the icon URL for watch users.
+    def getWatchUserIcons(self, wuid: str | list[str] | None | None = None) -> str | list[str]:
+        """Get the icon URL for watch users.
 
         Parameters:
         wuid (str or list[str] or None, optional): Watch User ID. Defaults to None.
@@ -335,12 +318,12 @@ class PyXplora:
         #     raise ChildNoError(["Watch User Icon"])
         return watch_user_icons
 
-    def getWatchUserXCoins(self, wuid: Optional[Union[str, List[str]]] = None) -> Union[int, List[int]]:
-        """
-        Get the XCoins earned by the watch user.
+    def getWatchUserXCoins(self, wuid: str | list[str] | None = None) -> int | list[int]:
+        """Get the XCoins earned by the watch user.
 
         Args:
-        wuid (str or list of str or None, optional): Watch User ID or a list of Watch User IDs. If None, returns XCoins for all Watch Users.
+        wuid (str or list of str or None, optional): Watch User ID or a list of Watch User IDs.
+        If None, returns XCoins for all Watch Users.
 
         Returns:
         int or list of int: XCoins earned by the specified Watch User or a list of XCoins earned by specified Watch Users.
@@ -367,9 +350,8 @@ class PyXplora:
         #     raise ChildNoError(["Watch User XCoins"])
         return watchuserxcoins
 
-    def getWatchUserCurrentStep(self, wuid: Union[str, List[str], None] = None) -> Union[int, List[int]]:
-        """
-        Get the current step count of a watch user.
+    def getWatchUserCurrentStep(self, wuid: str | list[str] | None = None) -> int | list[int]:
+        """Get the current step count of a watch user.
 
         Args:
         wuid (str | list[str] | None): ID(s) of watch user(s). If None, all IDs are used. (default None)
@@ -399,12 +381,12 @@ class PyXplora:
         #     raise ChildNoError(["Watch User Currentsteps"])
         return watchusercurrentstep
 
-    def getWatchUserTotalStep(self, wuid: Optional[Union[str, List[str], None]] = None) -> Union[int, List[int]]:
-        """
-        Get the total steps taken by a user or a list of users from the watch.
+    def getWatchUserTotalStep(self, wuid: str | list[str] | None | None = None) -> int | list[int]:
+        """Get the total steps taken by a user or a list of users from the watch.
 
         Args:
-        wuid (str | list[str] | None, optional): the watch user id or a list of watch user ids. If None, get total steps for all users. Default is None.
+        wuid (str | list[str] | None, optional): the watch user id or a list of watch user ids.
+        If None, get total steps for all users. Default is None.
 
         Returns:
         int | list[int]: the total steps taken by the user(s) or a list of total steps taken by each user in the list.
@@ -433,8 +415,7 @@ class PyXplora:
 
     ##### - #####
     def _helperTime(self, t: str) -> str:
-        """
-        Convert time in minutes to hours and minutes.
+        """Convert time in minutes to hours and minutes.
 
         Args:
         t (str): time in minutes as string
