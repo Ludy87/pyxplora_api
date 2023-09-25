@@ -104,7 +104,7 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 
 ## Watch: Location Infos
 
-| Function                                                      | Result Type           | Retrun        |
+| Function                                                      | Result Type           | Return        |
 | ------------------------------------------------------------- | --------------------- | ------------- |
 | getWatchLastLocation(wuid: str, withAsk: bool = False)        | dict[str, any]:       |               |
 | getWatchLocate(wuid: str)                                     | dict[str, any]:       |               |
@@ -468,7 +468,7 @@ You can Sign In with Phone Number or Email. If you enter your email, the telepho
 | locate Type                      | read       | str  | GPS/WIFI/CELL                                   |
 | locate now                       | read       | dict |                                                 |
 | is in Safezone                   | read       | bool |                                                 |
-| Safezone Lable                   | read       | str  |                                                 |
+| Safezone Label                   | read       | str  |                                                 |
 | Safezone                         | read/write | list |                                                 |
 | track Interval                   | read       | int  |                                                 |
 | ask Watch Locate                 | read       | bool |                                                 |
