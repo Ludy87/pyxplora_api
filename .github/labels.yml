@@ -44,4 +44,5 @@
   description: Beta Version Release
   color: d73a4a
 - name: "in progress"
+  description: "is being worked on"
   color: "FDF89E"
