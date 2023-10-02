@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Union
 
 from dataclasses_json import DataClassJsonMixin, dataclass_json
 
@@ -19,7 +20,7 @@ class SmallChat(DataClassJsonMixin):
     data_text: str
     data_sender_name: str
     create: str
-    emoticon_id: Emoticon.__str__ | None = Emoticon.UNKNOWN__.value
+    emoticon_id: Union[Emoticon.__str__, None] = Emoticon.UNKNOWN__.value
     delete_flag: int = 0
 
 
@@ -43,45 +44,45 @@ class User(DataClassJsonMixin):
 class Data(DataClassJsonMixin):
     tm: int
     sender_name: str
-    text: str | None = None
-    Text: str | None = None
-    battery: int | None = None
-    poi: str | None = None
-    city: str | None = None
-    address: str | None = None
-    province: str | None = None
-    locate_type: str | None = None
-    emoticon_id: Emoticon.__str__ | None = Emoticon.UNKNOWN__.value
-    emoji_id: Emoticon.__str__ | None = Emoticon.UNKNOWN__.value
-    call_name: str | None = None
-    call_time: int | None = None
-    call_type: int | None = None
-    lat: float | None = None
-    lng: float | None = None
-    radius: int | None = None
-    delete_flag: int | None = 0
+    text: Union[str, None] = None
+    Text: Union[str, None] = None
+    battery: Union[int, None] = None
+    poi: Union[str, None] = None
+    city: Union[str, None] = None
+    address: Union[str, None] = None
+    province: Union[str, None] = None
+    locate_type: Union[str, None] = None
+    emoticon_id: Union[Emoticon.__str__, None] = Emoticon.UNKNOWN__.value
+    emoji_id: Union[Emoticon.__str__, None] = Emoticon.UNKNOWN__.value
+    call_name: Union[str, None] = None
+    call_time: Union[int, None] = None
+    call_type: Union[int, None] = None
+    lat: Union[float, None] = None
+    lng: Union[float, None] = None
+    radius: Union[int, None] = None
+    delete_flag: Union[int, None] = 0
 
 
 @dataclass_json
 @dataclass
 class SimpleChat(DataClassJsonMixin):
-    id: str | None
-    msgId: str | None  # noqa: N815
-    readFlag: int | None  # noqa: N815
-    sender: User | None
-    receiver: User | None
-    data: Data | None
-    create: int | None
-    type: ChatType.__str__ | None = ChatType.UNKNOWN__.value
+    id: Union[str, None]
+    msgId: Union[str, None]  # noqa: N815
+    readFlag: Union[int, None]  # noqa: N815
+    sender: Union[User, None]
+    receiver: Union[User, None]
+    data: Union[Data, None]
+    create: Union[int, None]
+    type: Union[ChatType.__str__, None] = ChatType.UNKNOWN__.value
 
 
 @dataclass_json
 @dataclass
 class ChatsNew(DataClassJsonMixin):
-    list: list[SimpleChat] | None = field(default_factory=list[SimpleChat])
+    list: Union[list[SimpleChat], None] = field(default_factory=list[SimpleChat])
 
 
 @dataclass_json
 @dataclass
 class Chats(DataClassJsonMixin):
-    chatsNew: ChatsNew | None  # noqa: N815
+    chatsNew: Union[ChatsNew , None]  # noqa: N815
