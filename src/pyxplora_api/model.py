@@ -85,4 +85,4 @@ class ChatsNew(DataClassJsonMixin):
 @dataclass_json
 @dataclass
 class Chats(DataClassJsonMixin):
-    chatsNew: Union[ChatsNew , None]  # noqa: N815
+    chatsNew: Union[ChatsNew, None]  # noqa: N815
