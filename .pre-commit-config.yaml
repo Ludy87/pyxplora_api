@@ -10,6 +10,9 @@ ci:
   skip: []
   submodules: false
 
+default_language_version:
+    python: python3.9
+
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.0.289
