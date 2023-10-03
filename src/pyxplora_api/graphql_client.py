@@ -13,7 +13,7 @@ class GraphqlClient:
     """Class which represents the interface to make graphQL requests through."""
 
     def __init__(self, endpoint: str, headers: dict[str, str] = {}, **kwargs: any):
-        """Insantiate the client."""
+        """Instantiate the client."""
         self.logger = logging.getLogger(__name__)
         self.endpoint = endpoint
         self.headers = headers
