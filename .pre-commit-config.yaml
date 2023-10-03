@@ -12,7 +12,7 @@ ci:
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.289
+    rev: v0.0.292
     hooks:
       - id: ruff
         exclude: ^.github|sample|gql_mutations\.py|gql_queries\.py
@@ -28,7 +28,7 @@ repos:
           - --quiet
         files: ^((src|sample|tests)/.+)?[^/]+\.py$
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
+    rev: v2.2.6
     hooks:
       - id: codespell
         args:
@@ -72,7 +72,7 @@ repos:
           - --keep-updates
         files: ^(src|tests|sample)/.+\.py$
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.11.0
+    rev: v3.14.0
     hooks:
       - id: pyupgrade
         args: [--py39-plus]
