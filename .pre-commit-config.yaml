@@ -74,6 +74,8 @@ repos:
           - --force
           - --keep-updates
         files: ^(src|tests|sample)/.+\.py$
+        additional_dependencies:
+          - black==23.9.1
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.14.0
     hooks:
