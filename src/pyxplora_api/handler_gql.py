@@ -25,7 +25,6 @@ class HandlerGQL:
         _API_SECRET (str): The API secret.
         issueToken (dict[str, any]): The issue token.
         errors (list[any]): A list of errors.
-
     """
 
     accessToken: any = None  # noqa: N815
@@ -54,7 +53,6 @@ class HandlerGQL:
             timeZone (str): The time zone.
             email (str, optional): The email address. Defaults to None.
             signup (bool, optional): Indicates if the user is signing up. Defaults to True.
-
         """
         # init vars
         self.userLocale = userLang
@@ -81,7 +79,6 @@ class HandlerGQL:
 
         Returns:
             str: The API key.
-
         """
         return self._API_KEY
 
@@ -90,7 +87,6 @@ class HandlerGQL:
 
         Returns:
             str: The API secret.
-
         """
         return self._API_SECRET
 
@@ -105,7 +101,6 @@ class HandlerGQL:
 
         Raises:
             Exception: If `acceptedContentType` is empty or if `API_KEY` or `API_SECRET` is not set.
-
         """
         if acceptedContentType == "" or acceptedContentType is None:
             raise Exception("acceptedContentType MUST NOT be empty!")

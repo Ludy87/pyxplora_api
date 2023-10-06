@@ -14,8 +14,6 @@ class ErrorMSG(Enum):
 class Error(Exception):
     """Base class for all Exceptions."""
 
-    pass
-
 
 class NoAdminError(Error):
     """Exception raised when a user is not an administrator."""

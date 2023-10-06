@@ -19,7 +19,8 @@ class GraphqlClient:
         self.headers = headers
         self.options = kwargs
 
-    def __request_body(self, query: str, variables: dict[str, any] = None, operation_name: str = None) -> dict[str, any]:
+    @staticmethod
+    def __request_body(query: str, variables: dict[str, any] = None, operation_name: str = None) -> dict[str, any]:
         json: dict[str, any] = {"query": query}
 
         if variables:

@@ -93,7 +93,8 @@ class PyXploraApi(PyXplora):
             self.watchs = [watch for watch in children if watch["ward"]["phoneNumber"] in self._childPhoneNumber]
         self.user = user
 
-    def version(self) -> str:
+    @staticmethod
+    def version() -> str:
         return f"{VERSION}-{VERSION_APP}"
 
     async def setDevices(self, ids: str | list[str] | None = None) -> list[str]:
