@@ -83,7 +83,8 @@ class PyXploraApi(PyXplora):
 
         self.user = user
 
-    def version(self) -> str:
+    @staticmethod
+    def version() -> str:
         return f"{VERSION}-{VERSION_APP}"
 
     def setDevices(self, ids: str | list[str] | None = None) -> list[str]:

@@ -93,7 +93,8 @@ class PyXplora:
         """
         return (int(time()) - self.dtIssueToken) > (self.tokenExpiresAfter * 1000)
 
-    def delay(self, duration_in_seconds):
+    @staticmethod
+    def delay(duration_in_seconds):
         """Delay the execution for a specified duration.
 
         Args:
@@ -183,7 +184,6 @@ class PyXplora:
 
         Returns:
         str: The user update time in the format 'YYYY-MM-DD HH:MM:SS'.
-
         """
         return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -197,7 +197,6 @@ class PyXplora:
 
         Returns:
         list[str]: A list of unique identifiers of the watch users.
-
         """
         if isinstance(self._wuid, list) and self._wuid:
             return self._wuid
@@ -227,7 +226,6 @@ class PyXplora:
         Raises:
         ChildNoError: If no `wuid` provided or watch user ids are not found.
         XTypeError: If the `wuid` is not of type `str` or `list[str]`.
-
         """
         watchuserphonenumbers = []
         if wuid is None:
@@ -265,7 +263,6 @@ class PyXplora:
         Raises:
         ChildNoError: If the user IDs are not found.
         XTypeError: If the `wuid` parameter is not a string or a list of strings.
-
         """
         watchusernames = []
         if wuid is None:
@@ -298,7 +295,6 @@ class PyXplora:
         Raises:
         ChildNoError: If no watch user ID is found.
         XTypeError: If the input argument is not of type 'str' or 'list[str]'.
-
         """
         watch_user_icons = []
         if wuid is None:
@@ -414,7 +410,8 @@ class PyXplora:
         return watchusertotalstep
 
     ##### - #####
-    def _helperTime(self, t: str) -> str:
+    @staticmethod
+    def _helperTime(t: str) -> str:
         """Convert time in minutes to hours and minutes.
 
         Args:
