@@ -595,7 +595,7 @@ class PyXploraApi(PyXplora):
     async def isAdmin(self, wuid: str) -> bool:
         user_id = self.getUserID()
         contacts = await self.getWatchUserContacts(wuid)
-        return any(contact["id"] == user_id and contact["guardianType"] == "FIRST" for contact in contacts)
+        return Any(contact["id"] == user_id and contact["guardianType"] == "FIRST" for contact in contacts)
 
     async def shutdown(self, wuid: str) -> bool:
         if await self.isAdmin(wuid):
