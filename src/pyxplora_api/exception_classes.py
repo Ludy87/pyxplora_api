@@ -15,6 +15,10 @@ class Error(Exception):
     """Base class for all Exceptions."""
 
 
+class HandlerException(Exception):
+    """Base class for all HandlerExceptions."""
+
+
 class NoAdminError(Error):
     """Exception raised when a user is not an administrator."""
 
