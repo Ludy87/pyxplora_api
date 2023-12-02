@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import sys
+from typing import Any
+
+from pyxplora_api.exception_classes import HandlerException
 
 if sys.version_info >= (3, 11):
     from datetime import UTC, datetime
@@ -18,20 +21,20 @@ class HandlerGQL:
     """A class to handle GraphQL API requests for PyXplora.
 
     Attributes:
-        accessToken (any): The access token used for authentication.
+        accessToken (Any): The access token used for authentication.
         sessionId (None): The session ID.
         userId (None): The user ID.
         _API_KEY (str): The API key.
         _API_SECRET (str): The API secret.
-        issueToken (dict[str, any]): The issue token.
-        errors (list[any]): A list of errors.
+        issueToken (dict[str, Any]): The issue token.
+        errors (list[Any]): A list of errors.
     """
 
-    accessToken: any = None  # noqa: N815
+    accessToken: Any = None  # noqa: N815
     sessionId = None  # noqa: N815
     userId = None  # noqa: N815
-    issueToken: dict[str, any] = None  # noqa: N815
-    errors: list[any] = []
+    issueToken: dict[str, Any] = None  # noqa: N815
+    errors: list[Any] = []
 
     def __init__(
         self,
@@ -90,24 +93,24 @@ class HandlerGQL:
         """
         return self._API_SECRET
 
-    def getRequestHeaders(self, acceptedContentType: str) -> dict[str, any]:
+    def getRequestHeaders(self, acceptedContentType: str) -> dict[str, Any]:
         """Returns the request headers with the specified content type.
 
         Args:
             acceptedContentType (str): The accepted content type.
 
         Returns:
-            dict[str, any]: The request headers.
+            dict[str, Any]: The request headers.
 
         Raises:
             Exception: If `acceptedContentType` is empty or if `API_KEY` or `API_SECRET` is not set.
         """
         if acceptedContentType == "" or acceptedContentType is None:
-            raise Exception("acceptedContentType MUST NOT be empty!")
+            raise HandlerException("acceptedContentType MUST NOT be empty!")
         if self._API_KEY is None:
-            raise Exception("Xplorao2o API_KEY MUST NOT be empty!")
+            raise HandlerException("Xplorao2o API_KEY MUST NOT be empty!")
         if self._API_SECRET is None:
-            raise Exception("Xplorao2o API_SECRET MUST NOT be empty!")
+            raise HandlerException("Xplorao2o API_SECRET MUST NOT be empty!")
 
         authorizationHeader = ""
 

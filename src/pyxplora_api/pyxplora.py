@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from time import time
+from typing import Any
 
 from .exception_classes import ChildNoError, XTypeError
 
@@ -10,22 +11,22 @@ class PyXplora:
     """This class represents the PyXplora client. It has class level attributes and methods to interact with the Xplora API.
 
     Attributes:
-    _gql_handler (any): The GQL handler to interact with the Xplora API.
-    error_message (str): A string representing the error message, if any.
+    _gql_handler (Any): The GQL handler to interact with the Xplora API.
+    error_message (str): A string representing the error message, if Any.
     tokenExpiresAfter (int): An integer representing the time in seconds after which the token will expire.
     maxRetries (int): The maximum number of retries in case of API failure.
     retryDelay (int): The time in seconds to wait between retries.
-    device (dict[str, any]): A dictionary representing the device details, if any.
-    watchs (list[any]): A list of dictionaries representing the watch details, if any.
+    device (dict[str, Any]): A dictionary representing the device details, if Any.
+    watchs (list[Any]): A list of dictionaries representing the watch details, if Any.
     """
 
-    _gql_handler: any = None
+    _gql_handler: Any = None
     error_message = ""
     tokenExpiresAfter = 240  # noqa: N815
     maxRetries = 3  # noqa: N815
     retryDelay = 2  # noqa: N815
-    device: dict[str, any] = {}
-    watchs: list[any] = []
+    device: dict[str, Any] = {}
+    watchs: list[Any] = []
 
     def __init__(
         self,
@@ -82,8 +83,8 @@ class PyXplora:
         Returns:
             None
         """
-        self.user: dict[any, any] = {}
-        self._issueToken: dict[any, any] = {}
+        self.user: dict[Any, Any] = {}
+        self._issueToken: dict[Any, Any] = {}
 
     def _hasTokenExpired(self) -> bool:
         """Check if the token has expired.

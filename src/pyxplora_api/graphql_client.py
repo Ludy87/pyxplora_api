@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import aiohttp
 import requests
@@ -12,7 +13,7 @@ from .const import DEFAULT_TIMEOUT, DEFAULT_USER_AGENT
 class GraphqlClient:
     """Class which represents the interface to make graphQL requests through."""
 
-    def __init__(self, endpoint: str, headers: dict[str, str] = {}, **kwargs: any):
+    def __init__(self, endpoint: str, headers: dict[str, str] = {}, **kwargs: Any):
         """Instantiate the client."""
         self.logger = logging.getLogger(__name__)
         self.endpoint = endpoint
@@ -20,8 +21,10 @@ class GraphqlClient:
         self.options = kwargs
 
     @staticmethod
-    def __request_body(query: str, variables: dict[str, any] = None, operation_name: str = None) -> dict[str, any]:
-        json: dict[str, any] = {"query": query}
+    def __request_body(
+        query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
+    ) -> dict[str, Any]:
+        json: dict[str, Any] = {"query": query}
 
         if variables:
             json.update({"variables": variables})
@@ -31,7 +34,7 @@ class GraphqlClient:
 
         return json
 
-    def execute(self, query: str, variables: dict[str, any] = None, operation_name: str = None, headers: dict[str, str] = {}):
+    def execute(self, query: str, variables: dict[str, Any] = None, operation_name: str = None, headers: dict[str, str] = {}):
         """Make synchronous request to graphQL server."""
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
@@ -49,7 +52,7 @@ class GraphqlClient:
         return result.json()
 
     async def execute_async(
-        self, query: str, variables: dict[str, any] = None, operation_name: str = None, headers: dict[str, str] = {}
+        self, query: str, variables: dict[str, Any] = None, operation_name: str = None, headers: dict[str, str] = {}
     ):
         """Make asynchronous request to graphQL server."""
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
@@ -69,16 +72,18 @@ class GraphqlClient:
     async def ha_execute_async(
         self,
         query: str,
-        variables: dict[str, any] = None,
-        operation_name: str = None,
+        variables: dict[str, Any] | None = None,
+        operation_name: str | None = None,
         headers: dict[str, str] = {},
-        session: aiohttp.ClientSession = None,
+        session: aiohttp.ClientSession | None = None,
     ):
         """Make asynchronous request to graphQL server."""
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
         if "user-agent" not in headers:
             headers["user-agent"] = DEFAULT_USER_AGENT
+        if session is None:
+            return await self.execute_async(query=query, variables=variables, operation_name=operation_name, headers=headers)
         async with session.post(self.endpoint, json=request_body, headers={**self.headers, **headers}) as response:
             try:
                 response.raise_for_status()
