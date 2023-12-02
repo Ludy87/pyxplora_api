@@ -746,6 +746,6 @@ class PyXploraApi(PyXplora):
         data = await self._gql_handler.setReadChatMsg_a(wuid, msgId, id)
         return data
 
-    async def refresh_token(self, wuid: str, refresh_token: str = ""):
+    async def refresh_token(self, wuid: str):
         data = await self._gql_handler.refresh_token_a(wuid, self._refresh_token)
         return data.get("refreshToken", None)
