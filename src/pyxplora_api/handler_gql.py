@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import Any
 
-from pyxplora_api.exception_classes import HandlerException
+from .exception_classes import HandlerException
 
 if sys.version_info >= (3, 11):
     from datetime import UTC, datetime
