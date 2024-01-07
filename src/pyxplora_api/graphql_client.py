@@ -34,7 +34,13 @@ class GraphqlClient:
 
         return json
 
-    def execute(self, query: str, variables: dict[str, Any] = None, operation_name: str = None, headers: dict[str, str] = {}):
+    def execute(
+        self,
+        query: str,
+        variables: dict[str, Any] | None = None,
+        operation_name: str | None = None,
+        headers: dict[str, str] = {},
+    ):
         """Make synchronous request to graphQL server."""
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
@@ -52,7 +58,11 @@ class GraphqlClient:
         return result.json()
 
     async def execute_async(
-        self, query: str, variables: dict[str, Any] = None, operation_name: str = None, headers: dict[str, str] = {}
+        self,
+        query: str,
+        variables: dict[str, Any] | None = None,
+        operation_name: str | None = None,
+        headers: dict[str, str] = {},
     ):
         """Make asynchronous request to graphQL server."""
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)

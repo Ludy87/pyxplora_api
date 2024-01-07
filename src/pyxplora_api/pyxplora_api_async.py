@@ -27,6 +27,10 @@ LIST_DICT: list[dict[str, Any]] = []
 
 
 class PyXploraApi(PyXplora):
+    inter_error: dict[str, Any] | None = None
+    _refresh_token: str | None = None
+    _issueToken: dict[str, Any] | None = None
+
     def __init__(
         self,
         countrycode: str = "",
@@ -34,18 +38,19 @@ class PyXploraApi(PyXplora):
         password: str = "",
         userLang: str = "",
         timeZone: str = "",
-        childPhoneNumber: list[str] = None,
+        childPhoneNumber: list[str] | None = None,
         wuid: str | list | None = None,
         email: str | None = None,
         sign_up: bool = True,
-        session: aiohttp.ClientSession = None,
+        session: aiohttp.ClientSession | None = None,
     ) -> None:
+        self.inter_error = None
         super().__init__(countrycode, phoneNumber, password, userLang, timeZone, childPhoneNumber, wuid, email)
         self._gql_handler: GQLHandler = GQLHandler(
             self._countrycode, self._phoneNumber, self._password, self._userLang, self._timeZone, self._email, sign_up, session
         )
 
-    async def _login(self, force_login: bool = False, key=None, sec=None) -> dict[str, Any]:
+    async def _login(self, force_login: bool = False, key=None, sec=None) -> tuple[dict[str, Any] | None, str | None]:
         if not self._isConnected() or self._hasTokenExpired() or force_login:
             retryCounter = 0
             while not self._isConnected() and (retryCounter < self.maxRetries + 2):
@@ -81,29 +86,40 @@ class PyXploraApi(PyXplora):
                 # print("Current Time =", current_time)
                 # print(self.error_message)
                 raise LoginError(self.error_message)
-            self.init(forceLogin, signup, key, sec)
+            return await self.init(forceLogin, signup, key, sec)
 
-        user = token.get("user", None)
-        if not user:
-            raise LoginError(self.error_message)
+        if isinstance(token, dict):
+            user = token.get("user", None)
+            if not user:
+                raise LoginError(self.error_message)
 
-        children = user.get("children", [])
-        if not self._childPhoneNumber:
-            self.watchs = children
-        else:
-            self.watchs = [watch for watch in children if watch["ward"]["phoneNumber"] in self._childPhoneNumber]
-        self.user = user
+            children = user.get("children", [])
+            if not self._childPhoneNumber:
+                self.watchs = children
+            else:
+                self.watchs = [watch for watch in children if watch["ward"]["phoneNumber"] in self._childPhoneNumber]
+            self.user = user
 
     @staticmethod
     def version() -> str:
         return f"{VERSION}-{VERSION_APP}"
 
     async def setDevices(self, ids: str | list[str] | None = None) -> list[str]:
+        if self.inter_error is not None:
+            self.__init__(
+                countrycode=self._countrycode,
+                phoneNumber=self._phoneNumber,
+                password=self._password,
+                userLang=self._userLang,
+                timeZone=self._timeZone,
+                email=self._email,
+            )
+            await self.init()
         if isinstance(ids, str):
             ids = [ids]
         return await self._setDevices(ids or [])
 
-    async def _setDevices(self, ids: list[str] = None) -> list[str]:
+    async def _setDevices(self, ids: list[str] | None = None) -> list[str]:
         wuids = ids if ids else self.getWatchUserIDs()
         tasks = [self._setDevice(wuid) for wuid in wuids]
         await asyncio.gather(*tasks)
@@ -182,10 +198,10 @@ class PyXploraApi(PyXplora):
                     contactUser = contact.get("contactUser", {})
                     if contactUser:
                         xcoin = contactUser.get("xcoin", -1)
-                        id = contactUser.get("id", None)
+                        _id = contactUser.get("id", None)
                         contacts.append(
                             {
-                                "id": id,
+                                "id": _id,
                                 "guardianType": contact["guardianType"],
                                 "create": datetime.fromtimestamp(contact["create"]).strftime("%Y-%m-%d %H:%M:%S"),
                                 "update": datetime.fromtimestamp(contact["update"]).strftime("%Y-%m-%d %H:%M:%S"),
@@ -237,6 +253,9 @@ class PyXploraApi(PyXplora):
                     await self.askWatchLocate(wuid)
                     await asyncio.sleep(1)
                 location_raw = await self._gql_handler.getWatchLastLocation_a(wuid)
+                if location_raw.get("message", None):
+                    # _LOGGER.error(location_raw)
+                    self.inter_error = location_raw
                 _watch_last_locate = location_raw.get("watchLastLocate", {})
                 if not _watch_last_locate:
                     return watch_location
@@ -415,7 +434,7 @@ class PyXploraApi(PyXplora):
         return ChatsNew.from_dict(chats_new, infer_missing=True) if asObject else chats_new
 
     ##### Watch Location Info #####
-    async def getWatchLastLocation(self, wuid: str, withAsk: bool = False) -> dict[str, Any]:
+    async def getWatchLastLocation(self, wuid: str) -> dict[str, Any]:
         tasks = [self.loadWatchLocation(wuid)]
         results = await asyncio.gather(*tasks)
         if results:
@@ -649,8 +668,8 @@ class PyXploraApi(PyXplora):
     async def conv360IDToO2OID(self, qid: str, deviceId: str) -> dict[str, Any]:
         return await self._gql_handler.conv360IDToO2OID_a(qid, deviceId)
 
-    async def campaigns(self, id: str, categoryId: str) -> dict[str, Any]:
-        return await self._gql_handler.campaigns_a(id, categoryId)
+    async def campaigns(self, _id: str, categoryId: str) -> dict[str, Any]:
+        return await self._gql_handler.campaigns_a(_id, categoryId)
 
     async def getCountries(self) -> list[dict[str, str]]:
         countries: dict[str, Any] = await self._gql_handler.countries_a()
@@ -662,14 +681,14 @@ class PyXploraApi(PyXplora):
     async def watchesDynamic(self) -> dict[str, Any]:
         return await self._gql_handler.watchesDynamic_a()
 
-    async def watchGroups(self, id: str = "") -> dict[str, Any]:
-        return await self._gql_handler.watchGroups_a(id)
+    async def watchGroups(self, _id: str = "") -> dict[str, Any]:
+        return await self._gql_handler.watchGroups_a(_id)
 
     async def familyInfo(self, wuid: str, watchId: str, tz: str, date: int) -> dict[str, Any]:
         return await self._gql_handler.familyInfo_a(wuid, watchId, tz, date)
 
-    async def avatars(self, id: str) -> dict[str, Any]:
-        return await self._gql_handler.avatars_a(id)
+    async def avatars(self, _id: str) -> dict[str, Any]:
+        return await self._gql_handler.avatars_a(_id)
 
     async def getWatchUserSteps(self, wuid: str, date: int) -> dict[str, Any]:
         userSteps = await self._gql_handler.getWatchUserSteps_a(wuid=wuid, tz=self._timeZone, date=date)
@@ -742,8 +761,8 @@ class PyXploraApi(PyXplora):
             return data.get("fetchChatShortVideoCover")
         return None
 
-    async def set_read_chat_msg(self, wuid: str, msgId: str = "", id: str = ""):
-        data = await self._gql_handler.setReadChatMsg_a(wuid, msgId, id)
+    async def set_read_chat_msg(self, wuid: str, msgId: str = "", _id: str = ""):
+        data = await self._gql_handler.setReadChatMsg_a(wuid, msgId, _id)
         return data
 
     async def refresh_token(self, wuid: str):

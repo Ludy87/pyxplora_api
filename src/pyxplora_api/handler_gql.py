@@ -33,7 +33,7 @@ class HandlerGQL:
     accessToken: Any = None  # noqa: N815
     sessionId = None  # noqa: N815
     userId = None  # noqa: N815
-    issueToken: dict[str, Any] = None  # noqa: N815
+    issueToken: dict[str, Any] | None = None  # noqa: N815
     errors: list[Any] = []
 
     def __init__(
@@ -43,7 +43,7 @@ class HandlerGQL:
         password: str,
         userLang: str,
         timeZone: str,
-        email: str = None,
+        email: str | None = None,
         signup: bool = True,
     ) -> None:
         """Initializes the class with the given parameters.

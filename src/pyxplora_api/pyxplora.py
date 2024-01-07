@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from time import time
 from typing import Any
 
-from .exception_classes import ChildNoError, XTypeError
+from .exception_classes import ChildNoError, ErrorMSG, XTypeError
 
 
 class PyXplora:
@@ -21,7 +21,7 @@ class PyXplora:
     """
 
     _gql_handler: Any = None
-    error_message = ""
+    error_message: str | ErrorMSG = ""
     tokenExpiresAfter = 240  # noqa: N815
     maxRetries = 3  # noqa: N815
     retryDelay = 2  # noqa: N815
@@ -35,7 +35,7 @@ class PyXplora:
         password: str,
         userLang: str,
         timeZone: str,
-        childPhoneNumber: list[str] = None,
+        childPhoneNumber: list[str] | None = None,
         wuid: str | list | None = None,
         email: str | None = None,
     ) -> None:
@@ -84,7 +84,7 @@ class PyXplora:
             None
         """
         self.user: dict[Any, Any] = {}
-        self._issueToken: dict[Any, Any] = {}
+        self._issueToken: dict[str, Any] | None = None
 
     def _hasTokenExpired(self) -> bool:
         """Check if the token has expired.
