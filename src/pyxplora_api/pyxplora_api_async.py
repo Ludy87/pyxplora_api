@@ -29,7 +29,7 @@ LIST_DICT: list[dict[str, Any]] = []
 class PyXploraApi(PyXplora):
     inter_error: dict[str, Any] | None = None
     _refresh_token: str | None = None
-    _issueToken: dict[str, Any] | None = None
+    _issueToken: dict[str, Any] | None = None  # noqa: N815
 
     def __init__(
         self,
