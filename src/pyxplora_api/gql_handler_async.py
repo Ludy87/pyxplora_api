@@ -255,7 +255,9 @@ class GQLHandler(HandlerGQL):
             )
         ).get("data", {})
 
-    async def getWatchLocHistory_a(self, wuid: str, date: int | None = None, tz: str | None = None, limit: int = 1) -> dict[str, Any]:
+    async def getWatchLocHistory_a(
+        self, wuid: str, date: int | None = None, tz: str | None = None, limit: int = 1
+    ) -> dict[str, Any]:
         return (
             await self.runGqlQuery_a(
                 gq.WATCH_Q.get("locHistoryQ", ""), {"uid": wuid, "date": date, "tz": tz, "limit": limit}, "LocHistory"
