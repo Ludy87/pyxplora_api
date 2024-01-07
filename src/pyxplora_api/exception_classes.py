@@ -14,6 +14,7 @@ class ErrorMSG(Enum):
 
 class Error(Exception):
     """Base class for all Exceptions."""
+
     def __init__(self, message: str = ""):
         self.message = message
         super().__init__(self.message)
@@ -21,6 +22,7 @@ class Error(Exception):
 
 class HandlerException(Error):
     """Base class for all HandlerExceptions."""
+
     def __str__(self) -> str:
         return f"HandlerException: {self.message}"
 
