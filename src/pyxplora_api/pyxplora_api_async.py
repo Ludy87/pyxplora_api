@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime
+import json
 import logging
 from time import time
 from typing import Any
@@ -404,12 +405,26 @@ class PyXploraApi(PyXplora):
         while not chats_new and retry_counter < self.maxRetries + 2:
             retry_counter += 1
             try:
-                result = await self._gql_handler.chats_a(wuid, offset, limit, msgId, asObject)
+                result: dict[str, Any] | Chats | ChatsNew | str | None = await self._gql_handler.chats_a(
+                    wuid, offset, limit, msgId, asObject
+                )
+
                 if not result:
                     continue
+
+                if result == "":
+                    result = ChatsNew()
+
+                if isinstance(result, str):
+                    result = json.loads(result)
+
                 if isinstance(result, dict):
-                    result = ChatsNew.from_dict(result.get("chatsNew", None))
-                elif isinstance(result, Chats):
+                    if result.get("chatsNew", None):
+                        result = ChatsNew.from_dict(result.get("chatsNew", None))
+                    else:
+                        result = ChatsNew()
+
+                if isinstance(result, Chats):
                     result = result.chatsNew
 
                 if result is None:
@@ -420,8 +435,6 @@ class PyXploraApi(PyXplora):
                         d.data.emoji_id = d.data.emoticon_id
                         d.data.emoticon_id = Emoji[f"M{d.data.emoticon_id}"].value
                         await self.set_read_chat_msg(wuid, d.msgId, d.id)
-
-                result = ChatsNew.from_dict(result)
 
                 filtered_chats = [chat for chat in result.list if show_del_msg or chat.data.delete_flag == 0]
                 chats_new = ChatsNew(filtered_chats).to_dict()
