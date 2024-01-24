@@ -11,7 +11,7 @@ from .const import API_KEY, API_SECRET, ENDPOINT
 from .exception_classes import ErrorMSG, HandlerException, LoginError, NoAdminError
 from .graphql_client import GraphqlClient
 from .handler_gql import HandlerGQL
-from .model import Chats
+from .model import Chats, ChatsNew
 from .status import EmailAndPhoneVerificationTypeV2, NormalStatus, UserContactType
 
 _LOGGER = logging.getLogger(__name__)
@@ -205,7 +205,7 @@ class GQLHandler(HandlerGQL):
 
     async def chats_a(
         self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", asObject=False
-    ) -> dict[str, Any] | Chats:
+    ) -> dict[str, Any] | Chats | ChatsNew | str | None:
         # ownUser id
         res: dict = await self.runGqlQuery_a(
             gq.WATCH_Q.get("chatsQ", ""), {"uid": wuid, "offset": offset, "limit": limit, "msgId": msgId}, "Chats"
