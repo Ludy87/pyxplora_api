@@ -427,9 +427,12 @@ class GQLHandler(HandlerGQL):
 
     async def sendText_a(self, wuid: str, text: str) -> bool:
         # ownUser id
-        if (await self.runGqlQuery_a(gm.WATCH_M.get("sendChatTextM", ""), {"uid": wuid, "text": text}, "SendChatText")).get(
-            "data", {}
-        )["sendChatText"] is not None:
+        result = await self.runGqlQuery_a(gm.WATCH_M.get("sendChatTextM", ""), {"uid": wuid, "text": text}, "SendChatText")
+        errors = result.get("errors", None)
+        if errors is not None:
+            for error in errors:
+                _LOGGER.error(error)
+        if result.get("data", {})["sendChatText"] is not None:
             return True
         return False
 
