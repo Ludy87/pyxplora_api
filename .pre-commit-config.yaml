@@ -22,6 +22,15 @@ repos:
         args:
           - --fix
           - --line-length=127
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.1
+    hooks:
+      - id: autoflake
+        args:
+          - "--in-place"
+          - "--remove-duplicate-keys"
+          - "--remove-unused-variables"
+          - "--remove-all-unused-imports"
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 24.1.1
     hooks:
@@ -56,7 +65,7 @@ repos:
         exclude_types: [json]
       - id: forbid-new-submodules
       - id: mixed-line-ending
-        args: [--fix=crlf]
+        args: [--fix=lf]
         exclude_types: [png,yaml]
         exclude: \.md$
       - id: trailing-whitespace
