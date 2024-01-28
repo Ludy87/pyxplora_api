@@ -42,8 +42,8 @@ class User(DataClassJsonMixin):
 @dataclass_json
 @dataclass
 class Data(DataClassJsonMixin):
-    tm: int
-    sender_name: str
+    tm: Union[int, str, None] = None
+    sender_name: Union[str, None] = None
     text: Union[str, None] = None
     Text: Union[str, None] = None
     battery: Union[int, None] = None
