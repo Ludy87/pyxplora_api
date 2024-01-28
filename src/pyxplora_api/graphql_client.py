@@ -1,4 +1,5 @@
 """Module containing graphQL client."""
+
 from __future__ import annotations
 
 import logging
