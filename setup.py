@@ -1,4 +1,5 @@
 """setup."""
+
 import configparser
 
 import setuptools
