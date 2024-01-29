@@ -275,7 +275,7 @@ class PyXploraApi(PyXplora):
                 )
                 _is_in_safe_zone = _watch_last_locate.get("isInSafeZone", False)
                 _safe_zone_label = _watch_last_locate.get("safeZoneLabel", "")
-                _watch_battery = _watch_last_locate.get("battery", -1)
+                _watch_battery = _watch_last_locate.get("battery", None)
                 _watch_charging = _watch_last_locate.get("isCharging", False)
 
                 watch_location = {
