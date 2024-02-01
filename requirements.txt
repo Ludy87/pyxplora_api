@@ -1,4 +1,4 @@
-aiohttp==3.9.1
+aiohttp==3.9.3
 dataclasses-json==0.6.3
 python-graphql-client==0.4.3
 requests==2.31.0
