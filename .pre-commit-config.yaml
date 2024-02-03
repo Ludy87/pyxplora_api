@@ -11,7 +11,7 @@ ci:
   submodules: false
 
 default_language_version:
-    python: python3.9
+  python: python3.9
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -53,8 +53,8 @@ repos:
     hooks:
       - id: check-ast
       - id: check-yaml
-      # - id: check-json
-      #   exclude: (.vscode|.devcontainer)
+      - id: check-json
+        exclude: (.vscode|.devcontainer)
       - id: check-added-large-files
         args: [--maxkb=800]
       - id: debug-statements
@@ -66,11 +66,20 @@ repos:
       - id: forbid-new-submodules
       - id: mixed-line-ending
         args: [--fix=lf]
-        exclude_types: [png,yaml]
+        exclude_types: [png, yaml]
         exclude: \.md$
       - id: trailing-whitespace
       # - id: pretty-format-json
       #   args: [--autofix,--no-ensure-ascii]
+      - id: check-executables-have-shebangs
+        stages: [manual]
+      - id: check-case-conflict
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        exclude_types: [json]
+        exclude: \.md$
   - repo: https://github.com/cdce8p/python-typing-update
     rev: v0.6.0
     hooks:
@@ -86,7 +95,7 @@ repos:
           - --keep-updates
         files: ^(src|tests|sample)/.+\.py$
         additional_dependencies:
-          - black==23.9.1
+          - black==24.1.1
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.0
     hooks:
