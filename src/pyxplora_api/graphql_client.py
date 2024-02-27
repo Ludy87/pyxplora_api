@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Optional, Any
 
 import aiohttp
 import requests
@@ -14,8 +14,9 @@ from .const import DEFAULT_TIMEOUT, DEFAULT_USER_AGENT
 class GraphqlClient:
     """Class which represents the interface to make graphQL requests through."""
 
-    def __init__(self, endpoint: str, headers: dict[str, str] = {}, **kwargs: Any):
+    def __init__(self, endpoint: str, headers: Optional[dict[str, str]] = None, **kwargs: Any):
         """Instantiate the client."""
+        headers = {} if headers is None else headers
         self.logger = logging.getLogger(__name__)
         self.endpoint = endpoint
         self.headers = headers
@@ -40,9 +41,10 @@ class GraphqlClient:
         query: str,
         variables: dict[str, Any] | None = None,
         operation_name: str | None = None,
-        headers: dict[str, str] = {},
+        headers: Optional[dict[str, str]] = None,
     ):
         """Make synchronous request to graphQL server."""
+        headers = {} if headers is None else headers
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
         if "user-agent" not in headers:
@@ -63,9 +65,10 @@ class GraphqlClient:
         query: str,
         variables: dict[str, Any] | None = None,
         operation_name: str | None = None,
-        headers: dict[str, str] = {},
+        headers: Optional[dict[str, str]] = None,
     ):
         """Make asynchronous request to graphQL server."""
+        headers = {} if headers is None else headers
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
         if "user-agent" not in headers:
@@ -85,10 +88,11 @@ class GraphqlClient:
         query: str,
         variables: dict[str, Any] | None = None,
         operation_name: str | None = None,
-        headers: dict[str, str] = {},
+        headers: Optional[dict[str, str]] = None,
         session: aiohttp.ClientSession | None = None,
     ):
         """Make asynchronous request to graphQL server."""
+        headers = {} if headers is None else headers
         request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
         if "user-agent" not in headers:

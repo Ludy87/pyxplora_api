@@ -40,7 +40,8 @@ class NoAdminError(Error):
 class ChildNoError(Error):
     """Exception raised when a child's phone number or watch ID is not found."""
 
-    def __init__(self, error_message=["Child phonenumber", "Watch ID"]) -> None:
+    def __init__(self, error_message=None) -> None:
+        error_message = ["Child phonenumber", "Watch ID"] if error_message is None else error_message
         self.error_message = error_message
         super().__init__()
 

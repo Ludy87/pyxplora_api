@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 import logging
 from time import time
-from typing import Any
+from typing import Optional, Any
 
 from .const_version import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
@@ -578,12 +578,14 @@ class PyXploraApi(PyXplora):
                 self.delay(self.retryDelay)
         return watch
 
-    def getSWInfo(self, wuid: str, watches: dict[str, Any] = {}) -> dict[str, Any]:
+    def getSWInfo(self, wuid: str, watches: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+        watches = {} if watches is None else watches
         wqr: dict[str, Any] = watches if watches else self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return self._gql_handler.getSWInfo(qrCode.split("=")[1])
 
-    def getWatchState(self, wuid: str, watches: dict[str, Any] = {}) -> dict[str, Any]:
+    def getWatchState(self, wuid: str, watches: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+        watches = {} if watches is None else watches
         wqr: dict[str, Any] = watches if watches else self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return self._gql_handler.getWatchState(qrCode=qrCode.split("=")[1])
