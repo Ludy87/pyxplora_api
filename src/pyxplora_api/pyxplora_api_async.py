@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 import logging
 from time import time
-from typing import Any
+from typing import Optional, Any
 
 import aiohttp
 
@@ -668,12 +668,14 @@ class PyXploraApi(PyXplora):
                 await asyncio.sleep(self.retryDelay)
         return watch
 
-    async def getSWInfo(self, wuid: str, watches: dict[str, Any] = {}) -> dict[str, Any]:
+    async def getSWInfo(self, wuid: str, watches: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+        watches = {} if watches is None else watches
         wqr: dict[str, Any] = watches if watches else await self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return await self._gql_handler.getSWInfo_a(qrCode.split("=")[1])
 
-    async def getWatchState(self, wuid: str, watches: dict[str, Any] = {}) -> dict[str, Any]:
+    async def getWatchState(self, wuid: str, watches: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+        watches = {} if watches is None else watches
         wqr: dict[str, Any] = watches if watches else await self.getWatches(wuid=wuid)
         qrCode: str = wqr.get("qrCode", "=")
         return await self._gql_handler.getWatchState_a(qrCode=qrCode.split("=")[1])
