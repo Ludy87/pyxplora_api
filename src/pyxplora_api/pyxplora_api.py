@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 import logging
 from time import time
-from typing import Optional, Any
+from typing import Any, Optional
 
 from .const_version import VERSION, VERSION_APP
 from .exception_classes import Error, ErrorMSG, LoginError, NoAdminError
