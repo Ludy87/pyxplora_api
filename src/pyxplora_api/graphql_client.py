@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
 
 import aiohttp
 import requests
