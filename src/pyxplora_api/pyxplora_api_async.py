@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 import logging
 from time import time
-from typing import Optional, Any
+from typing import Any, Optional
 
 import aiohttp
 
