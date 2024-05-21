@@ -2,4 +2,4 @@ aiohttp==3.9.5
 dataclasses-json==0.6.4
 geopy==2.4.1
 python-graphql-client==0.4.3
-requests==2.31.0
+requests==2.32.0
