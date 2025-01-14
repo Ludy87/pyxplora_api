@@ -10,3 +10,8 @@ updates:
     labels:
       - "in progress"
       - "dependencies"
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: daily
