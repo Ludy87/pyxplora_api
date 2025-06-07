@@ -58,7 +58,7 @@ class GQLHandler(HandlerGQL):
             Exception: If the query string is empty.
         """
         if query is None:
-            raise HandlerException("GraphQL guery string MUST NOT be empty!")
+            raise HandlerException("GraphQL query string MUST NOT be empty!")
         # Add Xplora® API headers
         requestHeaders = self.getRequestHeaders("application/json; charset=UTF-8")
         # create GQLClient

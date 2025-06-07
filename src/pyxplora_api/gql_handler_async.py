@@ -41,7 +41,7 @@ class GQLHandler(HandlerGQL):
         operation_name: str | None = None,
     ) -> dict[str, Any]:
         if query is None:
-            raise HandlerException("GraphQL guery string MUST NOT be empty!")
+            raise HandlerException("GraphQL query string MUST NOT be empty!")
         # Add Xplora® API headers
         requestHeaders = self.getRequestHeaders("application/json; charset=UTF-8")
         # create GQLClient
