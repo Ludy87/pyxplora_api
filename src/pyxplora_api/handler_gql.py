@@ -114,7 +114,9 @@ class HandlerGQL:
 
         authorizationHeader = ""
 
-        if (self.accessToken is None or not self.issueToken) and self._API_KEY == API_KEY:
+        if (
+            self.accessToken is None or not self.issueToken
+        ) and self._API_KEY == API_KEY:
             # OPEN authorization
             authorizationHeader = f"Open {self._API_KEY}:{self._API_SECRET}"
         # else:
@@ -123,9 +125,7 @@ class HandlerGQL:
             w360: dict = self.issueToken.get("w360", None)
             if w360:
                 if w360.get("token") and w360.get("secret"):
-                    authorizationHeader = (
-                        f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
-                    )
+                    authorizationHeader = f'Bearer {w360.get("token", self.accessToken)}:{w360.get("secret", self._API_SECRET)}'
                     self._API_KEY = w360.get("token", API_KEY)
                     self._API_SECRET = w360.get("secret", API_SECRET)
             else:

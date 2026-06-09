@@ -39,10 +39,15 @@ class GQLHandler(HandlerGQL):
         email: str | None = None,
         signup: bool = True,
     ) -> None:
-        super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone, email, signup)
+        super().__init__(
+            countryPhoneNumber, phoneNumber, password, userLang, timeZone, email, signup
+        )
 
     def runGqlQuery(
-        self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
+        self,
+        query: str,
+        variables: dict[str, Any] | None = None,
+        operation_name: str | None = None,
     ) -> dict[str, Any]:
         """Execute a GraphQL query or mutation.
 
@@ -64,11 +69,16 @@ class GQLHandler(HandlerGQL):
         # create GQLClient
         gqlClient = GraphqlClient(endpoint=ENDPOINT, headers=requestHeaders)
         # execute QUERY|MUTATION
-        data: dict[str, Any] = gqlClient.execute(query=query, variables=variables, operation_name=operation_name)
+        data: dict[str, Any] = gqlClient.execute(
+            query=query, variables=variables, operation_name=operation_name
+        )
         return data
 
     def runAuthorizedGqlQuery(
-        self, query: str, variables: dict[str, Any] | None = None, operation_name: str | None = None
+        self,
+        query: str,
+        variables: dict[str, Any] | None = None,
+        operation_name: str | None = None,
     ) -> dict[str, Any]:
         """This function executes a GraphQL query that requires authorization.
 
@@ -99,7 +109,11 @@ class GQLHandler(HandlerGQL):
             the user is stored in the `Client` instance's `issueToken`, `sessionId`, `userId`, and `accessToken`
             properties.
         """
-        dataAll = self.runGqlQuery(gm.SIGN_M.get("signInWithEmailOrPhoneM", ""), self.variables, "signInWithEmailOrPhone")
+        dataAll = self.runGqlQuery(
+            gm.SIGN_M.get("signInWithEmailOrPhoneM", ""),
+            self.variables,
+            "signInWithEmailOrPhone",
+        )
         if dataAll is None:
             return
         errors = dataAll.get("errors", None)
@@ -108,7 +122,9 @@ class GQLHandler(HandlerGQL):
         data = dataAll.get("data", {})
         signIn = data.get("signInWithEmailOrPhone", None)
         if signIn is None:
-            error_message = dataAll.get("errors", [{"message": ""}])[0].get("message", "")
+            error_message = dataAll.get("errors", [{"message": ""}])[0].get(
+                "message", ""
+            )
             raise LoginError(f"Login error: {error_message}")
 
         self.issueToken = signIn
@@ -118,7 +134,9 @@ class GQLHandler(HandlerGQL):
 
         return self.issueToken
 
-    def isAdmin(self, wuid: str, query: str, variables: dict[str, Any], key: str) -> bool:
+    def isAdmin(
+        self, wuid: str, query: str, variables: dict[str, Any], key: str
+    ) -> bool:
         """This method determines whether the currently logged-in user is an admin for the specified watch user.
 
         Args:
@@ -142,7 +160,9 @@ class GQLHandler(HandlerGQL):
                 id = None
             if self.userId == id:
                 if contact["guardianType"] == "FIRST":
-                    data: dict[str, Any] = self.runAuthorizedGqlQuery(query, variables, key).get("data", {})
+                    data: dict[str, Any] = self.runAuthorizedGqlQuery(
+                        query, variables, key
+                    ).get("data", {})
                     for k in data:
                         if k.upper() == key.upper():
                             return data.get(k, False)
@@ -159,7 +179,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: A dictionary containing the response of the query, with a key "askWatchLocate".
         """
-        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("askLocateQ", ""), {"uid": wuid}, "AskWatchLocate")
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("askLocateQ", ""), {"uid": wuid}, "AskWatchLocate"
+        )
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "askWatchLocate", "errors": errors})
@@ -177,7 +199,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: A dictionary containing the response of the query.
         """
-        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("contactsQ", ""), {"uid": wuid}, "Contacts")
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("contactsQ", ""), {"uid": wuid}, "Contacts"
+        )
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatchUserContacts", "errors": errors})
@@ -192,7 +216,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: A dictionary containing the response of the query.
         """
-        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("watchesQ", ""), {"uid": wuid}, "Watches")
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("watchesQ", ""), {"uid": wuid}, "Watches"
+        )
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatches", "errors": errors})
@@ -208,14 +234,18 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: A dictionary containing the response of the query.
         """
         data: dict[str, Any] = self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("checkByQrCodeQ", ""), {"qrCode": qrCode}, "CheckWatchByQrCode"
+            gq.WATCH_Q.get("checkByQrCodeQ", ""),
+            {"qrCode": qrCode},
+            "CheckWatchByQrCode",
         )
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getSWInfo", "errors": errors})
         return data.get("data", {})
 
-    def getWatchState(self, qrCode: str, qrt: str = "", qrc: str = "") -> dict[str, Any]:
+    def getWatchState(
+        self, qrCode: str, qrt: str = "", qrc: str = ""
+    ) -> dict[str, Any]:
         """Get the state of a watch using its QR code.
 
         Args:
@@ -233,7 +263,9 @@ class GQLHandler(HandlerGQL):
             variables["qrt"] = qrt
         if qrc:
             variables["qrc"] = qrc
-        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("stateQ", ""), variables, "WatchState")
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("stateQ", ""), variables, "WatchState"
+        )
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatchState", "errors": errors})
@@ -248,7 +280,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: A dictionary containing the response of the query.
         """
-        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("locateQ", ""), {"uid": wuid}, "WatchLastLocate")
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("locateQ", ""), {"uid": wuid}, "WatchLastLocate"
+        )
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatchLastLocation", "errors": errors})
@@ -263,7 +297,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: A dictionary containing the response of the query.
         """
-        data: dict[str, Any] = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("trackQ", ""), {"uid": wuid}, "TrackWatch")
+        data: dict[str, Any] = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("trackQ", ""), {"uid": wuid}, "TrackWatch"
+        )
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "trackWatch", "errors": errors})
@@ -281,7 +317,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the response of the query.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("alarmsQ", ""), {"uid": wuid}, "Alarms").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("alarmsQ", ""), {"uid": wuid}, "Alarms"
+        ).get("data", {})
 
     def getWifi(self, wuid: str) -> dict[str, Any]:
         """Get the Wi-Fi information of a watch.
@@ -292,7 +330,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the response of the query.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("getWifisQ", ""), {"uid": wuid}, "GetWifis").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("getWifisQ", ""), {"uid": wuid}, "GetWifis"
+        ).get("data", {})
 
     def unReadChatMsgCount(self, wuid: str) -> dict[str, Any]:
         """Get the count of unread chat messages for a watch.
@@ -303,9 +343,11 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the response of the query.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("unReadChatMsgCountQ", ""), {"uid": wuid}, "UnReadChatMsgCount").get(
-            "data", {}
-        )
+        return self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("unReadChatMsgCountQ", ""),
+            {"uid": wuid},
+            "UnReadChatMsgCount",
+        ).get("data", {})
 
     def safeZones(self, wuid: str) -> dict[str, Any]:
         """Get the safe zones for a watch.
@@ -316,7 +358,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the response of the query.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("safeZonesQ", ""), {"uid": wuid}, "SafeZones").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("safeZonesQ", ""), {"uid": wuid}, "SafeZones"
+        ).get("data", {})
 
     def safeZoneGroups(self) -> dict[str, Any]:
         """Get the safe zone groups.
@@ -324,7 +368,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the response of the query.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("safeZoneGroupsQ", ""), {}, "SafeZoneGroups").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("safeZoneGroupsQ", ""), {}, "SafeZoneGroups"
+        ).get("data", {})
 
     def silentTimes(self, wuid: str) -> dict[str, Any]:
         """Get the silent times for a watch.
@@ -335,9 +381,18 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the response of the query.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("silentTimesQ", ""), {"uid": wuid}, "SlientTimes").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("silentTimesQ", ""), {"uid": wuid}, "SlientTimes"
+        ).get("data", {})
 
-    def chats(self, wuid: str, offset: int = 0, limit: int = 0, msgId: str = "", asObject=False) -> dict[str, Any]:
+    def chats(
+        self,
+        wuid: str,
+        offset: int = 0,
+        limit: int = 0,
+        msgId: str = "",
+        asObject=False,
+    ) -> dict[str, Any]:
         """Get the chat messages for a watch.
 
         Args:
@@ -351,7 +406,9 @@ class GQLHandler(HandlerGQL):
             Union[dict, Chats]: A dictionary containing the response of the query or a Chats object if asObject is True.
         """
         res: dict = self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("chatsQ", ""), {"uid": wuid, "offset": offset, "limit": limit, "msgId": msgId}, "Chats"
+            gq.WATCH_Q.get("chatsQ", ""),
+            {"uid": wuid, "offset": offset, "limit": limit, "msgId": msgId},
+            "Chats",
         )
         if res.get("errors", None) or res.get("data", None) is None:
             if asObject:
@@ -373,7 +430,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data of the image.
         """
         return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("fetchChatImageQ", ""), {"uid": wuid, "msgId": msgId}, "FetchChatImage"
+            gq.WATCH_Q.get("fetchChatImageQ", ""),
+            {"uid": wuid, "msgId": msgId},
+            "FetchChatImage",
         ).get("data", {})
 
     def fetchChatMp3(self, wuid: str, msgId: str) -> dict[str, Any]:
@@ -387,7 +446,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data of the mp3.
         """
         return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("fetchChatMp3Q", ""), {"uid": wuid, "msgId": msgId}, "FetchChatMp3"
+            gq.WATCH_Q.get("fetchChatMp3Q", ""),
+            {"uid": wuid, "msgId": msgId},
+            "FetchChatMp3",
         ).get("data", {})
 
     def fetchChatShortVideo(self, wuid: str, msgId: str) -> dict[str, Any]:
@@ -401,7 +462,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data of the short video.
         """
         return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("fetchChatShortVideoQ", ""), {"uid": wuid, "msgId": msgId}, "FetchChatShortVideo"
+            gq.WATCH_Q.get("fetchChatShortVideoQ", ""),
+            {"uid": wuid, "msgId": msgId},
+            "FetchChatShortVideo",
         ).get("data", {})
 
     def fetchChatShortVideoCover(self, wuid: str, msgId: str) -> dict[str, Any]:
@@ -415,7 +478,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data of the short video cover.
         """
         return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("fetchChatShortVideoCoverQ", ""), {"uid": wuid, "msgId": msgId}, "FetchChatShortVideoCover"
+            gq.WATCH_Q.get("fetchChatShortVideoCoverQ", ""),
+            {"uid": wuid, "msgId": msgId},
+            "FetchChatShortVideoCover",
         ).get("data", {})
 
     def fetchChatVoice(self, wuid: str, msgId: str) -> dict[str, Any]:
@@ -429,7 +494,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data of the voice.
         """
         return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("fetchChatVoiceQ", ""), {"uid": wuid, "msgId": msgId}, "FetchChatVoice"
+            gq.WATCH_Q.get("fetchChatVoiceQ", ""),
+            {"uid": wuid, "msgId": msgId},
+            "FetchChatVoice",
         ).get("data", {})
 
     def watchImei(self, imei: str, qrCode: str, deviceKey: str) -> dict[str, Any]:
@@ -444,10 +511,14 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: Data for the watch with the given IMEI.
         """
         return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("imeiQ", ""), {"imei": imei, "qrCode": qrCode, "deviceKey": deviceKey}, "WatchImei"
+            gq.WATCH_Q.get("imeiQ", ""),
+            {"imei": imei, "qrCode": qrCode, "deviceKey": deviceKey},
+            "WatchImei",
         ).get("data", {})
 
-    def getWatchLocHistory(self, wuid: str, date: int, tz: str, limit: int) -> dict[str, Any]:
+    def getWatchLocHistory(
+        self, wuid: str, date: int, tz: str, limit: int
+    ) -> dict[str, Any]:
         """Retrieve the location history for a watch with a given WUID.
 
         Args:
@@ -460,7 +531,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: Location history for the watch with the given WUID.
         """
         return self.runAuthorizedGqlQuery(
-            gq.WATCH_Q.get("locHistoryQ", ""), {"uid": wuid, "date": date, "tz": tz, "limit": limit}, "LocHistory"
+            gq.WATCH_Q.get("locHistoryQ", ""),
+            {"uid": wuid, "date": date, "tz": tz, "limit": limit},
+            "LocHistory",
         ).get("data", {})
 
     def watchesDynamic(self) -> dict[str, Any]:
@@ -469,9 +542,13 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: Dynamic data for all watches.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCH_Q.get("watchesDynamicQ", ""), {}, "WatchesDynamic").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("watchesDynamicQ", ""), {}, "WatchesDynamic"
+        ).get("data", {})
 
-    def coinHistory(self, wuid: str, start: int, end: int, type: str, offset: int, limit: int) -> dict[str, Any]:
+    def coinHistory(
+        self, wuid: str, start: int, end: int, type: str, offset: int, limit: int
+    ) -> dict[str, Any]:
         """Retrieve coin history for a watch with a given WUID.
 
         Args:
@@ -487,7 +564,14 @@ class GQLHandler(HandlerGQL):
         """
         return self.runAuthorizedGqlQuery(
             gq.XCOIN_Q.get("historyQ", ""),
-            {"uid": wuid, "start": start, "end": end, "type": type, "offset": offset, "limit": limit},
+            {
+                "uid": wuid,
+                "start": start,
+                "end": end,
+                "type": type,
+                "offset": offset,
+                "limit": limit,
+            },
             "CoinHistory",
         ).get("data", {})
 
@@ -500,7 +584,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The reminder data for the given user.
         """
-        return self.runAuthorizedGqlQuery(gq.XMOVE_Q.get("remindersQ", ""), {"uid": wuid}, "Reminders").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.XMOVE_Q.get("remindersQ", ""), {"uid": wuid}, "Reminders"
+        ).get("data", {})
 
     def groups(self, isCampaign: bool) -> dict[str, Any]:
         """Get card group data.
@@ -511,9 +597,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The card group data.
         """
-        return self.runAuthorizedGqlQuery(gq.CARD_Q.get("groupsQ", ""), {"isCampaign": isCampaign}, "CardGroups").get(
-            "data", {}
-        )
+        return self.runAuthorizedGqlQuery(
+            gq.CARD_Q.get("groupsQ", ""), {"isCampaign": isCampaign}, "CardGroups"
+        ).get("data", {})
 
     def dynamic(self) -> dict[str, Any]:
         """Get dynamic card data.
@@ -521,7 +607,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The dynamic card data.
         """
-        return self.runAuthorizedGqlQuery(gq.CARD_Q.get("dynamicQ", ""), {}, "DynamicCards").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.CARD_Q.get("dynamicQ", ""), {}, "DynamicCards"
+        ).get("data", {})
 
     def staticCard(self) -> dict[str, Any]:
         """Get dynamic card data.
@@ -529,7 +617,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The dynamic card data.
         """
-        return self.runAuthorizedGqlQuery(gq.CARD_Q.get("staticQ", ""), {}, "StaticCard").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.CARD_Q.get("staticQ", ""), {}, "StaticCard"
+        ).get("data", {})
 
     def familyInfo(self, wuid: str, watchId: str, tz: str, date: int) -> dict[str, Any]:
         """Get family information for a given user.
@@ -544,11 +634,21 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The family information for the given user.
         """
         return self.runAuthorizedGqlQuery(
-            gq.FAMILY_Q.get("infoQ", ""), {"uid": wuid, "watchId": watchId, "tz": tz, "date": date}, "FamilyInfo"
+            gq.FAMILY_Q.get("infoQ", ""),
+            {"uid": wuid, "watchId": watchId, "tz": tz, "date": date},
+            "FamilyInfo",
         ).get("data", {})
 
     def getMyTotalInfo(
-        self, wuid: str, tz: str, date: int, start: int, end: int, type: str, offset: int, limit: int
+        self,
+        wuid: str,
+        tz: str,
+        date: int,
+        start: int,
+        end: int,
+        type: str,
+        offset: int,
+        limit: int,
     ) -> dict[str, Any]:
         """Retrieve total information for the given user.
 
@@ -567,12 +667,28 @@ class GQLHandler(HandlerGQL):
         """
         return self.runAuthorizedGqlQuery(
             gq.MYINFO_Q.get("getMyTotalInfoQ", ""),
-            {"uid": wuid, "tz": tz, "date": date, "start": start, "end": end, "type": type, "offset": offset, "limit": limit},
+            {
+                "uid": wuid,
+                "tz": tz,
+                "date": date,
+                "start": start,
+                "end": end,
+                "type": type,
+                "offset": offset,
+                "limit": limit,
+            },
             "GetMyTotalInfo",
         ).get("data", {})
 
     def myInfoWithCoinHistory(
-        self, wuid: str, start: int, end: int, tz: str, type: str, offset: int, limit: int
+        self,
+        wuid: str,
+        start: int,
+        end: int,
+        tz: str,
+        type: str,
+        offset: int,
+        limit: int,
     ) -> dict[str, Any]:
         """Retrieve information for the given user with coin history.
 
@@ -590,7 +706,15 @@ class GQLHandler(HandlerGQL):
         """
         return self.runAuthorizedGqlQuery(
             gq.MYINFO_Q.get("myInfoWithCoinHistoryQ", ""),
-            {"uid": wuid, "start": start, "end": end, "tz": tz, "type": type, "offset": offset, "limit": limit},
+            {
+                "uid": wuid,
+                "start": start,
+                "end": end,
+                "tz": tz,
+                "type": type,
+                "offset": offset,
+                "limit": limit,
+            },
             "MyInfoWithCoinHistory",
         ).get("data", {})
 
@@ -601,7 +725,9 @@ class GQLHandler(HandlerGQL):
             dict: Information retrieved for the logged in user, including the data field.
         """
         # Profil from login Account
-        return self.runAuthorizedGqlQuery(gq.MYINFO_Q.get("readQ", ""), {}, "ReadMyInfo").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.MYINFO_Q.get("readQ", ""), {}, "ReadMyInfo"
+        ).get("data", {})
 
     def readCampaignProfile(self, wuid: str) -> dict[str, Any]:
         """Retrieve campaign profile for the given user.
@@ -626,7 +752,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The review status data in dictionary format.
         """
-        return self.runAuthorizedGqlQuery(gq.REVIEW_Q.get("getStatusQ", ""), {"uid": wuid}, "GetReviewStatus").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.REVIEW_Q.get("getStatusQ", ""), {"uid": wuid}, "GetReviewStatus"
+        ).get("data", {})
 
     def getWatchUserSteps(self, wuid: str, tz: str, date: int) -> dict[str, Any]:
         """Get the step count data for a given user id.
@@ -640,7 +768,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The step count data in dictionary format.
         """
         data: dict[str, Any] = self.runAuthorizedGqlQuery(
-            gq.STEP_Q.get("userQ", ""), {"uid": wuid, "tz": tz, "date": date}, "UserSteps"
+            gq.STEP_Q.get("userQ", ""),
+            {"uid": wuid, "tz": tz, "date": date},
+            "UserSteps",
         )
         errors = data.get("errors", [])
         if errors:
@@ -653,7 +783,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The list of countries in dictionary format.
         """
-        return self.runAuthorizedGqlQuery(gq.UTILS_Q.get("countriesQ", ""), {}, "Countries").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.UTILS_Q.get("countriesQ", ""), {}, "Countries"
+        ).get("data", {})
 
     def avatars(self, id: str) -> dict[str, Any]:
         """Get the avatar data for a given id.
@@ -664,7 +796,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The avatar data in dictionary format.
         """
-        return self.runAuthorizedGqlQuery(gq.CAMPAIGN_Q.get("avatarsQ", ""), {"id": id}, "Avatars").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.CAMPAIGN_Q.get("avatarsQ", ""), {"id": id}, "Avatars"
+        ).get("data", {})
 
     def getFollowRequestWatchCount(self) -> dict[str, Any]:
         """Get the follow request and watch count data.
@@ -673,7 +807,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The follow request and watch count data in dictionary format.
         """
         return self.runAuthorizedGqlQuery(
-            gq.CAMPAIGN_Q.get("followRequestWatchCountQ", ""), {}, "FollowRequestWatchCount"
+            gq.CAMPAIGN_Q.get("followRequestWatchCountQ", ""),
+            {},
+            "FollowRequestWatchCount",
         ).get("data", {})
 
     def campaigns(self, id: str, categoryId: str) -> dict[str, Any]:
@@ -687,7 +823,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data returned by the query, in the form of a dictionary.
         """
         return self.runAuthorizedGqlQuery(
-            gq.CAMPAIGN_Q.get("campaignsQ", ""), {"id": id, "categoryId": categoryId}, "Campaigns"
+            gq.CAMPAIGN_Q.get("campaignsQ", ""),
+            {"id": id, "categoryId": categoryId},
+            "Campaigns",
         ).get("data", {})
 
     def isSubscribed(self, id: str, wuid: str) -> dict[str, Any]:
@@ -701,7 +839,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data returned by the query, in the form of a dictionary.
         """
         return self.runAuthorizedGqlQuery(
-            gq.CAMPAIGN_Q.get("isSubscribedQ", ""), {"id": id, "uid": wuid}, "IsSubscribedCampaign"
+            gq.CAMPAIGN_Q.get("isSubscribedQ", ""),
+            {"id": id, "uid": wuid},
+            "IsSubscribedCampaign",
         ).get("data", {})
 
     def subscribed(self, wuid: str, needDetail: bool) -> dict[str, Any]:
@@ -715,7 +855,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data returned by the query, in the form of a dictionary.
         """
         return self.runAuthorizedGqlQuery(
-            gq.CAMPAIGN_Q.get("subscribedQ", ""), {"uid": wuid, "needDetail": needDetail}, "SubscribedCampaign"
+            gq.CAMPAIGN_Q.get("subscribedQ", ""),
+            {"uid": wuid, "needDetail": needDetail},
+            "SubscribedCampaign",
         ).get("data", {})
 
     def ranks(self, campaignId: str) -> dict[str, Any]:
@@ -727,7 +869,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The data returned by the query, in the form of a dictionary.
         """
-        return self.runAuthorizedGqlQuery(gq.CAMPAIGN_Q.get("ranksQ", ""), {"campaignId": campaignId}, "Ranks").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.CAMPAIGN_Q.get("ranksQ", ""), {"campaignId": campaignId}, "Ranks"
+        ).get("data", {})
 
     def conv360IDToO2OID(self, qid: str, deviceId: str) -> dict[str, Any]:
         """Convert the 360 ID to the O2O ID.
@@ -740,7 +884,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The data returned by the query, in the form of a dictionary.
         """
         return self.runAuthorizedGqlQuery(
-            gq.QUERY.get("conv360IDToO2OIDQ", ""), {"qid": qid, "deviceId": deviceId}, "Conv360IDToO2OID"
+            gq.QUERY.get("conv360IDToO2OIDQ", ""),
+            {"qid": qid, "deviceId": deviceId},
+            "Conv360IDToO2OID",
         ).get("data", {})
 
     def getAppVersion(self) -> dict[str, Any]:
@@ -749,7 +895,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The data for the GetAppVersion query.
         """
-        return self.runAuthorizedGqlQuery(gq.QUERY.get("getAppVersionQ", ""), {}, "GetAppVersion").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.QUERY.get("getAppVersionQ", ""), {}, "GetAppVersion"
+        ).get("data", {})
 
     def watchGroups(self, id: str = "") -> dict[str, Any]:
         """Returns the data for the WatchGroups query.
@@ -760,7 +908,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The data for the WatchGroups query.
         """
-        return self.runAuthorizedGqlQuery(gq.WATCHGROUP_Q.get("watchGroupsQ", ""), {"id": id}, "WatchGroups").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gq.WATCHGROUP_Q.get("watchGroupsQ", ""), {"id": id}, "WatchGroups"
+        ).get("data", {})
 
     def getStartTrackingWatch(self, wuid: str) -> dict[str, Any]:
         """Returns the data for the StartTrackingWatch query.
@@ -771,7 +921,11 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The data for the StartTrackingWatch query.
         """
-        data = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("startTrackingWatchQ", ""), {"uid": wuid}, "StartTrackingWatch")
+        data = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("startTrackingWatchQ", ""),
+            {"uid": wuid},
+            "StartTrackingWatch",
+        )
         errors: list[dict[str, str]] = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getStartTrackingWatch", "error": errors})
@@ -786,14 +940,20 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict[str, Any]: The data for the EndTrackingWatch query.
         """
-        data = self.runAuthorizedGqlQuery(gq.WATCH_Q.get("endTrackingWatchQ", ""), {"uid": wuid}, "EndTrackingWatch")
+        data = self.runAuthorizedGqlQuery(
+            gq.WATCH_Q.get("endTrackingWatchQ", ""), {"uid": wuid}, "EndTrackingWatch"
+        )
         errors: list[dict[str, str]] = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getEndTrackingWatch", "error": errors})
         return data.get("data", {})
 
     def checkEmailOrPhoneExist(
-        self, type: UserContactType, email: str = "", countryCode: str = "", phoneNumber: str = ""
+        self,
+        type: UserContactType,
+        email: str = "",
+        countryCode: str = "",
+        phoneNumber: str = "",
     ) -> dict[str, bool]:
         """Check if email or phone number exist.
 
@@ -808,7 +968,12 @@ class GQLHandler(HandlerGQL):
         """
         data = self.runAuthorizedGqlQuery(
             gq.UTILS_Q.get("checkEmailOrPhoneExistQ", ""),
-            {"type": type.value, "email": email, "countryCode": countryCode, "phoneNumber": phoneNumber},
+            {
+                "type": type.value,
+                "email": email,
+                "countryCode": countryCode,
+                "phoneNumber": phoneNumber,
+            },
             "CheckEmailOrPhoneExist",
         )
         return data.get("data", {})
@@ -828,9 +993,11 @@ class GQLHandler(HandlerGQL):
             bool: Whether the text was sent successfully.
         """
         if (
-            self.runAuthorizedGqlQuery(gm.WATCH_M.get("sendChatTextM", ""), {"uid": wuid, "text": text}, "SendChatText").get(
-                "data", {}
-            )["sendChatText"]
+            self.runAuthorizedGqlQuery(
+                gm.WATCH_M.get("sendChatTextM", ""),
+                {"uid": wuid, "text": text},
+                "SendChatText",
+            ).get("data", {})["sendChatText"]
             is not None
         ):
             return True
@@ -845,7 +1012,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the data from the response.
         """
-        return self.runAuthorizedGqlQuery(gm.STEP_M.get("addM", ""), {"stepCount": stepCount}, "AddStep").get("data", {})
+        return self.runAuthorizedGqlQuery(
+            gm.STEP_M.get("addM", ""), {"stepCount": stepCount}, "AddStep"
+        ).get("data", {})
 
     def shutdown(self, wuid: str) -> bool:
         """Shuts down the system for a specified user.
@@ -856,7 +1025,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             bool: Whether the system was shut down successfully.
         """
-        return self.isAdmin(wuid, gm.WATCH_M.get("shutdownM", ""), {"uid": wuid}, "ShutDown")
+        return self.isAdmin(
+            wuid, gm.WATCH_M.get("shutdownM", ""), {"uid": wuid}, "ShutDown"
+        )
 
     def reboot(self, wuid: str) -> bool:
         """Reboots the system for a specified user.
@@ -867,7 +1038,9 @@ class GQLHandler(HandlerGQL):
         Returns:
             bool: Whether the system was rebooted successfully.
         """
-        return self.isAdmin(wuid, gm.WATCH_M.get("rebootM", ""), {"uid": wuid}, "reboot")
+        return self.isAdmin(
+            wuid, gm.WATCH_M.get("rebootM", ""), {"uid": wuid}, "reboot"
+        )
 
     def modifyAlert(self, id: str, yesOrNo: str) -> dict[str, Any]:
         """Modifies an alert.
@@ -879,9 +1052,15 @@ class GQLHandler(HandlerGQL):
         Returns:
             dict: A dictionary containing the data from the response.
         """
-        return self.runAuthorizedGqlQuery(gm.WATCH_M.get("modifyAlertM", ""), {"uid": id, "remind": yesOrNo}, "modifyAlert")
+        return self.runAuthorizedGqlQuery(
+            gm.WATCH_M.get("modifyAlertM", ""),
+            {"uid": id, "remind": yesOrNo},
+            "modifyAlert",
+        )
 
-    def setEnableSilentTime(self, silent_id: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
+    def setEnableSilentTime(
+        self, silent_id: str, status: str = NormalStatus.ENABLE.value
+    ) -> dict[str, Any]:
         """Sets the silent time for a specified user.
 
         Args:
@@ -892,10 +1071,14 @@ class GQLHandler(HandlerGQL):
             dict: A dictionary containing the data from the response.
         """
         return self.runAuthorizedGqlQuery(
-            gm.WATCH_M.get("setEnableSlientTimeM", ""), {"silentId": silent_id, "status": status}, "SetEnableSlientTime"
+            gm.WATCH_M.get("setEnableSlientTimeM", ""),
+            {"silentId": silent_id, "status": status},
+            "SetEnableSlientTime",
         ).get("data", {})
 
-    def setEnableAlarmTime(self, alarm_id: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
+    def setEnableAlarmTime(
+        self, alarm_id: str, status: str = NormalStatus.ENABLE.value
+    ) -> dict[str, Any]:
         """Enable or disable alarm time.
 
         Args:
@@ -908,7 +1091,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: Dictionary containing the response data.
         """
         return self.runAuthorizedGqlQuery(
-            gm.WATCH_M.get("modifyAlarmM", ""), {"alarmId": alarm_id, "status": status}, "ModifyAlarm"
+            gm.WATCH_M.get("modifyAlarmM", ""),
+            {"alarmId": alarm_id, "status": status},
+            "ModifyAlarm",
         ).get("data", {})
 
     def setReadChatMsg(self, wuid: str, msgId: str, id: str) -> dict[str, Any]:
@@ -923,10 +1108,14 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: Dictionary containing the response data.
         """
         return self.runAuthorizedGqlQuery(
-            gm.WATCH_M.get("setReadChatMsgM", ""), {"uid": wuid, "msgId": msgId, "id": id}, "setReadChatMsg"
+            gm.WATCH_M.get("setReadChatMsgM", ""),
+            {"uid": wuid, "msgId": msgId, "id": id},
+            "setReadChatMsg",
         ).get("data", {})
 
-    def submitIncorrectLocationData(self, wuid: str, lat: str, lng: str, timestamp: str) -> dict[str, Any]:
+    def submitIncorrectLocationData(
+        self, wuid: str, lat: str, lng: str, timestamp: str
+    ) -> dict[str, Any]:
         """Submit incorrect location data.
 
         Args:
@@ -944,7 +1133,9 @@ class GQLHandler(HandlerGQL):
             "SubmitIncorrectLocationData",
         ).get("data", {})
 
-    def modifyContact(self, contactId: str, isAdmin: bool, contactName: str = "", fileId: str = "") -> dict[str, Any]:
+    def modifyContact(
+        self, contactId: str, isAdmin: bool, contactName: str = "", fileId: str = ""
+    ) -> dict[str, Any]:
         """Modify a contact.
 
         Args:
@@ -958,7 +1149,12 @@ class GQLHandler(HandlerGQL):
         """
         return self.runAuthorizedGqlQuery(
             gm.WATCH_M.get("modifyContactM", ""),
-            {"contactId": contactId, "contactName": contactName, "fileId": fileId, "isAdmin": isAdmin},
+            {
+                "contactId": contactId,
+                "contactName": contactName,
+                "fileId": fileId,
+                "isAdmin": isAdmin,
+            },
         )
 
     def issueEmailOrPhoneCode(
@@ -1046,7 +1242,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The result of the `verifyCaptcha` query.
         """
         return self.runAuthorizedGqlQuery(
-            gm.SIGN_M.get("verifyCaptchaM", ""), {"captchaString": captchaString, "type": type}, "verifyCaptcha"
+            gm.SIGN_M.get("verifyCaptchaM", ""),
+            {"captchaString": captchaString, "type": type},
+            "verifyCaptcha",
         )
 
     def verifyEmailOrPhoneCode(
@@ -1095,7 +1293,9 @@ class GQLHandler(HandlerGQL):
             dict[str, Any]: The result of the `deleteChatMessage` query.
         """
         return self.runAuthorizedGqlQuery(
-            gm.WATCH_M.get("deleteChatMessageM", ""), {"uid": wuid, "msgId": msgId}, "DeleteChatMessage"
+            gm.WATCH_M.get("deleteChatMessageM", ""),
+            {"uid": wuid, "msgId": msgId},
+            "DeleteChatMessage",
         ).get("data", {})
 
     ########## SECTION MUTATION end ##########

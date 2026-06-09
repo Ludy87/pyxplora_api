@@ -75,7 +75,9 @@ class PyXplora:
         Returns:
             bool: True if the instance is connected, False otherwise.
         """
-        return bool(self._gql_handler and self._issueToken and self._gql_handler.accessToken)
+        return bool(
+            self._gql_handler and self._issueToken and self._gql_handler.accessToken
+        )
 
     def _logoff(self) -> None:
         """Log off the user by clearing the stored information.
@@ -146,7 +148,10 @@ class PyXplora:
         str: The profile icon of the user.
         """
         extra = self.user.get("extra", {})
-        return extra.get("profileIcon", "https://s3.eu-central-1.amazonaws.com/kids360uc/default_icon.png")
+        return extra.get(
+            "profileIcon",
+            "https://s3.eu-central-1.amazonaws.com/kids360uc/default_icon.png",
+        )
 
     def getUserXcoin(self) -> int:
         """This function returns the xcoin amount of the user.
@@ -178,7 +183,9 @@ class PyXplora:
         Returns:
         str: The creation date and time of the user in the format "YYYY-MM-DD HH:MM:SS".
         """
-        return datetime.fromtimestamp(self.user.get("create", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.fromtimestamp(self.user.get("create", 0.0)).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
     def getUserUpdate(self) -> str:
         """This function returns the user update time in a string format.
@@ -186,10 +193,14 @@ class PyXplora:
         Returns:
         str: The user update time in the format 'YYYY-MM-DD HH:MM:SS'.
         """
-        return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.fromtimestamp(self.user.get("update", 0.0)).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
     ##### Watch Info #####
-    def getWatchUserIDs(self, watch_user_phone_numbers: list[str] | None = None) -> list[str]:
+    def getWatchUserIDs(
+        self, watch_user_phone_numbers: list[str] | None = None
+    ) -> list[str]:
         """This function returns the unique identifiers of the watch users.
 
         Parameters:
@@ -212,7 +223,9 @@ class PyXplora:
                 watch_ids.append(watch["ward"]["id"])
         return watch_ids
 
-    def getWatchUserPhoneNumbers(self, wuid: str | list[str] | None = None, ignoreError: bool = False) -> str | list[str]:
+    def getWatchUserPhoneNumbers(
+        self, wuid: str | list[str] | None = None, ignoreError: bool = False
+    ) -> str | list[str]:
         """This function returns the phone number of the watch users.
 
         Parameters:
@@ -283,7 +296,9 @@ class PyXplora:
         #     raise ChildNoError(["Watch username"])
         return watchusernames
 
-    def getWatchUserIcons(self, wuid: str | list[str] | None | None = None) -> str | list[str]:
+    def getWatchUserIcons(
+        self, wuid: str | list[str] | None | None = None
+    ) -> str | list[str]:
         """Get the icon URL for watch users.
 
         Parameters:
@@ -305,7 +320,9 @@ class PyXplora:
         for watch in self.watchs:
             if isinstance(wuid, list):
                 if watch["ward"]["id"] in wuid:
-                    watch_user_icons.append(f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}")
+                    watch_user_icons.append(
+                        f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
+                    )
             elif isinstance(wuid, str):
                 if watch["ward"]["id"] == wuid:
                     return f"https://api.myxplora.com/file?id={watch['ward']['file']['id']}"
@@ -315,7 +332,9 @@ class PyXplora:
         #     raise ChildNoError(["Watch User Icon"])
         return watch_user_icons
 
-    def getWatchUserXCoins(self, wuid: str | list[str] | None = None) -> int | list[int]:
+    def getWatchUserXCoins(
+        self, wuid: str | list[str] | None = None
+    ) -> int | list[int]:
         """Get the XCoins earned by the watch user.
 
         Args:
@@ -347,7 +366,9 @@ class PyXplora:
         #     raise ChildNoError(["Watch User XCoins"])
         return watchuserxcoins
 
-    def getWatchUserCurrentStep(self, wuid: str | list[str] | None = None) -> int | list[int]:
+    def getWatchUserCurrentStep(
+        self, wuid: str | list[str] | None = None
+    ) -> int | list[int]:
         """Get the current step count of a watch user.
 
         Args:
@@ -378,7 +399,9 @@ class PyXplora:
         #     raise ChildNoError(["Watch User Currentsteps"])
         return watchusercurrentstep
 
-    def getWatchUserTotalStep(self, wuid: str | list[str] | None | None = None) -> int | list[int]:
+    def getWatchUserTotalStep(
+        self, wuid: str | list[str] | None | None = None
+    ) -> int | list[int]:
         """Get the total steps taken by a user or a list of users from the watch.
 
         Args:
