@@ -45,7 +45,9 @@ def main():
             i = str(i).zfill(7)
         for area_code in german_area_codes:
             data = xplora.checkEmailOrPhoneExist(
-                UserContactType.PHONE, countryCode=country_code, phoneNumber=f"{area_code}{i}"
+                UserContactType.PHONE,
+                countryCode=country_code,
+                phoneNumber=f"{area_code}{i}",
             )
             if data:
                 print(f"{country_code}{area_code}{i} is registered")
