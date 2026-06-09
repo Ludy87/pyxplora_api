@@ -7,9 +7,7 @@ from pyxplora_api.pyxplora import PyXplora
 
 
 def make_client(*, wuid=None) -> PyXplora:
-    client = PyXplora(
-        "49", "15123456789", "secret", "de-DE", "Europe/Berlin", wuid=wuid
-    )
+    client = PyXplora("49", "15123456789", "secret", "de-DE", "Europe/Berlin", wuid=wuid)
     client.watchs = [
         {
             "ward": {
@@ -87,9 +85,7 @@ def test_watch_user_accessors_support_all_str_and_filtered_inputs() -> None:
     assert client.getWatchUserPhoneNumbers("wuid-1") == "111"
     assert client.getWatchUserNames() == ["Alice", "Bob"]
     assert client.getWatchUserNames("wuid-2") == "Bob"
-    assert (
-        client.getWatchUserIcons("wuid-1") == "https://api.myxplora.com/file?id=file-1"
-    )
+    assert client.getWatchUserIcons("wuid-1") == "https://api.myxplora.com/file?id=file-1"
     assert client.getWatchUserIcons(["wuid-1", "wuid-2"]) == [
         "https://api.myxplora.com/file?id=file-1",
         "https://api.myxplora.com/file?id=file-2",
