@@ -36,9 +36,10 @@ setuptools.setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Intended Audience :: Developers",
@@ -49,5 +50,5 @@ setuptools.setup(
     ],
     keywords="api xplora watch",
     install_requires=requirements_array,
-    python_requires=">=3.9",
+    python_requires=">=3.10",
 )
