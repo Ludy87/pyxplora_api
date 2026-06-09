@@ -70,9 +70,7 @@ def test_dataclass_defaults_and_serialization_round_trip() -> None:
 
     assert small.emoticon_id == Emoticon.UNKNOWN__.value
     assert small.delete_flag == 0
-    assert (
-        SmallChatList.from_dict(small_list.to_dict()).small_chat_list[0].msgId == "msg"
-    )
+    assert SmallChatList.from_dict(small_list.to_dict()).small_chat_list[0].msgId == "msg"
 
 
 def test_selected_status_enum_values_are_stable() -> None:

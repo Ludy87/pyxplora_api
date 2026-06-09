@@ -41,11 +41,7 @@ class ChildNoError(Error):
     """Exception raised when a child's phone number or watch ID is not found."""
 
     def __init__(self, error_message=None) -> None:
-        error_message = (
-            ["Child phonenumber", "Watch ID"]
-            if error_message is None
-            else error_message
-        )
+        error_message = ["Child phonenumber", "Watch ID"] if error_message is None else error_message
         self.error_message = error_message
         super().__init__()
 
@@ -63,7 +59,9 @@ class XTypeError(Error):
         super().__init__()
 
     def __str__(self) -> str:
-        return f"Transfer value has the wrong type! The following are permitted: {self.allow}. The specified type is: {self.deny}"
+        return (
+            f"Transfer value has the wrong type! The following are permitted: {self.allow}. The specified type is: {self.deny}"
+        )
 
 
 class FunctionError(Error):
@@ -82,9 +80,7 @@ class LoginError(Error):
     """Exception raised when login to the Xplora API fails."""
 
     def __init__(self, error_message: str | ErrorMSG = "") -> None:
-        self.error_message = (
-            error_message if isinstance(error_message, str) else error_message.value
-        )
+        self.error_message = error_message if isinstance(error_message, str) else error_message.value
         super().__init__()
 
     def __str__(self) -> str:
@@ -95,9 +91,7 @@ class PhoneOrEmailFail(Error):
     """Exception raised when phone number or email address is not found."""
 
     def __init__(self, error_message: str | ErrorMSG = ErrorMSG.PHONE_MAIL_ERR) -> None:
-        self.error_message = (
-            error_message if isinstance(error_message, str) else error_message.value
-        )
+        self.error_message = error_message if isinstance(error_message, str) else error_message.value
         super().__init__()
 
     def __str__(self) -> str:

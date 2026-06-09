@@ -14,9 +14,7 @@ from .const import DEFAULT_TIMEOUT, DEFAULT_USER_AGENT
 class GraphqlClient:
     """Class which represents the interface to make graphQL requests through."""
 
-    def __init__(
-        self, endpoint: str, headers: Optional[dict[str, str]] = None, **kwargs: Any
-    ):
+    def __init__(self, endpoint: str, headers: Optional[dict[str, str]] = None, **kwargs: Any):
         """Instantiate the client."""
         headers = {} if headers is None else headers
         self.logger = logging.getLogger(__name__)
@@ -49,9 +47,7 @@ class GraphqlClient:
     ):
         """Make synchronous request to graphQL server."""
         headers = {} if headers is None else headers
-        request_body = self.__request_body(
-            query=query, variables=variables, operation_name=operation_name
-        )
+        request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
         if "user-agent" not in headers:
             headers["user-agent"] = DEFAULT_USER_AGENT
@@ -75,15 +71,11 @@ class GraphqlClient:
     ):
         """Make asynchronous request to graphQL server."""
         headers = {} if headers is None else headers
-        request_body = self.__request_body(
-            query=query, variables=variables, operation_name=operation_name
-        )
+        request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
         if "user-agent" not in headers:
             headers["user-agent"] = DEFAULT_USER_AGENT
-        async with aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(DEFAULT_TIMEOUT)
-        ) as session, session.post(
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(DEFAULT_TIMEOUT)) as session, session.post(
             self.endpoint, json=request_body, headers={**self.headers, **headers}
         ) as response:
             try:
@@ -103,9 +95,7 @@ class GraphqlClient:
     ):
         """Make asynchronous request to graphQL server."""
         headers = {} if headers is None else headers
-        request_body = self.__request_body(
-            query=query, variables=variables, operation_name=operation_name
-        )
+        request_body = self.__request_body(query=query, variables=variables, operation_name=operation_name)
 
         if "user-agent" not in headers:
             headers["user-agent"] = DEFAULT_USER_AGENT
@@ -116,9 +106,7 @@ class GraphqlClient:
                 operation_name=operation_name,
                 headers=headers,
             )
-        async with session.post(
-            self.endpoint, json=request_body, headers={**self.headers, **headers}
-        ) as response:
+        async with session.post(self.endpoint, json=request_body, headers={**self.headers, **headers}) as response:
             try:
                 response.raise_for_status()
                 return await response.json()

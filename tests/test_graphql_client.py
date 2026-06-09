@@ -19,10 +19,10 @@ class FakeResponse:
 
 
 class AsyncPostContext:
-    def __init__(self, response: "AsyncResponse") -> None:
+    def __init__(self, response: AsyncResponse) -> None:
         self.response = response
 
-    async def __aenter__(self) -> "AsyncResponse":
+    async def __aenter__(self) -> AsyncResponse:
         return self.response
 
     async def __aexit__(self, exc_type, exc, tb) -> None:
@@ -80,13 +80,9 @@ def test_execute_posts_merged_headers_and_default_user_agent(monkeypatch) -> Non
         return response
 
     monkeypatch.setattr("pyxplora_api.graphql_client.requests.post", fake_post)
-    client = GraphqlClient(
-        "https://example.test/graphql", headers={"Authorization": "base"}, verify=False
-    )
+    client = GraphqlClient("https://example.test/graphql", headers={"Authorization": "base"}, verify=False)
 
-    assert client.execute(
-        "query", {"id": 1}, "Operation", headers={"X-Test": "yes"}
-    ) == {"data": {"ok": True}}
+    assert client.execute("query", {"id": 1}, "Operation", headers={"X-Test": "yes"}) == {"data": {"ok": True}}
     assert response.raised is True
     assert calls == [
         {
@@ -110,13 +106,9 @@ def test_execute_posts_merged_headers_and_default_user_agent(monkeypatch) -> Non
 def test_ha_execute_async_uses_supplied_session_and_default_user_agent() -> None:
     response = AsyncResponse({"data": {"ok": True}})
     session = FakeSession(response)
-    client = GraphqlClient(
-        "https://example.test/graphql", headers={"Authorization": "base"}
-    )
+    client = GraphqlClient("https://example.test/graphql", headers={"Authorization": "base"})
 
-    result = asyncio.run(
-        client.ha_execute_async("query", {"id": 2}, "Operation", session=session)
-    )
+    result = asyncio.run(client.ha_execute_async("query", {"id": 2}, "Operation", session=session))
 
     assert result == {"data": {"ok": True}}
     assert response.raised is True

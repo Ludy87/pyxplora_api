@@ -11,9 +11,7 @@ from pyxplora_api.status import ClientType
 
 
 def make_handler() -> HandlerGQL:
-    return HandlerGQL(
-        "49", "15123456789", "secret", "de-DE", "Europe/Berlin", "user@example.test"
-    )
+    return HandlerGQL("49", "15123456789", "secret", "de-DE", "Europe/Berlin", "user@example.test")
 
 
 def test_constructor_hashes_password_and_builds_login_variables() -> None:
@@ -21,7 +19,7 @@ def test_constructor_hashes_password_and_builds_login_variables() -> None:
 
     assert handler.getApiKey() == API_KEY
     assert handler.getSecret() == API_SECRET
-    assert handler.passwordMD5 == hashlib.md5("secret".encode()).hexdigest()
+    assert handler.passwordMD5 == hashlib.md5(b"secret").hexdigest()
     assert handler.variables == {
         "countryPhoneNumber": "49",
         "phoneNumber": "15123456789",

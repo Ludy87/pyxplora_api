@@ -32,9 +32,7 @@ class GQLHandler(HandlerGQL):
     ) -> None:
         self._session = session
         self.refreshToken = None
-        super().__init__(
-            countryPhoneNumber, phoneNumber, password, userLang, timeZone, email, signup
-        )
+        super().__init__(countryPhoneNumber, phoneNumber, password, userLang, timeZone, email, signup)
 
     async def runGqlQuery_a(
         self,
@@ -88,14 +86,10 @@ class GQLHandler(HandlerGQL):
         data = dataAll.get("data", {})
         signIn: dict[str, Any] | None = data.get("signInWithEmailOrPhone", None)
         if signIn is None:
-            error_message = dataAll.get("errors", [{"message": ""}])[0].get(
-                "message", ""
-            )
+            error_message = dataAll.get("errors", [{"message": ""}])[0].get("message", "")
             if error_message:
                 raise LoginError(f"Login error: {error_message}")
-            raise LoginError(
-                "The server is not responding, please wait a moment and try again."
-            )
+            raise LoginError("The server is not responding, please wait a moment and try again.")
 
         self.issueToken = signIn
         self.refreshToken = self.issueToken.get("refreshToken", None)
@@ -110,9 +104,7 @@ class GQLHandler(HandlerGQL):
 
         return self.issueToken, self.refreshToken
 
-    async def isAdmin_a(
-        self, wuid: str, query: str, variables: dict[str, Any], key: str
-    ) -> bool:
+    async def isAdmin_a(self, wuid: str, query: str, variables: dict[str, Any], key: str) -> bool:
         contacts: dict[str, Any] = await self.getWatchUserContacts_a(wuid)
         for contact in contacts["contacts"]["contacts"]:
             try:
@@ -121,9 +113,7 @@ class GQLHandler(HandlerGQL):
                 id = None
             if self.userId == id:
                 if contact["guardianType"] == "FIRST":
-                    data: dict[str, Any] = (
-                        await self.runGqlQuery_a(query, variables, key)
-                    ).get("data", {})
+                    data: dict[str, Any] = (await self.runGqlQuery_a(query, variables, key)).get("data", {})
                     for k in data:
                         if k.upper() == key.upper():
                             return data.get(k, False)
@@ -132,9 +122,7 @@ class GQLHandler(HandlerGQL):
     ########## SECTION QUERY start ##########
 
     async def askWatchLocate_a(self, wuid: str) -> dict[str, Any]:
-        data: dict[str, Any] = await self.runGqlQuery_a(
-            gq.WATCH_Q.get("askLocateQ", ""), {"uid": wuid}, "AskWatchLocate"
-        )
+        data: dict[str, Any] = await self.runGqlQuery_a(gq.WATCH_Q.get("askLocateQ", ""), {"uid": wuid}, "AskWatchLocate")
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "askWatchLocate", "errors": errors})
@@ -145,18 +133,14 @@ class GQLHandler(HandlerGQL):
 
     async def getWatchUserContacts_a(self, wuid: str) -> dict[str, Any]:
         # Contacts from ownUser
-        data: dict[str, Any] = await self.runGqlQuery_a(
-            gq.WATCH_Q.get("contactsQ", ""), {"uid": wuid}, "Contacts"
-        )
+        data: dict[str, Any] = await self.runGqlQuery_a(gq.WATCH_Q.get("contactsQ", ""), {"uid": wuid}, "Contacts")
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatchUserContacts", "errors": errors})
         return data.get("data", {})
 
     async def getWatches_a(self, wuid: str) -> dict[str, Any]:
-        data: dict[str, Any] = await self.runGqlQuery_a(
-            gq.WATCH_Q.get("watchesQ", ""), {"uid": wuid}, "Watches"
-        )
+        data: dict[str, Any] = await self.runGqlQuery_a(gq.WATCH_Q.get("watchesQ", ""), {"uid": wuid}, "Watches")
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatches", "errors": errors})
@@ -173,9 +157,7 @@ class GQLHandler(HandlerGQL):
             self.errors.append({"function": "getSWInfo", "errors": errors})
         return data.get("data", {})
 
-    async def getWatchState_a(
-        self, qrCode: str, qrt: str = "", qrc: str = ""
-    ) -> dict[str, Any]:
+    async def getWatchState_a(self, qrCode: str, qrt: str = "", qrc: str = "") -> dict[str, Any]:
         variables = {}
         if qrCode:
             variables["qrCode"] = qrCode
@@ -183,24 +165,18 @@ class GQLHandler(HandlerGQL):
             variables["qrt"] = qrt
         if qrc:
             variables["qrc"] = qrc
-        data: dict[str, Any] = await self.runGqlQuery_a(
-            gq.WATCH_Q.get("stateQ", ""), variables, "WatchState"
-        )
+        data: dict[str, Any] = await self.runGqlQuery_a(gq.WATCH_Q.get("stateQ", ""), variables, "WatchState")
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatchState", "errors": errors})
         return data.get("data", {})
 
     async def getWatchLastLocation_a(self, wuid: str) -> dict[str, Any]:
-        data: dict[str, Any] = await self.runGqlQuery_a(
-            gq.WATCH_Q.get("locateQ", ""), {"uid": wuid}, "WatchLastLocate"
-        )
+        data: dict[str, Any] = await self.runGqlQuery_a(gq.WATCH_Q.get("locateQ", ""), {"uid": wuid}, "WatchLastLocate")
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getWatchLastLocation", "errors": errors})
-            error_msg = data.get("errors", [{"code": "E", "message": "E"}])[0].get(
-                "message", "E"
-            )
+            error_msg = data.get("errors", [{"code": "E", "message": "E"}])[0].get("message", "E")
             if error_msg == ErrorMSG.AUTH_FAIL.value:
                 _LOGGER.error(error_msg)
                 return errors[0]
@@ -208,9 +184,7 @@ class GQLHandler(HandlerGQL):
 
     async def trackWatch_a(self, wuid: str) -> dict[str, Any]:
         # tracking time - seconds
-        data: dict[str, Any] = await self.runGqlQuery_a(
-            gq.WATCH_Q.get("trackQ", ""), {"uid": wuid}, "TrackWatch"
-        )
+        data: dict[str, Any] = await self.runGqlQuery_a(gq.WATCH_Q.get("trackQ", ""), {"uid": wuid}, "TrackWatch")
         errors = data.get("errors", [])
         if errors:
             self.errors.append({"function": "trackWatch", "errors": errors})
@@ -220,19 +194,11 @@ class GQLHandler(HandlerGQL):
         return {"trackWatch": -1}
 
     async def getAlarmTime_a(self, wuid: str) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.WATCH_Q.get("alarmsQ", ""), {"uid": wuid}, "Alarms"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.WATCH_Q.get("alarmsQ", ""), {"uid": wuid}, "Alarms")).get("data", {})
 
     async def getWifi_a(self, wuid: str) -> dict[str, Any]:
         # without function?
-        return (
-            await self.runGqlQuery_a(
-                gq.WATCH_Q.get("getWifisQ", ""), {"uid": wuid}, "GetWifis"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.WATCH_Q.get("getWifisQ", ""), {"uid": wuid}, "GetWifis")).get("data", {})
 
     async def unReadChatMsgCount_a(self, wuid: str) -> dict[str, Any]:
         return (
@@ -244,25 +210,13 @@ class GQLHandler(HandlerGQL):
         ).get("data", {})
 
     async def safeZones_a(self, wuid: str) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.WATCH_Q.get("safeZonesQ", ""), {"uid": wuid}, "SafeZones"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.WATCH_Q.get("safeZonesQ", ""), {"uid": wuid}, "SafeZones")).get("data", {})
 
     async def safeZoneGroups_a(self) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.WATCH_Q.get("safeZoneGroupsQ", ""), {}, "SafeZoneGroups"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.WATCH_Q.get("safeZoneGroupsQ", ""), {}, "SafeZoneGroups")).get("data", {})
 
     async def silentTimes_a(self, wuid: str) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.WATCH_Q.get("silentTimesQ", ""), {"uid": wuid}, "SlientTimes"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.WATCH_Q.get("silentTimesQ", ""), {"uid": wuid}, "SlientTimes")).get("data", {})
 
     async def chats_a(
         self,
@@ -332,9 +286,7 @@ class GQLHandler(HandlerGQL):
             )
         ).get("data", {})
 
-    async def watchImei_a(
-        self, imei: str, qrCode: str, deviceKey: str
-    ) -> dict[str, Any]:
+    async def watchImei_a(self, imei: str, qrCode: str, deviceKey: str) -> dict[str, Any]:
         return (
             await self.runGqlQuery_a(
                 gq.WATCH_Q.get("imeiQ", ""),
@@ -355,15 +307,9 @@ class GQLHandler(HandlerGQL):
         ).get("data", {})
 
     async def watchesDynamic_a(self) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.WATCH_Q.get("watchesDynamicQ", ""), {}, "WatchesDynamic"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.WATCH_Q.get("watchesDynamicQ", ""), {}, "WatchesDynamic")).get("data", {})
 
-    async def coinHistory_a(
-        self, wuid: str, start: int, end: int, _type: str, offset: int, limit: int
-    ) -> dict[str, Any]:
+    async def coinHistory_a(self, wuid: str, start: int, end: int, _type: str, offset: int, limit: int) -> dict[str, Any]:
         return (
             await self.runGqlQuery_a(
                 gq.XCOIN_Q.get("historyQ", ""),
@@ -380,32 +326,20 @@ class GQLHandler(HandlerGQL):
         ).get("data", {})
 
     async def reminders_a(self, wuid: str) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.XMOVE_Q.get("remindersQ", ""), {"uid": wuid}, "Reminders"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.XMOVE_Q.get("remindersQ", ""), {"uid": wuid}, "Reminders")).get("data", {})
 
     async def groups_a(self, isCampaign: bool) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.CARD_Q.get("groupsQ", ""), {"isCampaign": isCampaign}, "CardGroups"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.CARD_Q.get("groupsQ", ""), {"isCampaign": isCampaign}, "CardGroups")).get(
+            "data", {}
+        )
 
     async def dynamic_a(self) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(gq.CARD_Q.get("dynamicQ", ""), {}, "DynamicCards")
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.CARD_Q.get("dynamicQ", ""), {}, "DynamicCards")).get("data", {})
 
     async def staticCard_a(self) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(gq.CARD_Q.get("staticQ", ""), {}, "StaticCard")
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.CARD_Q.get("staticQ", ""), {}, "StaticCard")).get("data", {})
 
-    async def familyInfo_a(
-        self, wuid: str, watchId: str, tz: str, date: int
-    ) -> dict[str, Any]:
+    async def familyInfo_a(self, wuid: str, watchId: str, tz: str, date: int) -> dict[str, Any]:
         return (
             await self.runGqlQuery_a(
                 gq.FAMILY_Q.get("infoQ", ""),
@@ -470,9 +404,7 @@ class GQLHandler(HandlerGQL):
 
     async def getMyInfo_a(self) -> dict[str, Any]:
         # Profil from login Account
-        return (
-            await self.runGqlQuery_a(gq.MYINFO_Q.get("readQ", ""), {}, "ReadMyInfo")
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.MYINFO_Q.get("readQ", ""), {}, "ReadMyInfo")).get("data", {})
 
     async def readCampaignProfile_a(self, wuid: str) -> dict[str, Any]:
         return (
@@ -483,15 +415,9 @@ class GQLHandler(HandlerGQL):
         ).get("data", {})
 
     async def getReviewStatus_a(self, wuid: str) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.REVIEW_Q.get("getStatusQ", ""), {"uid": wuid}, "GetReviewStatus"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.REVIEW_Q.get("getStatusQ", ""), {"uid": wuid}, "GetReviewStatus")).get("data", {})
 
-    async def getWatchUserSteps_a(
-        self, wuid: str, tz: str, date: int
-    ) -> dict[str, Any]:
+    async def getWatchUserSteps_a(self, wuid: str, tz: str, date: int) -> dict[str, Any]:
         data: dict[str, Any] = await self.runGqlQuery_a(
             gq.STEP_Q.get("userQ", ""),
             {"uid": wuid, "tz": tz, "date": date},
@@ -504,16 +430,10 @@ class GQLHandler(HandlerGQL):
 
     async def countries_a(self) -> dict[str, Any]:
         # Country Support
-        return (
-            await self.runGqlQuery_a(gq.UTILS_Q.get("countriesQ", ""), {}, "Countries")
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.UTILS_Q.get("countriesQ", ""), {}, "Countries")).get("data", {})
 
     async def avatars_a(self, _id: str) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.CAMPAIGN_Q.get("avatarsQ", ""), {"id": _id}, "Avatars"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.CAMPAIGN_Q.get("avatarsQ", ""), {"id": _id}, "Avatars")).get("data", {})
 
     async def getFollowRequestWatchCount_a(self) -> dict[str, Any]:
         return (
@@ -552,11 +472,7 @@ class GQLHandler(HandlerGQL):
         ).get("data", {})
 
     async def ranks_a(self, campaignId: str) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.CAMPAIGN_Q.get("ranksQ", ""), {"campaignId": campaignId}, "Ranks"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.CAMPAIGN_Q.get("ranksQ", ""), {"campaignId": campaignId}, "Ranks")).get("data", {})
 
     async def conv360IDToO2OID_a(self, qid: str, deviceId: str) -> dict[str, Any]:
         return (
@@ -568,18 +484,10 @@ class GQLHandler(HandlerGQL):
         ).get("data", {})
 
     async def getAppVersion_a(self) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.QUERY.get("getAppVersionQ", ""), {}, "GetAppVersion"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.QUERY.get("getAppVersionQ", ""), {}, "GetAppVersion")).get("data", {})
 
     async def watchGroups_a(self, _id: str = "") -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gq.WATCHGROUP_Q.get("watchGroupsQ", ""), {"id": _id}, "WatchGroups"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gq.WATCHGROUP_Q.get("watchGroupsQ", ""), {"id": _id}, "WatchGroups")).get("data", {})
 
     async def getStartTrackingWatch_a(self, wuid: str) -> dict[str, Any]:
         data = await self.runGqlQuery_a(
@@ -593,9 +501,7 @@ class GQLHandler(HandlerGQL):
         return data.get("data", {})
 
     async def getEndTrackingWatch_a(self, wuid: str) -> dict[str, Any]:
-        data = await self.runGqlQuery_a(
-            gq.WATCH_Q.get("endTrackingWatchQ", ""), {"uid": wuid}, "EndTrackingWatch"
-        )
+        data = await self.runGqlQuery_a(gq.WATCH_Q.get("endTrackingWatchQ", ""), {"uid": wuid}, "EndTrackingWatch")
         errors: list[dict[str, str]] = data.get("errors", [])
         if errors:
             self.errors.append({"function": "getEndTrackingWatch", "error": errors})
@@ -640,23 +546,15 @@ class GQLHandler(HandlerGQL):
         return False
 
     async def addStep_a(self, stepCount: int) -> dict[str, Any]:
-        return (
-            await self.runGqlQuery_a(
-                gm.STEP_M.get("addM", ""), {"stepCount": stepCount}, "AddStep"
-            )
-        ).get("data", {})
+        return (await self.runGqlQuery_a(gm.STEP_M.get("addM", ""), {"stepCount": stepCount}, "AddStep")).get("data", {})
 
     async def shutdown_a(self, wuid: str) -> bool:
         # ownUser id
-        return await self.isAdmin_a(
-            wuid, gm.WATCH_M.get("shutdownM", ""), {"uid": wuid}, "ShutDown"
-        )
+        return await self.isAdmin_a(wuid, gm.WATCH_M.get("shutdownM", ""), {"uid": wuid}, "ShutDown")
 
     async def reboot_a(self, wuid: str) -> bool:
         # ownUser id
-        return await self.isAdmin_a(
-            wuid, gm.WATCH_M.get("rebootM", ""), {"uid": wuid}, "reboot"
-        )
+        return await self.isAdmin_a(wuid, gm.WATCH_M.get("rebootM", ""), {"uid": wuid}, "reboot")
 
     async def modifyAlert_a(self, _id: str, yesOrNo: str) -> dict[str, Any]:
         # function?
@@ -666,9 +564,7 @@ class GQLHandler(HandlerGQL):
             "modifyAlert",
         )
 
-    async def setEnableSilentTime_a(
-        self, silent_id: str, status: str = NormalStatus.ENABLE.value
-    ) -> dict[str, Any]:
+    async def setEnableSilentTime_a(self, silent_id: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
         return (
             await self.runGqlQuery_a(
                 gm.WATCH_M.get("setEnableSlientTimeM", ""),
@@ -677,9 +573,7 @@ class GQLHandler(HandlerGQL):
             )
         ).get("data", {})
 
-    async def setEnableAlarmTime_a(
-        self, alarm_id: str, status: str = NormalStatus.ENABLE.value
-    ) -> dict[str, Any]:
+    async def setEnableAlarmTime_a(self, alarm_id: str, status: str = NormalStatus.ENABLE.value) -> dict[str, Any]:
         return (
             await self.runGqlQuery_a(
                 gm.WATCH_M.get("modifyAlarmM", ""),
@@ -697,9 +591,7 @@ class GQLHandler(HandlerGQL):
             )
         ).get("data", {})
 
-    async def submitIncorrectLocationData_a(
-        self, wuid: str, lat: str, lng: str, timestamp: str
-    ) -> dict[str, Any]:
+    async def submitIncorrectLocationData_a(self, wuid: str, lat: str, lng: str, timestamp: str) -> dict[str, Any]:
         return (
             await self.runGqlQuery_a(
                 gm.WATCH_M.get("submitIncorrectLocationDataM", ""),
@@ -708,9 +600,7 @@ class GQLHandler(HandlerGQL):
             )
         ).get("data", {})
 
-    async def modifyContact_a(
-        self, contactId: str, isAdmin: bool, contactName: str = "", fileId: str = ""
-    ) -> dict[str, Any]:
+    async def modifyContact_a(self, contactId: str, isAdmin: bool, contactName: str = "", fileId: str = "") -> dict[str, Any]:
         return await self.runGqlQuery_a(
             gm.WATCH_M.get("modifyContactM", ""),
             {
@@ -767,9 +657,7 @@ class GQLHandler(HandlerGQL):
             "SignUpWithEmailAndPhoneV2",
         )
 
-    async def verifyCaptcha_a(
-        self, captchaString: str = "", _type: str = ""
-    ) -> dict[str, Any]:
+    async def verifyCaptcha_a(self, captchaString: str = "", _type: str = "") -> dict[str, Any]:
         return await self.runGqlQuery_a(
             gm.SIGN_M.get("verifyCaptchaM", ""),
             {"captchaString": captchaString, "type": _type},
@@ -808,9 +696,7 @@ class GQLHandler(HandlerGQL):
         ).get("data", {})
 
     async def connect360_a(self):
-        data = await self.runGqlQuery_a(
-            gm.SIGN_M.get("connect360M", ""), {}, "connect360"
-        )
+        data = await self.runGqlQuery_a(gm.SIGN_M.get("connect360M", ""), {}, "connect360")
         return data.get("data", {})
 
     async def refresh_token_a(self, wuid: str, refresh_token: str) -> str | None:

@@ -54,9 +54,7 @@ class Data(DataClassJsonMixin):
     sender_name: Union[str, None] = None
     text: Union[str, None] = None
     Text: Union[str, None] = None
-    battery: Union[int, None] = field(
-        default=None, metadata=config(decoder=int_or_none)
-    )
+    battery: Union[int, None] = field(default=None, metadata=config(decoder=int_or_none))
     poi: Union[str, None] = None
     city: Union[str, None] = None
     address: Union[str, None] = None
@@ -65,12 +63,8 @@ class Data(DataClassJsonMixin):
     emoticon_id: Union[Emoticon.__str__, None] = Emoticon.UNKNOWN__.value
     emoji_id: Union[Emoticon.__str__, None] = Emoticon.UNKNOWN__.value
     call_name: Union[str, None] = None
-    call_time: Union[int, None] = field(
-        default=None, metadata=config(decoder=int_or_none)
-    )
-    call_type: Union[int, None] = field(
-        default=None, metadata=config(decoder=int_or_none)
-    )
+    call_time: Union[int, None] = field(default=None, metadata=config(decoder=int_or_none))
+    call_type: Union[int, None] = field(default=None, metadata=config(decoder=int_or_none))
     lat: Union[float, None] = None
     lng: Union[float, None] = None
     radius: Union[int, None] = field(default=None, metadata=config(decoder=int_or_none))
@@ -82,9 +76,7 @@ class Data(DataClassJsonMixin):
 class SimpleChat(DataClassJsonMixin):
     id: Union[str, None] = None
     msgId: Union[str, None] = None  # noqa: N815
-    readFlag: Union[int, None] = field(
-        default=None, metadata=config(decoder=int_or_none)
-    )  # noqa: N815
+    readFlag: Union[int, None] = field(default=None, metadata=config(decoder=int_or_none))  # noqa: N815
     sender: Union[User, None] = None
     receiver: Union[User, None] = None
     data: Union[Data, None] = None
