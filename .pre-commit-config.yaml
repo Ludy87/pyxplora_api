@@ -100,3 +100,13 @@ repos:
     hooks:
       - id: pyupgrade
         args: [--py39-plus, --keep-runtime-typing]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+        args:
+          - --redact
+          - --no-git
+          - --verbose
+          - --exit-code=1
+          - --config=.gitleaks.toml
