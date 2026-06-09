@@ -23,10 +23,16 @@ def test_exception_messages_are_human_readable() -> None:
         "Transfer value has the wrong type! The following are permitted: str. "
         "The specified type is: <class 'int'>"
     )
-    assert str(FunctionError("call")) == "Xplora API call finally failed with response: call"
+    assert (
+        str(FunctionError("call"))
+        == "Xplora API call finally failed with response: call"
+    )
 
 
 def test_login_and_contact_errors_accept_error_enums() -> None:
     assert str(LoginError(ErrorMSG.AUTH_FAIL)) == "Authentication failed."
     assert str(PhoneOrEmailFail()) == "Phone Number or Email address not exist"
-    assert str(PhoneOrEmailFail(ErrorMSG.PHONE_MAIL_ERR)) == "Phone Number or Email address not exist"
+    assert (
+        str(PhoneOrEmailFail(ErrorMSG.PHONE_MAIL_ERR))
+        == "Phone Number or Email address not exist"
+    )

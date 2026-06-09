@@ -11,7 +11,9 @@ from pyxplora_api.status import ClientType
 
 
 def make_handler() -> HandlerGQL:
-    return HandlerGQL("49", "15123456789", "secret", "de-DE", "Europe/Berlin", "user@example.test")
+    return HandlerGQL(
+        "49", "15123456789", "secret", "de-DE", "Europe/Berlin", "user@example.test"
+    )
 
 
 def test_constructor_hashes_password_and_builds_login_variables() -> None:
@@ -41,7 +43,9 @@ def test_get_request_headers_uses_open_authorization_without_token() -> None:
 
 
 @pytest.mark.parametrize("content_type", ["", None])
-def test_get_request_headers_rejects_missing_content_type(content_type: str | None) -> None:
+def test_get_request_headers_rejects_missing_content_type(
+    content_type: str | None,
+) -> None:
     with pytest.raises(HandlerException, match="acceptedContentType"):
         make_handler().getRequestHeaders(content_type)  # type: ignore[arg-type]
 

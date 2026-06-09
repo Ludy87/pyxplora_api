@@ -28,7 +28,18 @@ class FakeGQLHandler:
         }
 
     def getAlarmTime(self, wuid):
-        return {"alarms": [{"id": "alarm-1", "vendorId": "vendor", "name": "Wake", "occurMin": "450", "weekRepeat": "1111100", "status": "ENABLE"}]}
+        return {
+            "alarms": [
+                {
+                    "id": "alarm-1",
+                    "vendorId": "vendor",
+                    "name": "Wake",
+                    "occurMin": "450",
+                    "weekRepeat": "1111100",
+                    "status": "ENABLE",
+                }
+            ]
+        }
 
     def getWatchLastLocation(self, wuid):
         return {
@@ -57,10 +68,33 @@ class FakeGQLHandler:
         return {"trackWatch": -1}
 
     def safeZones(self, wuid):
-        return {"safeZones": [{"vendorId": "vendor", "groupName": "Family", "name": "Home", "lat": "52", "lng": "13", "rad": 100, "address": "Street"}]}
+        return {
+            "safeZones": [
+                {
+                    "vendorId": "vendor",
+                    "groupName": "Family",
+                    "name": "Home",
+                    "lat": "52",
+                    "lng": "13",
+                    "rad": 100,
+                    "address": "Street",
+                }
+            ]
+        }
 
     def silentTimes(self, wuid):
-        return {"silentTimes": [{"id": "silent-1", "vendorId": "vendor", "start": "480", "end": "540", "weekRepeat": "1111100", "status": "ENABLE"}]}
+        return {
+            "silentTimes": [
+                {
+                    "id": "silent-1",
+                    "vendorId": "vendor",
+                    "start": "480",
+                    "end": "540",
+                    "weekRepeat": "1111100",
+                    "status": "ENABLE",
+                }
+            ]
+        }
 
     def setEnableSilentTime(self, silent_id, status=NormalStatus.ENABLE.value):
         self.set_silent_calls.append((silent_id, status))
@@ -97,7 +131,16 @@ class FakeGQLHandler:
         return {"followRequestWatchCount": 3}
 
     def getWatches(self, wuid):
-        return {"watches": [{"swKey": "imei", "osVersion": "1.2.3", "qrCode": "code=qr", "groupName": "X5"}]}
+        return {
+            "watches": [
+                {
+                    "swKey": "imei",
+                    "osVersion": "1.2.3",
+                    "qrCode": "code=qr",
+                    "groupName": "X5",
+                }
+            ]
+        }
 
     def getSWInfo(self, qr):
         return {"qr": qr, "version": "1.2.3"}
@@ -125,7 +168,14 @@ class FakeGQLHandler:
 
 
 def make_api() -> PyXploraApi:
-    api = PyXploraApi("49", "15123456789", "secret", "de-DE", "Europe/Berlin", childPhoneNumber=["222"])
+    api = PyXploraApi(
+        "49",
+        "15123456789",
+        "secret",
+        "de-DE",
+        "Europe/Berlin",
+        childPhoneNumber=["222"],
+    )
     api._gql_handler = FakeGQLHandler()
     api.delay = lambda _seconds: None
     return api
@@ -166,20 +216,48 @@ def test_alarm_safe_zone_and_silent_time_transforms() -> None:
     api = make_api()
 
     assert api.getWatchAlarm("wuid-1") == [
-        {"id": "alarm-1", "vendorId": "vendor", "name": "Wake", "start": "07:30", "weekRepeat": "1111100", "status": "ENABLE"}
+        {
+            "id": "alarm-1",
+            "vendorId": "vendor",
+            "name": "Wake",
+            "start": "07:30",
+            "weekRepeat": "1111100",
+            "status": "ENABLE",
+        }
     ]
     assert api.getWatchSafeZones("wuid-1") == [
-        {"vendorId": "vendor", "groupName": "Family", "name": "Home", "lat": "52", "lng": "13", "rad": 100, "address": "Street"}
+        {
+            "vendorId": "vendor",
+            "groupName": "Family",
+            "name": "Home",
+            "lat": "52",
+            "lng": "13",
+            "rad": 100,
+            "address": "Street",
+        }
     ]
     assert api.getSilentTime("wuid-1") == [
-        {"id": "silent-1", "vendorId": "vendor", "start": "08:00", "end": "09:00", "weekRepeat": "1111100", "status": "ENABLE"}
+        {
+            "id": "silent-1",
+            "vendorId": "vendor",
+            "start": "08:00",
+            "end": "09:00",
+            "weekRepeat": "1111100",
+            "status": "ENABLE",
+        }
     ]
     assert api.setEnableSilentTime("silent-1") is True
     assert api.setDisableSilentTime("silent-1") is True
-    assert api._gql_handler.set_silent_calls == [("silent-1", "ENABLE"), ("silent-1", "DISABLE")]
+    assert api._gql_handler.set_silent_calls == [
+        ("silent-1", "ENABLE"),
+        ("silent-1", "DISABLE"),
+    ]
     assert api.setEnableAlarmTime("alarm-1") is True
     assert api.setDisableAlarmTime("alarm-1") is True
-    assert api._gql_handler.set_alarm_calls == [("alarm-1", "ENABLE"), ("alarm-1", "DISABLE")]
+    assert api._gql_handler.set_alarm_calls == [
+        ("alarm-1", "ENABLE"),
+        ("alarm-1", "DISABLE"),
+    ]
 
 
 def test_admin_and_passthrough_helpers() -> None:
@@ -191,10 +269,26 @@ def test_admin_and_passthrough_helpers() -> None:
     assert api.shutdown("wuid-1") is True
     assert api.reboot("wuid-1") is True
     assert api.getFollowRequestWatchCount() == 3
-    assert api.getWatches("wuid-1") == {"imei": "imei", "osVersion": "1.2.3", "qrCode": "code=qr", "model": "X5"}
-    assert api.getSWInfo("wuid-1", {"qrCode": "code=qr"}) == {"qr": "qr", "version": "1.2.3"}
-    assert api.getWatchState("wuid-1", {"qrCode": "code=qr"}) == {"qrCode": "qr", "state": "ok"}
-    assert api.getWatchUserSteps("wuid-1", 1700000000) == {"wuid": "wuid-1", "tz": "Europe/Berlin", "date": 1700000000, "steps": 42}
+    assert api.getWatches("wuid-1") == {
+        "imei": "imei",
+        "osVersion": "1.2.3",
+        "qrCode": "code=qr",
+        "model": "X5",
+    }
+    assert api.getSWInfo("wuid-1", {"qrCode": "code=qr"}) == {
+        "qr": "qr",
+        "version": "1.2.3",
+    }
+    assert api.getWatchState("wuid-1", {"qrCode": "code=qr"}) == {
+        "qrCode": "qr",
+        "state": "ok",
+    }
+    assert api.getWatchUserSteps("wuid-1", 1700000000) == {
+        "wuid": "wuid-1",
+        "tz": "Europe/Berlin",
+        "date": 1700000000,
+        "steps": 42,
+    }
     assert api.addStep(100) is True
     assert api.submitIncorrectLocationData("wuid-1", "52", "13", "1700000000") is True
     assert api.checkEmailOrPhoneExist(type="EMAIL", email="user@example.test") is True

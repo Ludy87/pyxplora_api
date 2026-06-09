@@ -1,7 +1,24 @@
 from __future__ import annotations
 
-from pyxplora_api.model import Chats, ChatsNew, Data, SimpleChat, SmallChat, SmallChatList, User, int_or_none
-from pyxplora_api.status import ChatType, Emoji, Emoticon, LocationType, NormalStatus, UserContactType, WatchOnlineStatus
+from pyxplora_api.model import (
+    Chats,
+    ChatsNew,
+    Data,
+    SimpleChat,
+    SmallChat,
+    SmallChatList,
+    User,
+    int_or_none,
+)
+from pyxplora_api.status import (
+    ChatType,
+    Emoji,
+    Emoticon,
+    LocationType,
+    NormalStatus,
+    UserContactType,
+    WatchOnlineStatus,
+)
 
 
 def test_int_or_none_handles_valid_and_invalid_values() -> None:
@@ -20,7 +37,12 @@ def test_dataclasses_json_decodes_nested_chat_payload() -> None:
                     "readFlag": "1",
                     "sender": {"id": "sender", "name": "Parent"},
                     "receiver": {"id": "receiver", "name": "Child"},
-                    "data": {"tm": "1700000000", "text": "Hallo", "battery": "88", "delete_flag": "0"},
+                    "data": {
+                        "tm": "1700000000",
+                        "text": "Hallo",
+                        "battery": "88",
+                        "delete_flag": "0",
+                    },
                     "create": "1700000001",
                     "type": ChatType.TEXT.value,
                 }
@@ -48,7 +70,9 @@ def test_dataclass_defaults_and_serialization_round_trip() -> None:
 
     assert small.emoticon_id == Emoticon.UNKNOWN__.value
     assert small.delete_flag == 0
-    assert SmallChatList.from_dict(small_list.to_dict()).small_chat_list[0].msgId == "msg"
+    assert (
+        SmallChatList.from_dict(small_list.to_dict()).small_chat_list[0].msgId == "msg"
+    )
 
 
 def test_selected_status_enum_values_are_stable() -> None:

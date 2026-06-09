@@ -56,7 +56,11 @@ def test_request_body_omits_empty_optional_fields() -> None:
     assert body == {"query": "query"}
 
     body = GraphqlClient._GraphqlClient__request_body("query", {"id": 1}, "Operation")
-    assert body == {"query": "query", "variables": {"id": 1}, "operationName": "Operation"}
+    assert body == {
+        "query": "query",
+        "variables": {"id": 1},
+        "operationName": "Operation",
+    }
 
 
 def test_execute_posts_merged_headers_and_default_user_agent(monkeypatch) -> None:
@@ -64,19 +68,39 @@ def test_execute_posts_merged_headers_and_default_user_agent(monkeypatch) -> Non
     response = FakeResponse({"data": {"ok": True}})
 
     def fake_post(endpoint: str, *, json: dict, headers: dict, timeout: int, **options):
-        calls.append({"endpoint": endpoint, "json": json, "headers": headers, "timeout": timeout, "options": options})
+        calls.append(
+            {
+                "endpoint": endpoint,
+                "json": json,
+                "headers": headers,
+                "timeout": timeout,
+                "options": options,
+            }
+        )
         return response
 
     monkeypatch.setattr("pyxplora_api.graphql_client.requests.post", fake_post)
-    client = GraphqlClient("https://example.test/graphql", headers={"Authorization": "base"}, verify=False)
+    client = GraphqlClient(
+        "https://example.test/graphql", headers={"Authorization": "base"}, verify=False
+    )
 
-    assert client.execute("query", {"id": 1}, "Operation", headers={"X-Test": "yes"}) == {"data": {"ok": True}}
+    assert client.execute(
+        "query", {"id": 1}, "Operation", headers={"X-Test": "yes"}
+    ) == {"data": {"ok": True}}
     assert response.raised is True
     assert calls == [
         {
             "endpoint": "https://example.test/graphql",
-            "json": {"query": "query", "variables": {"id": 1}, "operationName": "Operation"},
-            "headers": {"Authorization": "base", "X-Test": "yes", "user-agent": DEFAULT_USER_AGENT},
+            "json": {
+                "query": "query",
+                "variables": {"id": 1},
+                "operationName": "Operation",
+            },
+            "headers": {
+                "Authorization": "base",
+                "X-Test": "yes",
+                "user-agent": DEFAULT_USER_AGENT,
+            },
             "timeout": DEFAULT_TIMEOUT,
             "options": {"verify": False},
         }
@@ -86,16 +110,24 @@ def test_execute_posts_merged_headers_and_default_user_agent(monkeypatch) -> Non
 def test_ha_execute_async_uses_supplied_session_and_default_user_agent() -> None:
     response = AsyncResponse({"data": {"ok": True}})
     session = FakeSession(response)
-    client = GraphqlClient("https://example.test/graphql", headers={"Authorization": "base"})
+    client = GraphqlClient(
+        "https://example.test/graphql", headers={"Authorization": "base"}
+    )
 
-    result = asyncio.run(client.ha_execute_async("query", {"id": 2}, "Operation", session=session))
+    result = asyncio.run(
+        client.ha_execute_async("query", {"id": 2}, "Operation", session=session)
+    )
 
     assert result == {"data": {"ok": True}}
     assert response.raised is True
     assert session.calls == [
         {
             "endpoint": "https://example.test/graphql",
-            "json": {"query": "query", "variables": {"id": 2}, "operationName": "Operation"},
+            "json": {
+                "query": "query",
+                "variables": {"id": 2},
+                "operationName": "Operation",
+            },
             "headers": {"Authorization": "base", "user-agent": DEFAULT_USER_AGENT},
         }
     ]
