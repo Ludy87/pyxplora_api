@@ -10,6 +10,10 @@ updates:
     labels:
       - "in progress"
       - "dependencies"
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"
 
   - package-ecosystem: pip
     directory: /
